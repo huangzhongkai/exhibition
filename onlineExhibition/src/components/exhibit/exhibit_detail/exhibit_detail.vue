@@ -24,7 +24,7 @@
         <span class="left">作品解读</span>
         <span class="right" @click="more_reading()">查看更多</span>
       </div>
-      <div class="reading_info" v-for="reading in exhibit.image_text_readings">
+      <div class="reading_info" v-if="isShow(index)" v-for="(reading, index) in exhibit.image_text_readings">
         <div class="avatar">
           <img :src="reading.image_path"/>
         </div>
@@ -33,7 +33,7 @@
           <div class="description">{{reading.reading_content}}</div>
         </div>
       </div>
-      <div class="reading_info" v-for="(reading, index) in exhibit.audio_readings">
+      <div class="reading_info" v-if="isShow(index)" v-for="(reading, index) in exhibit.audio_readings">
         <div class="avatar">
           <img @click="show_video(index)" :src="reading.play_icon"/>
         </div>
@@ -61,15 +61,18 @@
             <h1 class="name">{{rating.username}}</h1>
             <p class="text">{{rating.text}}</p>
             <div class="time">
-              {{rating.rateTime | formatDate}}
+              {{rating.rateTime}}
             </div>
           </div>
         </li>
       </ul>
     </div>
 
-    <more_reading :exhibition_id="param.id" ref="more_reading">
+    <more_reading :exhibit_id="param.id" ref="more_reading">
     </more_reading>
+
+    <ratings :exhibition_id="param.id" ref="edit_ratings">
+    </ratings>
   </div>
 </template>
 
@@ -78,11 +81,13 @@
   import audio_reading from '../../audio/audio_reading.vue'
   import more_reading from '../more_reading/more_reading.vue'
   import {formatDate} from '../../../common/js/date';
+  import ratings from '../ratings/ratings.vue'
 
   export default {
     components: {
       audio_reading,
-      more_reading
+      more_reading,
+      ratings
     },
     data () {
       return {
@@ -97,7 +102,8 @@
       };
     },
     created() {
-      this.$http.get('http://10.50.101.66:8887/exhibits/'+ this.param.id ).then(response => {
+      console.log(this.param.id);
+      this.$http.get('http://10.50.101.66:8887/exhibits/'+ this.param.id +'/').then(response => {
 
         this.exhibit = response.body;
       },response => {
@@ -132,14 +138,23 @@
         this.$refs.more_reading.show();
       },
       show_image_text_readings(key) {
-        window.open("http://10.50.101.66:8080/readings/image_text_readings.html?id=" + key);
+        window.open("http://10.50.101.66:8080/readings/image_text_readings.html?id=" + key +'&type=exhibit');
       },
       show_video_readings(key) {
-        window.open("http://10.50.101.66:8080/readings/video_readings.html?id=" + key);
+        window.open("http://10.50.101.66:8080/readings/video_readings.html?id=" + key +'&type=exhibit');
       },
       add_rating () {
-        console.log('hahah');
-        window.open("http://10.50.101.66:8080/ratings/ratings.html");
+//        window.open("http://10.50.101.66:8080/ratings/ratings.html");
+        document.body.style.height = '100%';
+        document.body.style.overflow = 'hidden';
+        this.$refs.edit_ratings.show();
+      },
+      isShow (index) {
+        if(index <=1){
+          return true;
+        }else{
+          return false;
+        }
       }
     },
     filters: {
@@ -268,7 +283,7 @@
         position: relative
         flex: 1
         .name
-          margin-bottom: 4px
+          margin-top: 0px
           line-height: 12px
           font-size: 10px
           color: rgb(7, 17, 27)

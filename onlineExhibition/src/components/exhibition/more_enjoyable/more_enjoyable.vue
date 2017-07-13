@@ -10,7 +10,7 @@
       <div class="more_enjoyable_content" ref="more_content">
         <ul :style="{height: max_length}" style="display: flex">
           <div class="left_product">
-            <div v-for="enjoyable in exhibition.enjoyables" class="exhibit_block">
+            <div v-for="enjoyable in exhibits" class="exhibit_block">
               <img @click="show_exhibit(enjoyable.id)" width="100%"  v-bind:src="enjoyable.image_path">
               <div class="exhibit_name">
                 {{enjoyable.name}}
@@ -21,7 +21,7 @@
             </div>
           </div>
           <div class="right_product">
-            <div v-for="enjoyable in exhibition.enjoyables" class="exhibit_block">
+            <div v-for="enjoyable in exhibits_right" class="exhibit_block">
               <img @click="show_exhibit(enjoyable.id)" width="100%" v-bind:src="enjoyable.image_path">
               <div class="exhibit_name">
                 {{enjoyable.name}}
@@ -48,8 +48,9 @@
     },
     data () {
       return {
-        exhibitions:[],
-        exhibition:{},
+        exhibit:{},
+        exhibits:[],
+        exhibits_right:[],
         showFlag: false,
         max_length:''
       };
@@ -64,7 +65,7 @@
         document.body.style.overflow = '';
       },
       show_exhibit (key) {
-        window.open("http://10.50.101.66:8080/production/production.html?id=" + key);
+        window.open("http://10.50.101.66:8080/exhibit/exhibit.html?id=" + key);
       },
       _initScroll() {
         this.exhibitionScroll = new BScroll(this.$refs.more_content, {
@@ -74,9 +75,25 @@
     },
     created() {
       if(this.exhibition_id != undefined){
-        this.$http.get('http://10.50.101.66:8887/exhibition_readings/'+ this.exhibition_id).then(response => {
-          this.exhibition = response.body;
-          this.max_length = (this.exhibition.image_text_readings.length + this.exhibition.audio_readings.length) *100 - screen.height
+        this.$http.get('http://10.50.101.66:8887/exhibits?exhibition='+ this.exhibition_id +'&type=enjoyable').then(response => {
+          this.exhibits = [];
+          this.exhibits_right = [];
+          if(response.body.length%2 === 0){
+            for(let i=0;i<response.body.length/2;i++){
+              this.exhibits[i]=response.body[i];
+              this.exhibits_right[i]=response.body[i+response.body.length/2];
+            }
+          }else{
+            let l = response.body.length -1;
+            for(let i=0;i<l/2;i++){
+              this.exhibits[i]=response.body[i];
+              this.exhibits_right[i]=response.body[i+l/2];
+            }
+            this.exhibits_right[l/2] = response.body[response.body.length -1];
+          }
+
+          this.exhibit = response.body;
+          this.max_length = (this.exhibit.length + this.exhibit.length) *100 - screen.height
           this.max_length = this.max_length.toString() + 'px';
           this.$nextTick(() => {
             this._initScroll();

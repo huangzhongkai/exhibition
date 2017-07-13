@@ -12,7 +12,7 @@
           </div>
         </div>
 
-        <div class="progress">
+        <div class="progress-b">
 
           <div @click="changeTime($event)" @touchmove="touchMove($event)" @touchend="touchEnd($event)" ref="progressBar" class="progress-bar">
             <div class="now" ref="now" :style="{width: (now / nativeAudio.duration).toFixed(3)*100 + '%'}"></div>
@@ -150,16 +150,18 @@
           background: url(./pause.svg) no-repeat;
           background-size: contain;
 
-    .progress
+    .progress-b
       width: 100%;
       top: 10px;
       left: 0;
       span.start
         position: absolute;
+        margin-top: 5px
         left: 6px;
         // padding-right: 5px;
       span.end
         position: absolute;
+        margin-top: 5px
         right: 6px;
         // padding-left: 5px;
       .progress-bar

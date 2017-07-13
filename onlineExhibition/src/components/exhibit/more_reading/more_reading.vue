@@ -9,7 +9,7 @@
       </div>
       <div class="more_content" ref="more_reading_content">
         <ul :style="{height: max_length}">
-          <div class="more_reading_info" v-for="reading in exhibition.image_text_readings">
+          <div class="more_reading_info" v-for="reading in exhibit.image_text_readings">
             <div class="avatar">
               <img class="avatar_image_background" :src="reading.image_path"/>
             </div>
@@ -18,7 +18,7 @@
               <div class="description">{{reading.reading_content}}</div>
             </div>
           </div>
-          <div class="more_reading_info" v-for="(reading, index) in exhibition.audio_readings">
+          <div class="more_reading_info" v-for="(reading, index) in exhibit.audio_readings">
             <div class="avatar">
               <img class="avatar_image_background" src="/static/exhibition/head1.jpeg"/>
               <img class="avatar_image_play" @click="show_video(index)" :src="reading.play_icon"/>
@@ -45,12 +45,11 @@
 
   export default {
     props: {
-      exhibition_id:0
+      exhibit_id:0
     },
     data () {
       return {
-        exhibitions:[],
-        exhibition:{},
+        exhibit:{},
         showFlag: false,
         max_length:''
       };
@@ -77,17 +76,17 @@
         });
       },
       show_image_text_readings(key) {
-        window.open("http://10.50.101.66:8080/readings/image_text_readings.html?id=" + key);
+        window.open("http://10.50.101.66:8080/readings/image_text_readings.html?id=" + key +'&type=exhibit');
       },
       show_video_readings(key) {
-        window.open("http://10.50.101.66:8080/readings/video_readings.html?id=" + key);
+        window.open("http://10.50.101.66:8080/readings/video_readings.html?id=" + key +'&type=exhibit');
       },
     },
     created() {
-      if(this.exhibition_id != undefined){
-        this.$http.get('http://10.50.101.66:8887/exhibit_readings/'+ this.exhibition_id).then(response => {
-          this.exhibition = response.body;
-          this.max_length = (this.exhibition.image_text_readings.length + this.exhibition.audio_readings.length) *100 - screen.height
+      if(this.exhibit_id != undefined){
+        this.$http.get('http://10.50.101.66:8887/exhibit_readings/'+ this.exhibit_id).then(response => {
+          this.exhibit = response.body;
+          this.max_length = (this.exhibit.image_text_readings.length + this.exhibit.audio_readings.length) *100 - screen.height
           this.max_length = this.max_length.toString() + 'px';
           this.$nextTick(() => {
             this._initScroll();

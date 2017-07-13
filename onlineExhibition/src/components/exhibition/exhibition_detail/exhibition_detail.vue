@@ -29,7 +29,7 @@
         <span class="left">展览解读</span>
         <span class="right" @click="more_reading()">查看更多</span>
       </div>
-      <div class="reading_info" v-for="reading in exhibition.image_text_readings">
+      <div class="reading_info" v-if="isShow(index)" v-for="(reading, index) in exhibition.image_text_readings">
         <div class="avatar">
           <img class="avatar_image_background" :src="reading.image_path"/>
         </div>
@@ -38,7 +38,7 @@
           <div class="description">{{reading.reading_content}}</div>
         </div>
       </div>
-      <div class="reading_info" v-for="(reading, index) in exhibition.audio_readings">
+      <div class="reading_info"v-if="isShow(index)"  v-for="(reading, index) in exhibition.audio_readings">
         <div class="avatar">
           <img class="avatar_image_background" src="/static/exhibition/head1.jpeg"/>
           <img class="avatar_image_play" @click="show_video(index)" :src="reading.play_icon"/>
@@ -150,17 +150,24 @@
         }
       },
       show_charactor(key) {
-        window.open("http://10.50.101.66:8080/production/production.html?id=" + key);
+        window.open("http://10.50.101.66:8080/exhibit/exhibit.html?id=" + key);
       },
       show_enjoyable(key) {
-        window.open("http://10.50.101.66:8080/production/production.html?id=" + key);
+        window.open("http://10.50.101.66:8080/exhibit/exhibit.html?id=" + key);
       },
       show_image_text_readings(key) {
-        window.open("http://10.50.101.66:8080/readings/image_text_readings.html?id=" + key);
+        window.open("http://10.50.101.66:8080/readings/image_text_readings.html?id=" + key +'&type=exhibition');
       },
       show_video_readings(key) {
-        window.open("http://10.50.101.66:8080/readings/video_readings.html?id=" + key);
+        window.open("http://10.50.101.66:8080/readings/video_readings.html?id=" + key +'&type=exhibition');
       },
+      isShow (index) {
+        if(index <=1){
+          return true;
+        }else{
+          return false;
+        }
+      }
     }
   };
 </script>

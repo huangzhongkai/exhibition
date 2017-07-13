@@ -77,10 +77,10 @@
         });
       },
       show_image_text_readings(key) {
-        window.open("http://10.50.101.66:8080/readings/image_text_readings.html?id=" + key);
+        window.open("http://10.50.101.66:8080/readings/image_text_readings.html?id=" + key +'&type=exhibition');
       },
       show_video_readings(key) {
-        window.open("http://10.50.101.66:8080/readings/video_readings.html?id=" + key);
+        window.open("http://10.50.101.66:8080/readings/video_readings.html?id=" + key +'&type=exhibition');
       },
     },
     created() {

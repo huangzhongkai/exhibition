@@ -23,6 +23,7 @@ class OeArtistExhibitionRelation(models.Model):
     class Meta:
         db_table = 'oe_artist_exhibition_relation'
 
+
 class OeExhibit(models.Model):
     id = models.CharField(db_column='ID', primary_key=True, max_length=32) # Field name made lowercase.
     sn = models.CharField(db_column='SN', max_length=32) # Field name made lowercase.
@@ -36,6 +37,26 @@ class OeExhibit(models.Model):
     exhibition = models.ForeignKey('OeExhibition', db_column='EXHIBITION_ID') # Field name made lowercase.
     class Meta:
         db_table = 'oe_exhibit'
+
+class OeExhibitImageTextReading(models.Model):
+    id = models.CharField(db_column='ID', primary_key=True, max_length=32)
+    image_path = models.CharField(db_column='IMAGE_PATH', max_length=200)
+    title = models.CharField(db_column='TITLE', max_length=100, blank=True)
+    content = models.CharField(db_column='CONTENT', max_length=100, blank=True)
+    exhibit = models.ForeignKey('OeExhibit', db_column='EXHIBIT_ID')
+    class Meta:
+        db_table = 'oe_exhibit_image_text_reading'
+
+class OeExhibitVideoReading(models.Model):
+    id = models.CharField(db_column='ID', primary_key=True, max_length=32)
+    video_path = models.CharField(db_column='VIDEO_PATH', max_length=200)
+    title = models.CharField(db_column='TITLE', max_length=100, blank=True)
+    content = models.CharField(db_column='CONTENT', max_length=100, blank=True)
+    play_icon = models.CharField(db_column='PLAY_ICON', max_length=200)
+    exhibit = models.ForeignKey('OeExhibit', db_column='EXHIBIT_ID')
+    class Meta:
+        db_table = 'oe_exhibit_video_reading'
+
 
 class OeExhibitCategory(models.Model):
     id = models.CharField(db_column='ID', primary_key=True, max_length=32) # Field name made lowercase.
@@ -68,6 +89,25 @@ class OeExhibition(models.Model):
     video_path = models.CharField(db_column='VIDEO_PATH', max_length=200, blank=True) # Field name made lowercase.
     class Meta:
         db_table = 'oe_exhibition'
+
+class OeExhibitionImageTextReading(models.Model):
+    id = models.CharField(db_column='ID', primary_key=True, max_length=32)
+    image_path = models.CharField(db_column='IMAGE_PATH', max_length=200)
+    title = models.CharField(db_column='TITLE', max_length=100, blank=True)
+    content = models.CharField(db_column='CONTENT', max_length=100, blank=True)
+    exhibition = models.ForeignKey('OeExhibition', db_column='EXHIBITION_ID')
+    class Meta:
+        db_table = 'oe_exhibition_image_text_reading'
+
+class OeExhibitionVideoReading(models.Model):
+    id = models.CharField(db_column='ID', primary_key=True, max_length=32)
+    video_path = models.CharField(db_column='VIDEO_PATH', max_length=200)
+    title = models.CharField(db_column='TITLE', max_length=100, blank=True)
+    content = models.CharField(db_column='CONTENT', max_length=100, blank=True)
+    play_icon = models.CharField(db_column='PLAY_ICON', max_length=200)
+    exhibition = models.ForeignKey('OeExhibition', db_column='EXHIBITION_ID')
+    class Meta:
+        db_table = 'oe_exhibition_video_reading'
 
 class OeExhibitionComment(models.Model):
     id = models.CharField(db_column='ID', primary_key=True, max_length=32) # Field name made lowercase.
@@ -242,7 +282,7 @@ class OeUser(models.Model):
     user_name = models.CharField(db_column='USER_NAME', max_length=200, blank=True) # Field name made lowercase.
     nickname = models.CharField(db_column='NICKNAME', max_length=200, blank=True) # Field name made lowercase.
     password = models.CharField(db_column='PASSWORD', max_length=200) # Field name made lowercase.
-    status = models.IntegerField(db_column='STATUS') # Field name made lowercase.
+    status = models.IntegerField(db_column='STATUS', default=0) # Field name made lowercase.
     sex = models.IntegerField(db_column='SEX', blank=True, null=True) # Field name made lowercase.
     head_path = models.CharField(db_column='HEAD_PATH', max_length=200, blank=True) # Field name made lowercase.
     birthdate = models.DateTimeField(db_column='BIRTHDATE', blank=True, null=True) # Field name made lowercase.

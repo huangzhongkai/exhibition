@@ -7,6 +7,8 @@ import App from '../../components/exhibit/exhibit_detail/exhibit_detail.vue'
 import VUeResource from 'vue-resource'
 import Vuex from 'vuex'
 import "../../common/stylus/index.styl"
+import "bootstrap/dist/css/bootstrap.css"
+
 
 Vue.config.productionTip = false
 

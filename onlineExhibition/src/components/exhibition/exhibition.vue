@@ -12,15 +12,15 @@
                 {{ exhibition.name}}
               </div>
               <div>
-                展览时间：{{ exhibition.date}}
+                展览时间：{{ exhibition.exhibition_date}}
               </div>
               <div>
-                展览地点：{{ exhibition.site}}
+                展览地点：{{ exhibition.exhibition_site}}
               </div>
             </div>
             <div class="info_right">
               <div>
-                展策人:{{ exhibition.curator}}
+                展策人:{{ exhibition.exhibition_curator}}
               </div>
             </div>
           </div>
