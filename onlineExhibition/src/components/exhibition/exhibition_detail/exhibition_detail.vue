@@ -85,6 +85,7 @@
   import more_reading from "../more_reading/more_reading.vue"
   import more_charactor from "../more_charactor/more_charactor.vue"
   import more_enjoyable from "../more_enjoyable/more_enjoyable.vue"
+  import wx from 'weixin-js-sdk'
 
   export default {
     components: {
@@ -95,6 +96,7 @@
     },
     data () {
       return {
+        config:{},
         select_show:{},
         my_video: false,
         exhibitions: [],
@@ -109,11 +111,92 @@
     },
     created() {
       if(this.param.id != undefined ){
-        this.$http.get('http://10.50.101.66:8887/exhibitions/'+ this.param.id ).then(response => {
+        this.$http.get('http://10.50.101.66:8887/exhibitions/'+ this.param.id +'/').then(response => {
           this.exhibition = response.body;
         },response => {
         });
       }
+
+      this.$http.get('http://10.50.101.66:8887/get_signature/?' +
+        'appid=wx522cca3d4b048aa9&appsecret=d1f486a5f4ee59b54b6e8a657fdbbd1e' +
+        '&url='+ window.location.href).then(response => {
+        this.config = response.body;
+        let _this = this;
+        wx.config({
+          debug: true, // 开启调试模式,调用的所有api的返回值会在客户端alert出来，若要查看传入的参数，可以在pc端打开，参数信息会通过log打出，仅在pc端时才会打印。
+          appId: 'wx522cca3d4b048aa9', // 必填，公众号的唯一标识
+          timestamp: this.config.timestamp, // 必填，生成签名的时间戳
+          nonceStr: this.config.noncestr, // 必填，生成签名的随机串
+          signature: this.config.signature,// 必填，签名，见附录1
+          jsApiList: [
+            'onMenuShareAppMessage',
+            'onMenuShareTimeline',
+            'onMenuShareQQ',
+            'onMenuShareWeibo',
+            'onMenuShareQZone'
+          ] // 必填，需要使用的JS接口列表，所有JS接口列表见附录2
+        });
+
+        wx.ready(function(){
+          wx.onMenuShareAppMessage({
+            title: '在线艺术品超市分享给朋友', // 分享标题
+            desc: '在线艺术品超市，展厅,高大上的艺术家都在这里，加关注，不迷路', // 分享描述
+            link: 'http://kll2cwa.hk1.mofasuidao.cn/exhibition/exhibition.html?id=0', // 分享链接，该链接域名或路径必须与当前页面对应的公众号JS安全域名一致
+            imgUrl: 'http://picturebank.oss-cn-qingdao.aliyuncs.com/onlineExhibition/backround.jpg', // 分享图标
+            type: '', // 分享类型,music、video或link，不填默认为link
+            dataUrl: '', // 如果type是music或video，则要提供数据链接，默认为空
+            success: function () {
+              // 用户确认分享后执行的回调函数
+              alert('success');
+            },
+            cancel: function () {
+              // 用户取消分享后执行的回调函数
+              alert('fail');
+            }
+          });
+          wx.onMenuShareTimeline({
+            title: '在线艺术品超市分享到朋友圈', // 分享标题
+            link: 'http://kll2cwa.hk1.mofasuidao.cn/exhibition/exhibition.html?id=0', // 分享链接，该链接域名或路径必须与当前页面对应的公众号JS安全域名一致
+            imgUrl: 'http://picturebank.oss-cn-qingdao.aliyuncs.com/onlineExhibition/backround.jpg', // 分享图标
+            success: function () {
+            },
+            cancel: function () {
+            }
+          });
+          wx.onMenuShareQQ({
+            title: '在线艺术品超市分享到qq', // 分享标题
+            desc: '在线艺术品超市，展厅,高大上的艺术家都在这里，加关注，不迷路', // 分享描述
+            link: 'http://kll2cwa.hk1.mofasuidao.cn/exhibition/exhibition.html?id=0', // 分享链接
+            imgUrl: 'http://picturebank.oss-cn-qingdao.aliyuncs.com/onlineExhibition/backround.jpg', // 分享图标
+            success: function () {
+            },
+            cancel: function () {
+            }
+          });
+          wx.onMenuShareQZone({
+            title: '在线艺术品超市分享到QZone', // 分享标题
+            desc: '在线艺术品超市，展厅,高大上的艺术家都在这里，加关注，不迷路', // 分享描述
+            link: 'http://kll2cwa.hk1.mofasuidao.cn/exhibition/exhibition.html?id=0', // 分享链接
+            imgUrl: 'http://picturebank.oss-cn-qingdao.aliyuncs.com/onlineExhibition/backround.jpg', // 分享图标
+            success: function () {
+              // 用户确认分享后执行的回调函数
+            },
+            cancel: function () {
+              // 用户取消分享后执行的回调函数
+            }
+          });
+        });
+
+        wx.error(function(res){
+          _this.$http.get('http://10.50.101.66:8887/motified_signature/?' +
+            'appid=wx522cca3d4b048aa9&appsecret=d1f486a5f4ee59b54b6e8a657fdbbd1e' +
+            '&url='+ window.location.href).then(response => {
+          },response => {
+          });
+        });
+
+      },response => {
+      });
     },
     mounted() {
       this.$store.commit('findDOM', {name: 'audio', dom: this.$refs.audio});
@@ -121,6 +204,7 @@
         this.$store.state.isPlaying = false;
       });
       this.$refs.audio.addEventListener('error', () => { console.log(' play error') });
+
     },
     computed: {
       audio() {

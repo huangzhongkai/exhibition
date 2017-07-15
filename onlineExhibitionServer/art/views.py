@@ -3,10 +3,14 @@ import json
 import datetime,time
 from django.shortcuts import render_to_response, HttpResponse, Http404
 from art.models import OeArtist, OeExhibit, OeExhibition, OeExhibitionImageTextReading,OeExhibitionVideoReading, \
-    OeArtistExhibitionRelation
+    OeArtistExhibitionRelation, OeWxConfig
 from django.forms.models import model_to_dict
 from django.views.decorators.csrf import csrf_exempt
 from art.models import OeExhibitImageTextReading, OeExhibitVideoReading, OeUser, OeExhibitComment, OeExhibitionComment
+
+import hashlib
+import requests
+from art.utils import Wx
 # Create your views here.
 
 
@@ -985,3 +989,67 @@ def exhibition_html(request):
 def home_html(request):
     return render_to_response('home.html', locals())
 
+
+def motified_signature(request):
+    if request.method == 'GET':
+        appid = request.GET.get('appid', '0')
+        appsecret = request.GET.get('appsecret', 'error')
+        from_p = request.GET.get('from', '0')
+        isappinstalled = request.GET.get('isappinstalled', 'error')
+        url = request.GET.get('url', '0')
+        if from_p != 'error' and isappinstalled != 'error':
+            url = url + '&from=' + from_p + '&isappinstalled=' + isappinstalled
+
+        wx = Wx(appid, appsecret, url)
+        return_dict = {
+            'appid': appid,
+            'appsecret': appsecret,
+            'url': url,
+            'access_token': wx.get_access_token,
+            'jsapi_ticket': wx.get_jsapi_ticket,
+            'timestamp': wx.timestamp,
+            'noncestr': wx.noncestr,
+            'signature': wx.get_signature()
+        }
+        OeWxConfig.objects.filter(url=url).update(**return_dict)
+        return HttpResponse(json.dumps({}), content_type='application/json')
+
+
+def get_signature(request):
+    if request.method == 'GET':
+        appid = request.GET.get('appid', '0')
+        appsecret = request.GET.get('appsecret', 'error')
+        from_p = request.GET.get('from', '0')
+        isappinstalled = request.GET.get('isappinstalled', 'error')
+        url = request.GET.get('url', '0')
+        if from_p != 'error' and isappinstalled != 'error':
+            url = url + '&from=' + from_p + '&isappinstalled=' + isappinstalled
+        config = OeWxConfig.objects.filter(url=url, appid=appid, appsecret=appsecret).first()
+        if config:
+            return_dict = {
+                'timestamp': config.timestamp,
+                'noncestr': config.noncestr,
+                'signature': config.signature
+            }
+            return HttpResponse(json.dumps(return_dict), content_type='application/json')
+        else:
+            wx = Wx(appid, appsecret, url)
+            return_dict = {
+                'appid': appid,
+                'appsecret': appsecret,
+                'url': url,
+                'access_token': wx.get_access_token,
+                'jsapi_ticket': wx.get_jsapi_ticket,
+                'timestamp': wx.timestamp,
+                'noncestr': wx.noncestr,
+                'signature': wx.get_signature()
+            }
+            OeWxConfig.objects.create(**return_dict)
+
+            config = OeWxConfig.objects.filter(url=url, appid=appid, appsecret=appsecret).first()
+            return_dict = {
+                'timestamp': config.timestamp,
+                'noncestr': config.noncestr,
+                'signature': config.signature
+            }
+            return HttpResponse(json.dumps(return_dict), content_type='application/json')

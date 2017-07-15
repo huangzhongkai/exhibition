@@ -5,7 +5,7 @@ from django.contrib import admin
 from art.views import artist, artists, achievement, introduction, exhibit, exhibits
 from art.views import exhibition, exhibitions, exhibit_readings,exhibition_readings,\
     exhibit_image_text_readings, exhibit_vedio_readings, exhibition_image_text_readings,\
-    exhibition_vedio_readings
+    exhibition_vedio_readings, get_signature, motified_signature
 from art.views import home_html, exhibition_html, production_html, artist_html, exhibit_ratings
 
 admin.autodiscover()
@@ -36,7 +36,8 @@ urlpatterns = [
     url(r'^exhibition_image_text_readings/(\d+)/$', exhibition_image_text_readings),
     url(r'^exhibition_vedio_readings/(\d+)/$', exhibition_vedio_readings),
 
-
+    url(r'^get_signature/$', get_signature),
+    url(r'^motified_signature/$', motified_signature),
 
     # url(r'^attention/$', attention),
 
