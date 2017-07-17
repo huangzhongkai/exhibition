@@ -11,8 +11,12 @@ class Wx(object):
         self.appid = appid
         self.appsecret = appsecret
         self.url = url
-        self.timestamp = str(time.time()).split('.')[0]
-        self.noncestr = 'Wm3WZYTPz0wzccnW'
+        self.timestamp = int(str(time.time()).split('.')[0])
+        self.noncestr = 'WecWkTYHZw4WRR0f'
+        self.access_token = ''
+        self.jsapi_ticket = ''
+        self.signature = ''
+        self.auth_token = {}
         print self.appid, self.appsecret,self.url
 
     def get_access_token(self):
@@ -38,9 +42,18 @@ class Wx(object):
 
         if self.get_jsapi_ticket() != -1:
             joint_string = 'jsapi_ticket=' + self.get_jsapi_ticket() + '&noncestr=' + noncestr + '&timestamp=' + \
-                           timestamp + '&url=' + url
+                           str(timestamp) + '&url=' + url
             print joint_string
 
             signature = hashlib.sha1(joint_string).hexdigest()
             print signature
             return signature
+
+    def get_web_access_token(self, code):
+        r = requests.get(
+            url='https://api.weixin.qq.com/sns/oauth2/access_token?appid='+ self.appid +'&secret='+ self.appsecret +
+                '&code='+ code +'&grant_type=authorization_code')
+
+        self.auth_token = r.json()
+        print self.auth_token
+        return r.json()

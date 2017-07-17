@@ -336,7 +336,14 @@ class OeWxConfig(models.Model):
     signature = models.CharField(db_column='SIGNATURE', max_length=100)
     timestamp = models.IntegerField(db_column='TIMESTAMP', default=0)
     noncestr = models.CharField(db_column='NONCESTR', max_length=30)
-    url = models.CharField(db_column='URL', max_length=100)
+    url = models.CharField(db_column='URL', max_length=1000)
     class Meta:
         db_table = 'oe_wx_config'
+
+class OeWxDeveloper(models.Model):
+    id = models.AutoField(db_column='ID', primary_key=True)
+    appid = models.CharField(db_column='APPID', max_length=100)
+    appsecret = models.CharField(db_column='APPSECRET', max_length=100)
+    class Meta:
+        db_table = 'oe_wx_developer'
 

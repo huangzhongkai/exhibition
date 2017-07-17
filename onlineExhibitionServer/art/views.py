@@ -3,13 +3,11 @@ import json
 import datetime,time
 from django.shortcuts import render_to_response, HttpResponse, Http404
 from art.models import OeArtist, OeExhibit, OeExhibition, OeExhibitionImageTextReading,OeExhibitionVideoReading, \
-    OeArtistExhibitionRelation, OeWxConfig
+    OeArtistExhibitionRelation, OeWxConfig, OeWxDeveloper
 from django.forms.models import model_to_dict
 from django.views.decorators.csrf import csrf_exempt
 from art.models import OeExhibitImageTextReading, OeExhibitVideoReading, OeUser, OeExhibitComment, OeExhibitionComment
 
-import hashlib
-import requests
 from art.utils import Wx
 # Create your views here.
 
@@ -1016,17 +1014,20 @@ def motified_signature(request):
 
 
 def get_signature(request):
+
     if request.method == 'GET':
-        appid = request.GET.get('appid', '0')
-        appsecret = request.GET.get('appsecret', 'error')
-        from_p = request.GET.get('from', '0')
-        isappinstalled = request.GET.get('isappinstalled', 'error')
-        url = request.GET.get('url', '0')
-        if from_p != 'error' and isappinstalled != 'error':
-            url = url + '&from=' + from_p + '&isappinstalled=' + isappinstalled
+        url = request.GET.get('url', '0').decode('utf-8')
+
+        # if url.find('&code=') != -1:
+        #     code = url.split('&code=')[1].split('&')[0]
+
+        appid = OeWxDeveloper.objects.filter(id=2).first().appid
+        appsecret = OeWxDeveloper.objects.filter(id=2).first().appsecret
+
         config = OeWxConfig.objects.filter(url=url, appid=appid, appsecret=appsecret).first()
         if config:
             return_dict = {
+                'appid':config.appid,
                 'timestamp': config.timestamp,
                 'noncestr': config.noncestr,
                 'signature': config.signature
@@ -1038,8 +1039,8 @@ def get_signature(request):
                 'appid': appid,
                 'appsecret': appsecret,
                 'url': url,
-                'access_token': wx.get_access_token,
-                'jsapi_ticket': wx.get_jsapi_ticket,
+                'access_token': '',
+                'jsapi_ticket': '',
                 'timestamp': wx.timestamp,
                 'noncestr': wx.noncestr,
                 'signature': wx.get_signature()
@@ -1048,6 +1049,7 @@ def get_signature(request):
 
             config = OeWxConfig.objects.filter(url=url, appid=appid, appsecret=appsecret).first()
             return_dict = {
+                'appid': config.appid,
                 'timestamp': config.timestamp,
                 'noncestr': config.noncestr,
                 'signature': config.signature

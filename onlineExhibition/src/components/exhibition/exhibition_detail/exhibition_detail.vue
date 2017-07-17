@@ -118,13 +118,12 @@
       }
 
       this.$http.get('http://10.50.101.66:8887/get_signature/?' +
-        'appid=wx522cca3d4b048aa9&appsecret=d1f486a5f4ee59b54b6e8a657fdbbd1e' +
-        '&url='+ window.location.href).then(response => {
+        '&url='+ encodeURIComponent(location.href.split('#')[0])).then(response => {
         this.config = response.body;
         let _this = this;
         wx.config({
           debug: true, // 开启调试模式,调用的所有api的返回值会在客户端alert出来，若要查看传入的参数，可以在pc端打开，参数信息会通过log打出，仅在pc端时才会打印。
-          appId: 'wx522cca3d4b048aa9', // 必填，公众号的唯一标识
+          appId: this.config.appid, // 必填，公众号的唯一标识
           timestamp: this.config.timestamp, // 必填，生成签名的时间戳
           nonceStr: this.config.noncestr, // 必填，生成签名的随机串
           signature: this.config.signature,// 必填，签名，见附录1
@@ -187,13 +186,13 @@
           });
         });
 
-        wx.error(function(res){
-          _this.$http.get('http://10.50.101.66:8887/motified_signature/?' +
-            'appid=wx522cca3d4b048aa9&appsecret=d1f486a5f4ee59b54b6e8a657fdbbd1e' +
-            '&url='+ window.location.href).then(response => {
-          },response => {
-          });
-        });
+//        wx.error(function(res){
+//          _this.$http.get('http://10.50.101.66:8887/motified_signature/?' +
+//            'appid=wx522cca3d4b048aa9&appsecret=d1f486a5f4ee59b54b6e8a657fdbbd1e' +
+//            '&url='+ window.location.href).then(response => {
+//          },response => {
+//          });
+//        });
 
       },response => {
       });
