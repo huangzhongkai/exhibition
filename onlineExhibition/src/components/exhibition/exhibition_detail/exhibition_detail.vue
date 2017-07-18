@@ -186,13 +186,13 @@
           });
         });
 
-//        wx.error(function(res){
-//          _this.$http.get('http://10.50.101.66:8887/motified_signature/?' +
-//            'appid=wx522cca3d4b048aa9&appsecret=d1f486a5f4ee59b54b6e8a657fdbbd1e' +
-//            '&url='+ window.location.href).then(response => {
-//          },response => {
-//          });
-//        });
+        wx.error(function(res){
+          _this.$http.get('http://10.50.101.66:8887/motified_signature/?' +
+            'url='+ encodeURIComponent(location.href.split('#')[0])).then(response => {
+            window.location.reload();
+          },response => {
+          });
+        });
 
       },response => {
       });

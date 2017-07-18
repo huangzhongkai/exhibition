@@ -331,8 +331,6 @@ class OeWxConfig(models.Model):
     id = models.AutoField(db_column='ID', primary_key=True)
     appid = models.CharField(db_column='APPID', max_length=100)
     appsecret = models.CharField(db_column='APPSECRET', max_length=100)
-    access_token = models.CharField(db_column='ACCESS_TOKEN', max_length=200)
-    jsapi_ticket = models.CharField(db_column='JSAPI_TICKET', max_length=200)
     signature = models.CharField(db_column='SIGNATURE', max_length=100)
     timestamp = models.IntegerField(db_column='TIMESTAMP', default=0)
     noncestr = models.CharField(db_column='NONCESTR', max_length=30)
@@ -344,6 +342,9 @@ class OeWxDeveloper(models.Model):
     id = models.AutoField(db_column='ID', primary_key=True)
     appid = models.CharField(db_column='APPID', max_length=100)
     appsecret = models.CharField(db_column='APPSECRET', max_length=100)
+    access_token = models.CharField(db_column='ACCESS_TOKEN', max_length=200)
+    jsapi_ticket = models.CharField(db_column='JSAPI_TICKET', max_length=200)
+    create_timestamp = models.IntegerField(db_column='CREATE_TIMESTAMP', default=0)
     class Meta:
         db_table = 'oe_wx_developer'
 
