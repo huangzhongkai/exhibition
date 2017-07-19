@@ -75,7 +75,7 @@
     },
     created() {
       if(this.exhibition_id != undefined){
-        this.$http.get('http://10.50.101.66:8887/exhibits?exhibition='+ this.exhibition_id + '&type=charactor').then(response => {
+        this.$http.get('http://10.50.101.66:8887/exhibits/?exhibition='+ this.exhibition_id + '&type=charactor').then(response => {
           this.exhibits = [];
           this.exhibits_right = [];
           if(response.body.length%2 === 0){

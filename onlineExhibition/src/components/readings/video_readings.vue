@@ -46,12 +46,12 @@
     },
     created() {
       if(this.params.type === 'exhibit'){
-        this.$http.get('http://10.50.101.66:8887/exhibit_vedio_readings/'+ this.params.id).then(response => {
+        this.$http.get('http://10.50.101.66:8887/exhibit_vedio_readings/'+ this.params.id + '/').then(response => {
           this.reading = response.body;
         },response => {
         });
       }else if(this.params.type === 'exhibition'){
-        this.$http.get('http://10.50.101.66:8887/exhibition_vedio_readings/'+ this.params.id).then(response => {
+        this.$http.get('http://10.50.101.66:8887/exhibition_vedio_readings/'+ this.params.id + '/').then(response => {
           this.reading = response.body;
         },response => {
         });

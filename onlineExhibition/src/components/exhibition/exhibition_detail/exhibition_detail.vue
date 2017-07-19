@@ -22,13 +22,28 @@
           </div>
         </div>
       </div>
-      <audio_reading :name="exhibition.audio_name" ref="audio_reading"></audio_reading>
-      <audio :src="exhibition.audio_src" ref="audio"></audio>
+      <!--<audio_reading :name="exhibition.audio_name" ref="audio_reading"></audio_reading>-->
+      <!--<audio :src="exhibition.audio_src" ref="audio"></audio>-->
 
       <div class="reading_top">
         <span class="left">展览解读</span>
         <span class="right" @click="more_reading()">查看更多</span>
       </div>
+
+      <div class="reading_info" v-if="isShow(index)"  v-for="(reading, index) in exhibition.audio_readings">
+        <div class="avatar">
+          <img class="avatar_image_background" src="/static/exhibition/head1.jpeg"/>
+          <img class="avatar_image_play" @click="show_audio(index)" :src="play_icon"/>
+        </div>
+        <div class="reading_video">
+          <audio :src="reading.audio_src" ref="my_audio" class="my_video"></audio>
+        </div>
+        <div class="reading_content">
+          <div class="title">{{reading.reading_title}}</div>
+          <div class="description">{{reading.reading_content}}</div>
+        </div>
+      </div>
+
       <div class="reading_info" v-if="isShow(index)" v-for="(reading, index) in exhibition.image_text_readings">
         <div class="avatar">
           <img class="avatar_image_background" :src="reading.image_path"/>
@@ -38,7 +53,7 @@
           <div class="description">{{reading.reading_content}}</div>
         </div>
       </div>
-      <div class="reading_info"v-if="isShow(index)"  v-for="(reading, index) in exhibition.audio_readings">
+      <div class="reading_info"v-if="isShow(index)"  v-for="(reading, index) in exhibition.video_readings">
         <div class="avatar">
           <img class="avatar_image_background" src="/static/exhibition/head1.jpeg"/>
           <img class="avatar_image_play" @click="show_video(index)" :src="reading.play_icon"/>
@@ -96,6 +111,8 @@
     },
     data () {
       return {
+        play_icon:'/static/exhibition/play.svg',
+        isPlaying: false,
         config:{},
         select_show:{},
         my_video: false,
@@ -197,19 +214,19 @@
       },response => {
       });
     },
-    mounted() {
-      this.$store.commit('findDOM', {name: 'audio', dom: this.$refs.audio});
-      this.$refs.audio.addEventListener('ended', () => {
-        this.$store.state.isPlaying = false;
-      });
-      this.$refs.audio.addEventListener('error', () => { console.log(' play error') });
-
-    },
-    computed: {
-      audio() {
-        return this.$store.state.audio;
-      },
-    },
+//    mounted() {
+//      this.$store.commit('findDOM', {name: 'audio', dom: this.$refs.audio});
+//      this.$refs.audio.addEventListener('ended', () => {
+//        this.$store.state.isPlaying = false;
+//      });
+//      this.$refs.audio.addEventListener('error', () => { console.log(' play error') });
+//
+//    },
+//    computed: {
+//      audio() {
+//        return this.$store.state.audio;
+//      },
+//    },
     methods: {
       more_reading () {
         document.body.style.height = '100%';
@@ -232,6 +249,11 @@
           this.$refs.audio_reading.play();
         }
       },
+      show_audio (index) {
+        !this.isPlaying ? this.$refs.my_audio[index].play() : this.$refs.my_audio[index].pause();
+        !this.isPlaying ? this.play_icon = '/static/exhibition/pause.svg' : this.play_icon = '/static/exhibition/play.svg'
+        this.isPlaying = !this.isPlaying;
+      },
       show_charactor(key) {
         window.open("http://10.50.101.66:8080/exhibit/exhibit.html?id=" + key);
       },
@@ -245,7 +267,7 @@
         window.open("http://10.50.101.66:8080/readings/video_readings.html?id=" + key +'&type=exhibition');
       },
       isShow (index) {
-        if(index <=1){
+        if(index < 1){
           return true;
         }else{
           return false;
@@ -330,8 +352,12 @@
         display: inline-block
         margin-left: 16px
         .title
+          height :20px
+          line-height: 20px
           display: inline-block
-          margin: 2px 0 8px 0
+          margin: 2px 0 2px 0
+          overflow: hidden
+          text-overflow: ellipsis
         .description
           height :40px
           display: inline-block

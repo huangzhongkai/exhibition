@@ -45,7 +45,7 @@
     props: {
     },
     created() {
-      this.$http.get('http://10.50.101.66:8887/exhibits?artist='+ this.params.artist).then(response => {
+      this.$http.get('http://10.50.101.66:8887/exhibits/?artist='+ this.params.artist).then(response => {
         this.exhibits = [];
         this.exhibits_right = [];
         if(response.body.length%2 === 0){

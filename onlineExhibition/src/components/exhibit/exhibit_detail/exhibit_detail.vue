@@ -17,25 +17,40 @@
           </div>
         </div>
       </div>
-      <audio_reading class='audio_reading' :name="exhibit.audio_name" ref="audio_reading"></audio_reading>
-      <audio :src="exhibit.audio_src" ref="audio"></audio>
+      <!--<audio_reading class='audio_reading' :name="exhibit.audio_name" ref="audio_reading"></audio_reading>-->
+      <!--<audio :src="exhibit.audio_src" ref="audio"></audio>-->
 
       <div class="reading_top">
         <span class="left">作品解读</span>
         <span class="right" @click="more_reading()">查看更多</span>
       </div>
+      <div class="reading_info" v-if="isShow(index)"  v-for="(reading, index) in exhibit.audio_readings">
+        <div class="avatar">
+          <img class="avatar_image_background" src="/static/exhibition/head1.jpeg"/>
+          <img class="avatar_image_play" @click="show_audio(index)" :src="play_icon"/>
+        </div>
+        <div class="reading_video">
+          <audio :src="reading.audio_src" ref="my_audio" class="my_video"></audio>
+        </div>
+        <div class="reading_content">
+          <div class="title">{{reading.reading_title}}</div>
+          <div class="description">{{reading.reading_content}}</div>
+        </div>
+      </div>
+
       <div class="reading_info" v-if="isShow(index)" v-for="(reading, index) in exhibit.image_text_readings">
         <div class="avatar">
-          <img :src="reading.image_path"/>
+          <img class="avatar_image_background" :src="reading.image_path"/>
         </div>
         <div @click="show_image_text_readings(reading.id)" class="reading_content">
           <div class="title">{{reading.reading_title}}</div>
           <div class="description">{{reading.reading_content}}</div>
         </div>
       </div>
-      <div class="reading_info" v-if="isShow(index)" v-for="(reading, index) in exhibit.audio_readings">
+      <div class="reading_info"v-if="isShow(index)"  v-for="(reading, index) in exhibit.video_readings">
         <div class="avatar">
-          <img @click="show_video(index)" :src="reading.play_icon"/>
+          <img class="avatar_image_background" src="/static/exhibition/head1.jpeg"/>
+          <img class="avatar_image_play" @click="show_video(index)" :src="reading.play_icon"/>
         </div>
         <div class="reading_video">
           <video :src="reading.video_src" ref="my_video" class="my_video"></video>
@@ -92,6 +107,8 @@
     },
     data () {
       return {
+        play_icon:'/static/exhibition/play.svg',
+        isPlaying: false,
         config:{},
         exhibit:{},
         isEnlarge: false,
@@ -192,18 +209,18 @@
       });
 
     },
-    mounted() {
-      this.$store.commit('findDOM', {name: 'audio', dom: this.$refs.audio});
-      this.$refs.audio.addEventListener('ended', () => {
-        this.$store.state.isPlaying = false;
-      });
-      this.$refs.audio.addEventListener('error', () => { console.log(' play error') });
-    },
-    computed: {
-      audio() {
-        return this.$store.state.audio;
-      },
-    },
+//    mounted() {
+//      this.$store.commit('findDOM', {name: 'audio', dom: this.$refs.audio});
+//      this.$refs.audio.addEventListener('ended', () => {
+//        this.$store.state.isPlaying = false;
+//      });
+//      this.$refs.audio.addEventListener('error', () => { console.log(' play error') });
+//    },
+//    computed: {
+//      audio() {
+//        return this.$store.state.audio;
+//      },
+//    },
     methods: {
       show_video (index) {
         this.$refs.my_video[index].play();
@@ -231,8 +248,13 @@
         document.body.style.overflow = 'hidden';
         this.$refs.edit_ratings.show();
       },
+      show_audio (index) {
+        !this.isPlaying ? this.$refs.my_audio[index].play() : this.$refs.my_audio[index].pause();
+        !this.isPlaying ? this.play_icon = '/static/exhibition/pause.svg' : this.play_icon = '/static/exhibition/play.svg'
+        this.isPlaying = !this.isPlaying;
+      },
       isShow (index) {
-        if(index <=1){
+        if(index < 1){
           return true;
         }else{
           return false;
@@ -301,11 +323,10 @@
         margin: 5px 5px 5px 5px
         vertical-align: top
         display: inline-block
-        width: 64px
-        height: 64px
+        width: 1px
+        height: 1px
         z-index: 1
         .my_video
-          border-radius: 5px
           display: inline-block
           width: 100%
           height: 100%
@@ -315,20 +336,31 @@
         margin: 5px 5px 5px 5px
         vertical-align: top
         display: inline-block
-        img
+        width: 64px
+        height: 64px
+        .avatar_image_play
+          border-radius: 5px
+          width: 32px
+          height: 32px
+          position: relative
+          top: -48px
+          right : -16px
+        .avatar_image_background
           border-radius: 5px
           width: 64px
           height: 64px
-          background: url(/static/exhibit/bamboo.jpeg) no-repeat;
-          background-size: 64px 64px;
       .reading_content
         position: absolute
         margin: 5px 5px 5px 5px
         display: inline-block
         margin-left: 16px
         .title
+          height :20px
+          line-height: 20px
           display: inline-block
-          margin: 2px 0 8px 0
+          margin: 2px 0 2px 0
+          overflow: hidden
+          text-overflow: ellipsis
         .description
           height :40px
           display: inline-block

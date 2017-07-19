@@ -162,7 +162,7 @@
       }
     },
     created(){
-      this.$http.get('http://10.50.101.66:8887/exhibitions?artist=0').then(response => {
+      this.$http.get('http://10.50.101.66:8887/exhibitions/?artist=0').then(response => {
         this.exhibitions = response.body;
       },response => {
       });

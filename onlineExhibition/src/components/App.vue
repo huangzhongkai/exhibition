@@ -37,7 +37,7 @@
         };
       },
       created() {
-        this.$http.get('http://10.50.101.66:8887/artists/'+ this.header.artist).then(response => {
+        this.$http.get('http://10.50.101.66:8887/artists/'+ this.header.artist + '/').then(response => {
           this.header = response.body;
         },response => {
         });

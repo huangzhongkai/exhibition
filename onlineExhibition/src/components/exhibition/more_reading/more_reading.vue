@@ -9,6 +9,19 @@
       </div>
       <div class="more_content" ref="more_reading_content">
         <ul :style="{height: max_length}">
+          <div class="more_reading_info" v-for="(reading, index) in exhibition.audio_readings">
+            <div class="avatar">
+              <img class="avatar_image_background" src="/static/exhibition/head1.jpeg"/>
+              <img class="avatar_image_play" @click="show_audio(index)" :src="play_icon"/>
+            </div>
+            <div class="reading_video">
+              <audio :src="reading.audio_src" ref="my_audio" class="my_video"></audio>
+            </div>
+            <div class="more_reading_content">
+              <div class="title">{{reading.reading_title}}</div>
+              <div class="description">{{reading.reading_content}}</div>
+            </div>
+          </div>
           <div class="more_reading_info" v-for="reading in exhibition.image_text_readings">
             <div class="avatar">
               <img class="avatar_image_background" :src="reading.image_path"/>
@@ -18,7 +31,7 @@
               <div class="description">{{reading.reading_content}}</div>
             </div>
           </div>
-          <div class="more_reading_info" v-for="(reading, index) in exhibition.audio_readings">
+          <div class="more_reading_info" v-for="(reading, index) in exhibition.video_readings">
             <div class="avatar">
               <img class="avatar_image_background" src="/static/exhibition/head1.jpeg"/>
               <img class="avatar_image_play" @click="show_video(index)" :src="reading.play_icon"/>
@@ -49,6 +62,8 @@
     },
     data () {
       return {
+        play_icon:'/static/exhibition/play.svg',
+        isPlaying: false,
         exhibitions:[],
         exhibition:{},
         showFlag: false,
@@ -70,6 +85,11 @@
           this.$refs.audio_reading.play();
         }
       },
+      show_audio (index) {
+        !this.isPlaying ? this.$refs.my_audio[index].play() : this.$refs.my_audio[index].pause();
+        !this.isPlaying ? this.play_icon = '/static/exhibition/pause.svg' : this.play_icon = '/static/exhibition/play.svg'
+        this.isPlaying = !this.isPlaying;
+      },
       _initScroll() {
         console.log(this.$refs.reading_content);
         this.exhibitionScroll = new BScroll(this.$refs.more_reading_content, {
@@ -85,7 +105,7 @@
     },
     created() {
       if(this.exhibition_id != undefined){
-        this.$http.get('http://10.50.101.66:8887/exhibition_readings/'+ this.exhibition_id).then(response => {
+        this.$http.get('http://10.50.101.66:8887/exhibition_readings/'+ this.exhibition_id + '/').then(response => {
           this.exhibition = response.body;
           this.max_length = (this.exhibition.image_text_readings.length + this.exhibition.audio_readings.length) *100 - screen.height
           this.max_length = this.max_length.toString() + 'px';

@@ -22,7 +22,7 @@
       }
     },
     created() {
-      this.$http.get('http://10.50.101.66:8887/introduction?artist='+ this.params.artist).then(response => {
+      this.$http.get('http://10.50.101.66:8887/introduction/?artist='+ this.params.artist).then(response => {
         this.introduction = response.body;
       },response => {
       });

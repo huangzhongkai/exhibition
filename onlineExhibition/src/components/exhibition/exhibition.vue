@@ -47,7 +47,7 @@
       }
     },
     created() {
-      this.$http.get('http://10.50.101.66:8887/exhibitions?artist='+this.params.artist).then(response => {
+      this.$http.get('http://10.50.101.66:8887/exhibitions/?artist='+this.params.artist).then(response => {
         this.exhibitions = response.body;
         this.$nextTick(() => {
           this._initScroll();

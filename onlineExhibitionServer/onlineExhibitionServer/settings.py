@@ -76,15 +76,13 @@ CORS_ALLOW_HEADERS = (
     'x-csrftoken',
     'x-requested-with',
     'Pragma',
-    # '10.50.101.66',
-    'http://kll2cwa.hk1.mofasuidao.cn'
+    '10.50.101.66',
 )
 
-ALLOWED_HOSTS = ['10.50.101.66', 'localhost', '127.0.0.1', 'http://kll2cwa.hk1.mofasuidao.cn']
+ALLOWED_HOSTS = ['10.50.101.66', 'localhost', '127.0.0.1']
 
 
 TEMPLATE_DIRS = (
-    # os.path.join("/Users/huangzhongkai/onlineExhibition", ""),
     os.path.join("/Users/huangzhongkai/onlineExhibition", "dist"),
 )
 
