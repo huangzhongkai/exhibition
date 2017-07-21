@@ -2,11 +2,11 @@
 import json
 import datetime,time
 from django.shortcuts import render_to_response, HttpResponse, Http404
-from art.models import OeArtist, OeExhibit, OeExhibition, OeExhibitionImageTextReading,OeExhibitionVideoReading, \
+from art.models import OeArtist, OeExhibit, OeExhibition, OeExhibitInterpretation,\
     OeArtistExhibitionRelation, OeWxConfig, OeWxDeveloper, OeExhibitionInterpretation
 from django.forms.models import model_to_dict
 from django.views.decorators.csrf import csrf_exempt
-from art.models import OeExhibitImageTextReading, OeExhibitVideoReading, OeUser, OeExhibitComment, OeExhibitionComment
+from art.models import OeUser, OeExhibitComment, OeExhibitionComment
 
 from art.utils import Wx
 # Create your views here.
@@ -526,12 +526,12 @@ def exhibit(request, offset):
 
     #get exhibit image_text readings info
     image_text_reading_list = []
-    image_text_readings = OeExhibitImageTextReading.objects.filter(exhibit__id=offset)
+    image_text_readings = OeExhibitInterpretation.objects.filter(exhibit__id=offset, type=0)
     for image_text_reading in image_text_readings:
         image_text_reading = model_to_dict(image_text_reading)
         show_dict = {
             'id':image_text_reading['id'],
-            'image_path': image_text_reading['image_path'],
+            'image_path': image_text_reading['origin'],
             'reading_title': image_text_reading['title'],
             'reading_content': image_text_reading['content'],
         }
@@ -540,7 +540,7 @@ def exhibit(request, offset):
 
     # get exhibit audio reading info
     audio_reading_list = []
-    audio_readings = OeExhibitionInterpretation.objects.filter(exhibition__id=0, type=2)
+    audio_readings = OeExhibitInterpretation.objects.filter(exhibit__id=offset, type=2)
     for audio_reading in audio_readings:
         audio_reading = model_to_dict(audio_reading)
         show_dict = {
@@ -554,15 +554,14 @@ def exhibit(request, offset):
 
     #get exhibit video reading info
     video_reading_list = []
-    video_readings = OeExhibitVideoReading.objects.filter(exhibit__id=offset)
+    video_readings = OeExhibitInterpretation.objects.filter(exhibit__id=offset, type=1)
     for video_reading in video_readings:
         video_reading = model_to_dict(video_reading)
         show_dict = {
             'id': video_reading['id'],
             'reading_title': video_reading['title'],
             'reading_content': video_reading['content'],
-            'video_src': video_reading['video_path'],
-            'play_icon': video_reading['play_icon']
+            'video_src': video_reading['origin'],
         }
         video_reading_list.append(show_dict)
     video_reading_dict = {'video_readings': video_reading_list}
@@ -634,12 +633,12 @@ def exhibit_readings(request, offset):
 
     # get exhibit image_text readings info
     image_text_reading_list = []
-    image_text_readings = OeExhibitImageTextReading.objects.filter(exhibit__id=offset)
+    image_text_readings = OeExhibitInterpretation.objects.filter(exhibit__id=offset, type=0)
     for image_text_reading in image_text_readings:
         image_text_reading = model_to_dict(image_text_reading)
         show_dict = {
             'id': image_text_reading['id'],
-            'image_path': image_text_reading['image_path'],
+            'image_path': image_text_reading['origin'],
             'reading_title': image_text_reading['title'],
             'reading_content': image_text_reading['content'],
         }
@@ -648,7 +647,7 @@ def exhibit_readings(request, offset):
 
     # get exhibit audio reading info
     audio_reading_list = []
-    audio_readings = OeExhibitionInterpretation.objects.filter(exhibition__id=0, type=2)
+    audio_readings = OeExhibitInterpretation.objects.filter(exhibit__id=offset, type=2)
     for audio_reading in audio_readings:
         audio_reading = model_to_dict(audio_reading)
         show_dict = {
@@ -662,15 +661,14 @@ def exhibit_readings(request, offset):
 
     # get exhibit video reading info
     video_reading_list = []
-    video_readings = OeExhibitVideoReading.objects.filter(exhibit__id=offset)
+    video_readings = OeExhibitInterpretation.objects.filter(exhibit__id=offset, type=1)
     for video_reading in video_readings:
         video_reading = model_to_dict(video_reading)
         show_dict = {
             'id': video_reading['id'],
             'reading_title': video_reading['title'],
             'reading_content': video_reading['content'],
-            'video_src': video_reading['video_path'],
-            'play_icon': video_reading['play_icon']
+            'video_src': video_reading['origin'],
         }
         video_reading_list.append(show_dict)
     video_reading_dict = {'video_readings': video_reading_list}
@@ -722,12 +720,12 @@ def exhibition(request, offset):
 
         # get exhibition image_text readings info
         image_text_reading_list = []
-        image_text_readings = OeExhibitionImageTextReading.objects.filter(exhibition__id=offset)
+        image_text_readings = OeExhibitionInterpretation.objects.filter(exhibition__id=offset, type=0)
         for image_text_reading in image_text_readings:
             image_text_reading = model_to_dict(image_text_reading)
             show_dict = {
                 'id': image_text_reading['id'],
-                'image_path': image_text_reading['image_path'],
+                'image_path': image_text_reading['origin'],
                 'reading_title': image_text_reading['title'],
                 'reading_content': image_text_reading['content'],
             }
@@ -751,15 +749,15 @@ def exhibition(request, offset):
 
         # get exhibition video reading info
         video_reading_list = []
-        video_readings = OeExhibitionVideoReading.objects.filter(exhibition__id=offset)
+        video_readings = OeExhibitionInterpretation.objects.filter(exhibition__id=offset, type=1)
         for video_reading in video_readings:
             video_reading = model_to_dict(video_reading)
             show_dict = {
                 'id': video_reading['id'],
                 'reading_title': video_reading['title'],
                 'reading_content': video_reading['content'],
-                'video_src': video_reading['video_path'],
-                'play_icon': video_reading['play_icon']
+                'video_src': video_reading['origin'],
+                # 'play_icon': video_reading['play_icon']
             }
             video_reading_list.append(show_dict)
         video_reading_dict = {'video_readings': video_reading_list}
@@ -856,12 +854,12 @@ def exhibitions(request):
 def exhibition_readings(request, offset):
     # get exhibit image_text readings info
     image_text_reading_list = []
-    image_text_readings = OeExhibitionImageTextReading.objects.filter(exhibition__id=offset)
+    image_text_readings = OeExhibitionInterpretation.objects.filter(exhibition__id=offset, type=0)
     for image_text_reading in image_text_readings:
         image_text_reading = model_to_dict(image_text_reading)
         show_dict = {
             'id': image_text_reading['id'],
-            'image_path': image_text_reading['image_path'],
+            'image_path': image_text_reading['origin'],
             'reading_title': image_text_reading['title'],
             'reading_content': image_text_reading['content'],
         }
@@ -884,15 +882,15 @@ def exhibition_readings(request, offset):
 
     # get exhibit video reading info
     video_reading_list = []
-    video_readings = OeExhibitionVideoReading.objects.filter(exhibition__id=offset)
+    video_readings = OeExhibitionInterpretation.objects.filter(exhibition__id=offset, type=1)
     for video_reading in video_readings:
         video_reading = model_to_dict(video_reading)
         show_dict = {
             'id': video_reading['id'],
             'reading_title': video_reading['title'],
             'reading_content': video_reading['content'],
-            'video_src': video_reading['video_path'],
-            'play_icon': video_reading['play_icon']
+            'video_src': video_reading['origin'],
+            # 'play_icon': video_reading['play_icon']
         }
         video_reading_list.append(show_dict)
     video_reading_dict = {'video_readings': video_reading_list}
@@ -956,12 +954,12 @@ def exhibition_image_text_readings(request, offset):
         offset = int(offset)
     except ValueError:
         raise Http404()
-    exhibition_reading = OeExhibitionImageTextReading.objects.filter(id=offset).first()
+    exhibition_reading = OeExhibitionInterpretation.objects.filter(id=offset).first()
     exhibition_reading = model_to_dict(exhibition_reading)
 
     image_text_readings = {
         'id': exhibition_reading['id'],
-        'image_path': exhibition_reading['image_path'],
+        'image_path': exhibition_reading['origin'],
         'reading_content': '张大千（Chang Dai-Chien），男,四川内江人，祖籍广东省番禺，1899年5月10日出生于四川省内江市中区城郊安良里的\
           一个书香门第的家庭，中国泼墨画家，书法家。20 世纪50年代，张大千游历世界，获得巨大的国际声誉，被西方艺坛赞为“东方之笔”。[1]\
           他与二哥张善子昆仲创立“大风堂派”，是二十世纪中国画坛最具传奇色彩的泼墨画工。特别在山水画方面卓有成就。后旅居海外，画风工写结合，\
@@ -979,12 +977,12 @@ def exhibition_vedio_readings(request, offset):
         offset = int(offset)
     except ValueError:
         raise Http404()
-    exhibition_reading = OeExhibitionVideoReading.objects.filter(id=offset).first()
+    exhibition_reading = OeExhibitionInterpretation.objects.filter(id=offset).first()
     exhibition_reading = model_to_dict(exhibition_reading)
 
     video_readings = {
         'id': exhibition_reading['id'],
-        'video_src': exhibition_reading['video_path'],
+        'video_src': exhibition_reading['origin'],
         'poster': '/static/exhibition/head1.jpeg',
         'reading_content': '张大千（Chang Dai-Chien），男,四川内江人，祖籍广东省番禺，1899年5月10日出生于四川省内江市中区城郊安良里的\
           一个书香门第的家庭，中国泼墨画家，书法家。20 世纪50年代，张大千游历世界，获得巨大的国际声誉，被西方艺坛赞为“东方之笔”。[1]\

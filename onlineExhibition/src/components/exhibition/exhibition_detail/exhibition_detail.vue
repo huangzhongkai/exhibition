@@ -23,7 +23,7 @@
         </div>
       </div>
       <!--<audio_reading :name="exhibition.audio_name" ref="audio_reading"></audio_reading>-->
-      <!--<audio :src="exhibition.audio_src" ref="audio"></audio>-->
+      <!--<audio src="/static/exhibit/lyg.mp3" ref="audio"></audio>-->
 
       <div class="reading_top">
         <span class="left">展览解读</span>
@@ -35,8 +35,8 @@
           <img class="avatar_image_background" src="/static/exhibition/head1.jpeg"/>
           <img class="avatar_image_play" @click="show_audio(index)" :src="play_icon"/>
         </div>
-        <div class="reading_video">
-          <audio :src="reading.audio_src" ref="my_audio" class="my_video"></audio>
+        <div class="reading_audio">
+          <audio :src="reading.audio_src" ref="my_audio" class="my_audio" id="my_audio"></audio>
         </div>
         <div class="reading_content">
           <div class="title">{{reading.reading_title}}</div>
@@ -56,7 +56,7 @@
       <div class="reading_info"v-if="isShow(index)"  v-for="(reading, index) in exhibition.video_readings">
         <div class="avatar">
           <img class="avatar_image_background" src="/static/exhibition/head1.jpeg"/>
-          <img class="avatar_image_play" @click="show_video(index)" :src="reading.play_icon"/>
+          <img class="avatar_image_play" @click="show_video(index)" src="/static/exhibition/play.svg"/>
         </div>
         <div class="reading_video">
           <video :src="reading.video_src" ref="my_video" class="my_video"></video>
@@ -214,14 +214,14 @@
       },response => {
       });
     },
-//    mounted() {
-//      this.$store.commit('findDOM', {name: 'audio', dom: this.$refs.audio});
-//      this.$refs.audio.addEventListener('ended', () => {
-//        this.$store.state.isPlaying = false;
+    mounted() {
+      //this.$store.commit('findDOM', {name: 'audio', dom: this.$refs.audio});
+
+//      console.log(this.$refs.my_audio);
+//      this.$refs.my_audio.addEventListener('ended', () => {
+//        this.isPlaying = false;
 //      });
-//      this.$refs.audio.addEventListener('error', () => { console.log(' play error') });
-//
-//    },
+    },
 //    computed: {
 //      audio() {
 //        return this.$store.state.audio;
@@ -249,10 +249,15 @@
           this.$refs.audio_reading.play();
         }
       },
+
       show_audio (index) {
         !this.isPlaying ? this.$refs.my_audio[index].play() : this.$refs.my_audio[index].pause();
         !this.isPlaying ? this.play_icon = '/static/exhibition/pause.svg' : this.play_icon = '/static/exhibition/play.svg'
         this.isPlaying = !this.isPlaying;
+        this.$refs.my_audio[0].addEventListener('ended', () => {
+          this.play_icon = '/static/exhibition/play.svg'
+          this.isPlaying = false;
+        });
       },
       show_charactor(key) {
         window.open("http://10.50.101.66:8080/exhibit/exhibit.html?id=" + key);
@@ -324,6 +329,20 @@
         height: 1px
         z-index: 1
         .my_video
+          display: inline-block
+          width: 100%
+          height: 100%
+      .reading_audio
+        top: 0
+        left: 0
+        position: absolute
+        margin: 5px 5px 5px 5px
+        vertical-align: top
+        display: inline-block
+        width: 1px
+        height: 1px
+        z-index: 1
+        .my_audio
           display: inline-block
           width: 100%
           height: 100%

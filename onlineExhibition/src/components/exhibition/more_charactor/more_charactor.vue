@@ -93,7 +93,7 @@
           }
 
           this.exhibit = response.body;
-          this.max_length = this.exhibit.length *400 - screen.height
+          this.max_length = this.exhibit.length *200 - screen.height
           this.max_length = this.max_length.toString() + 'px';
           this.$nextTick(() => {
             this._initScroll();

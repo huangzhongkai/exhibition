@@ -50,7 +50,7 @@
       <div class="reading_info"v-if="isShow(index)"  v-for="(reading, index) in exhibit.video_readings">
         <div class="avatar">
           <img class="avatar_image_background" src="/static/exhibition/head1.jpeg"/>
-          <img class="avatar_image_play" @click="show_video(index)" :src="reading.play_icon"/>
+          <img class="avatar_image_play" @click="show_video(index)" src="/static/exhibit/play.svg"/>
         </div>
         <div class="reading_video">
           <video :src="reading.video_src" ref="my_video" class="my_video"></video>
@@ -252,6 +252,11 @@
         !this.isPlaying ? this.$refs.my_audio[index].play() : this.$refs.my_audio[index].pause();
         !this.isPlaying ? this.play_icon = '/static/exhibition/pause.svg' : this.play_icon = '/static/exhibition/play.svg'
         this.isPlaying = !this.isPlaying;
+
+        this.$refs.my_audio[0].addEventListener('ended', () => {
+          this.play_icon = '/static/exhibition/play.svg'
+          this.isPlaying = false;
+        });
       },
       isShow (index) {
         if(index < 1){

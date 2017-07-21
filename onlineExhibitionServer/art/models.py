@@ -38,25 +38,6 @@ class OeExhibit(models.Model):
     class Meta:
         db_table = 'oe_exhibit'
 
-class OeExhibitImageTextReading(models.Model):
-    id = models.CharField(db_column='ID', primary_key=True, max_length=32)
-    image_path = models.CharField(db_column='IMAGE_PATH', max_length=200)
-    title = models.CharField(db_column='TITLE', max_length=100, blank=True)
-    content = models.CharField(db_column='CONTENT', max_length=100, blank=True)
-    exhibit = models.ForeignKey('OeExhibit', db_column='EXHIBIT_ID')
-    class Meta:
-        db_table = 'oe_exhibit_image_text_reading'
-
-class OeExhibitVideoReading(models.Model):
-    id = models.CharField(db_column='ID', primary_key=True, max_length=32)
-    video_path = models.CharField(db_column='VIDEO_PATH', max_length=200)
-    title = models.CharField(db_column='TITLE', max_length=100, blank=True)
-    content = models.CharField(db_column='CONTENT', max_length=100, blank=True)
-    play_icon = models.CharField(db_column='PLAY_ICON', max_length=200)
-    exhibit = models.ForeignKey('OeExhibit', db_column='EXHIBIT_ID')
-    class Meta:
-        db_table = 'oe_exhibit_video_reading'
-
 
 class OeExhibitCategory(models.Model):
     id = models.CharField(db_column='ID', primary_key=True, max_length=32) # Field name made lowercase.
@@ -89,25 +70,6 @@ class OeExhibition(models.Model):
     video_path = models.CharField(db_column='VIDEO_PATH', max_length=200, blank=True) # Field name made lowercase.
     class Meta:
         db_table = 'oe_exhibition'
-
-class OeExhibitionImageTextReading(models.Model):
-    id = models.CharField(db_column='ID', primary_key=True, max_length=32)
-    image_path = models.CharField(db_column='IMAGE_PATH', max_length=200)
-    title = models.CharField(db_column='TITLE', max_length=100, blank=True)
-    content = models.CharField(db_column='CONTENT', max_length=100, blank=True)
-    exhibition = models.ForeignKey('OeExhibition', db_column='EXHIBITION_ID')
-    class Meta:
-        db_table = 'oe_exhibition_image_text_reading'
-
-class OeExhibitionVideoReading(models.Model):
-    id = models.CharField(db_column='ID', primary_key=True, max_length=32)
-    video_path = models.CharField(db_column='VIDEO_PATH', max_length=200)
-    title = models.CharField(db_column='TITLE', max_length=100, blank=True)
-    content = models.CharField(db_column='CONTENT', max_length=100, blank=True)
-    play_icon = models.CharField(db_column='PLAY_ICON', max_length=200)
-    exhibition = models.ForeignKey('OeExhibition', db_column='EXHIBITION_ID')
-    class Meta:
-        db_table = 'oe_exhibition_video_reading'
 
 class OeExhibitionComment(models.Model):
     id = models.CharField(db_column='ID', primary_key=True, max_length=32) # Field name made lowercase.
@@ -148,6 +110,24 @@ class OeExhibitionInterpretation(models.Model):
     file_path = models.CharField(db_column='FILE_PATH', max_length=128, blank=True) # Field name made lowercase.
     class Meta:
         db_table = 'oe_exhibition_interpretation'
+
+
+class OeExhibitInterpretation(models.Model):
+    id = models.CharField(db_column='ID', primary_key=True, max_length=32) # Field name made lowercase.
+    title = models.CharField(db_column='TITLE', max_length=200) # Field name made lowercase.
+    exhibit = models.ForeignKey(OeExhibit, db_column='EXHIBIT_ID') # Field name made lowercase.
+    type = models.CharField(db_column='TYPE', max_length=2) # Field name made lowercase.
+    create_by = models.CharField(db_column='CREATE_BY', max_length=32) # Field name made lowercase.
+    create_time = models.DateTimeField(db_column='CREATE_TIME') # Field name made lowercase.
+    modify_by = models.CharField(db_column='MODIFY_BY', max_length=32, blank=True) # Field name made lowercase.
+    modify_time = models.DateTimeField(db_column='MODIFY_TIME', blank=True, null=True) # Field name made lowercase.
+    origin = models.CharField(db_column='ORIGIN', max_length=200, blank=True) # Field name made lowercase.
+    publisher = models.CharField(db_column='PUBLISHER', max_length=45, blank=True) # Field name made lowercase.
+    publish_time = models.DateTimeField(db_column='PUBLISH_TIME', blank=True, null=True) # Field name made lowercase.
+    content = models.TextField(db_column='CONTENT', blank=True) # Field name made lowercase.
+    file_path = models.CharField(db_column='FILE_PATH', max_length=128, blank=True) # Field name made lowercase.
+    class Meta:
+        db_table = 'oe_exhibit_interpretation'
 
 class OeExhibitionRecommend(models.Model):
     id = models.CharField(db_column='ID', primary_key=True, max_length=32) # Field name made lowercase.
