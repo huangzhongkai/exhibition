@@ -47,7 +47,7 @@
       }
     },
     created() {
-      this.$http.get('http://10.50.101.66:8887/exhibitions/?artist='+this.params.artist).then(response => {
+      this.$http.get('http://qb4dwjh.hk1.mofasuidao.cn/exhibitions/?artist='+this.params.artist).then(response => {
         this.exhibitions = response.body;
         this.$nextTick(() => {
           this._initScroll();
@@ -61,8 +61,8 @@
     },
     methods:{
       show_exhibition(key) {
-          console.log(key);
-        window.open("http://10.50.101.66:8080/exhibition/exhibition.html?id=" + key);
+//        window.open("http://qb4dwjh.hk1.mofasuidao.cn/exhibition_html/?id=" + key);
+        window.location = "http://qb4dwjh.hk1.mofasuidao.cn/exhibition_html/?id=" + key ;
       },
       _initScroll() {
         this.exhibitionScroll = new BScroll(this.$refs.exhibition, {

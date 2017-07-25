@@ -102,15 +102,15 @@
         });
       },
       show_image_text_readings(key) {
-        window.open("http://10.50.101.66:8080/readings/image_text_readings.html?id=" + key +'&type=exhibition');
+        window.open("http://qb4dwjh.hk1.mofasuidao.cn/image_text_readings_html/?id=" + key +'&type=exhibition');
       },
       show_video_readings(key) {
-        window.open("http://10.50.101.66:8080/readings/video_readings.html?id=" + key +'&type=exhibition');
+        window.open("http://qb4dwjh.hk1.mofasuidao.cn/video_readings_html/?id=" + key +'&type=exhibition');
       },
     },
     created() {
       if(this.exhibition_id != undefined){
-        this.$http.get('http://10.50.101.66:8887/exhibition_readings/'+ this.exhibition_id + '/').then(response => {
+        this.$http.get('http://qb4dwjh.hk1.mofasuidao.cn/exhibition_readings/'+ this.exhibition_id + '/').then(response => {
           this.exhibition = response.body;
           this.max_length = (this.exhibition.image_text_readings.length + this.exhibition.audio_readings.length + this.exhibition.video_readings.length) *100 - screen.height
           for(let i=0; i<this.exhibition.audio_readings.length; i++){

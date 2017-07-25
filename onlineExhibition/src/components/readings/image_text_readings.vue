@@ -36,18 +36,18 @@
     },
     created() {
       if(this.params.type === 'exhibit'){
-        this.$http.get('http://10.50.101.66:8887/exhibit_image_text_readings/'+ this.params.id +'/').then(response => {
+        this.$http.get('http://qb4dwjh.hk1.mofasuidao.cn/exhibit_image_text_readings/'+ this.params.id +'/').then(response => {
           this.reading = response.body;
         },response => {
         });
       }else if(this.params.type === 'exhibition'){
-        this.$http.get('http://10.50.101.66:8887/exhibition_image_text_readings/'+ this.params.id + '/').then(response => {
+        this.$http.get('http://qb4dwjh.hk1.mofasuidao.cn/exhibition_image_text_readings/'+ this.params.id + '/').then(response => {
           this.reading = response.body;
         },response => {
         });
       };
 
-      this.$http.get('http://10.50.101.66:8887/get_signature/?' +
+      this.$http.get('http://qb4dwjh.hk1.mofasuidao.cn/get_signature/?' +
         '&url='+ encodeURIComponent(location.href.split('#')[0])).then(response => {
         this.config = response.body;
         let _this = this;

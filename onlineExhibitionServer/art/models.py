@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
 from django.db import models
@@ -54,7 +55,8 @@ class OeExhibitComment(models.Model):
     create_time = models.DateTimeField(db_column='CREATE_TIME') # Field name made lowercase.
     exhibit = models.ForeignKey(OeExhibit, db_column='EXHIBIT_ID', blank=True, null=True) # Field name made lowercase.
     parent = models.ForeignKey('self', db_column='PARENT_ID', blank=True, null=True) # Field name made lowercase.
-    user = models.ForeignKey('OeUser', db_column='USER_ID') # Field name made lowercase.
+    # user = models.ForeignKey('OeUser', db_column='USER_ID') # Field name made lowercase.
+    wx_user = models.ForeignKey('OeWxUser', db_column='WX_USER_ID')  # Field name made lowercase.
     class Meta:
         db_table = 'oe_exhibit_comment'
 
@@ -328,3 +330,19 @@ class OeWxDeveloper(models.Model):
     class Meta:
         db_table = 'oe_wx_developer'
 
+class OeWxUser(models.Model):
+    sex_choice = (
+        ('1', '男'),
+        ('2', '女'),
+        ('0', '未知')
+    )
+    id = models.AutoField(db_column='ID', primary_key=True)
+    appid = models.CharField(db_column='APPID', max_length=100)
+    nickname = models.CharField(db_column='NICKNAME', max_length=100)
+    sex = models.CharField(db_column='SEX', max_length=20, default='0', choices=sex_choice)
+    province = models.CharField(db_column='PROVINCE', max_length=100)
+    city = models.CharField(db_column='CITY', max_length=100)
+    country = models.CharField(db_column='COUNTRY', max_length=100)
+    headimgurl = models.CharField(db_column='HEADIMGURL', max_length=1000)
+    class Meta:
+        db_table = 'oe_wx_user'

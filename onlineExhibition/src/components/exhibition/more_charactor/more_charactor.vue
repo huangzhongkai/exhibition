@@ -65,7 +65,7 @@
         document.body.style.overflow = '';
       },
       show_exhibit (key) {
-        window.open("http://10.50.101.66:8080/exhibit/exhibit.html?id=" + key);
+        window.open("http://qb4dwjh.hk1.mofasuidao.cn/exhibit_html/?id=" + key);
       },
       _initScroll() {
         this.exhibitionScroll = new BScroll(this.$refs.more_content, {
@@ -75,7 +75,7 @@
     },
     created() {
       if(this.exhibition_id != undefined){
-        this.$http.get('http://10.50.101.66:8887/exhibits/?exhibition='+ this.exhibition_id + '&type=charactor').then(response => {
+        this.$http.get('http://qb4dwjh.hk1.mofasuidao.cn/exhibits/?exhibition='+ this.exhibition_id + '&type=charactor').then(response => {
           this.exhibits = [];
           this.exhibits_right = [];
           if(response.body.length%2 === 0){

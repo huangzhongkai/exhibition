@@ -44,5 +44,9 @@ class Wx(object):
         r = requests.get(
             url='https://api.weixin.qq.com/sns/oauth2/access_token?appid='+ self.appid +'&secret='+ self.appsecret +
                 '&code='+ code +'&grant_type=authorization_code')
-        print self.auth_token
+        return r.json()
+
+    def get_user_info(self, access_token, openid):
+        r = requests.get(
+            url='https://api.weixin.qq.com/sns/userinfo?access_token='+ access_token +'&openid='+ openid +'&lang=zh_CN')
         return r.json()

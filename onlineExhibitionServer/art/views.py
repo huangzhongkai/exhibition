@@ -3,10 +3,12 @@ import json
 import datetime,time
 from django.shortcuts import render_to_response, HttpResponse, Http404
 from art.models import OeArtist, OeExhibit, OeExhibition, OeExhibitInterpretation,\
-    OeArtistExhibitionRelation, OeWxConfig, OeWxDeveloper, OeExhibitionInterpretation
+    OeArtistExhibitionRelation, OeWxConfig, OeWxDeveloper, OeExhibitionInterpretation, OeWxUser
 from django.forms.models import model_to_dict
 from django.views.decorators.csrf import csrf_exempt
 from art.models import OeUser, OeExhibitComment, OeExhibitionComment
+
+from django.contrib.sessions.models import Session
 
 from art.utils import Wx
 # Create your views here.
@@ -485,21 +487,53 @@ exhibitions_list = [
 
 def artist(request, offset):
     print 'offset=', offset
-    try:
-        offset = int(offset)
-    except ValueError:
-        raise Http404()
+    code = request.GET.get('code', 'error')
+    print request.COOKIES
+    cookies = request.COOKIES
 
     artist = OeArtist.objects.filter(id=offset).first()
     artist = model_to_dict(artist)
-    # artist_dict['modify_time'] = artist_dict['modify_time'].strftime('%Y-%m-%d')
-    # artist_dict['create_time'] = artist_dict['create_time'].strftime('%Y-%m-%d')
     artist_dict = {
         'avatar': artist['head_path'],
         'name': artist['name'],
         'attention_count': 200
     }
-    return HttpResponse(json.dumps(artist_dict), content_type='application/json')
+    response = HttpResponse(json.dumps(artist_dict), content_type='application/json')
+
+    if Session.objects.filter(session_key=cookies.get('sessionid','none')).first():
+        return response
+
+    if code != 'undefined' and code!= 'error':
+        appid = OeWxDeveloper.objects.filter(id=1).first().appid
+        appsecret = OeWxDeveloper.objects.filter(id=1).first().appsecret
+
+        wx = Wx(appid, appsecret, '')
+        access_token = wx.get_web_access_token(code)
+        print access_token
+        user_info = wx.get_user_info(access_token['access_token'], access_token['openid'])
+        print user_info
+
+        objs = Session.objects.all()
+        for obj in objs:
+            if obj.get_decoded()['openid'] == user_info['openid']:
+                response.set_cookie('sessionid', obj.session_key)
+                print 'set cookie'
+                return response
+        request.session['openid'] =user_info['openid']
+        nickname = user_info['nickname'].encode("ISO-8859-1").decode('utf-8')
+        # OeUser.objects.create(nickname=user_info['nickname'].encode("ISO-8859-1").decode('utf-8'),
+        #                       sex=user_info['sex'],
+        #                       head_path=user_info['headimgurl'])
+        OeWxUser.objects.create(appid=user_info['openid'],
+                                nickname=user_info['nickname'].encode("ISO-8859-1").decode('utf-8'),
+                                sex=str(user_info['sex']),
+                                province=user_info['province'].encode("ISO-8859-1").decode('utf-8'),
+                                city=user_info['city'].encode("ISO-8859-1").decode('utf-8'),
+                                country=user_info['country'].encode("ISO-8859-1").decode('utf-8'),
+                                headimgurl=user_info['headimgurl'])
+        print nickname
+        return response
+
 
 def artists(request):
     artist_list = []
@@ -515,6 +549,7 @@ def artists(request):
 
 def exhibit(request, offset):
     print 'offset=', offset
+    print request.COOKIES
     # try:
     #     offset = int(offset)
     # except ValueError:
@@ -571,13 +606,13 @@ def exhibit(request, offset):
     comments = OeExhibitComment.objects.filter(exhibit__id=offset)
     for comment in comments:
         comment = model_to_dict(comment)
-        user = OeUser.objects.filter(id=comment['user']).first()
-        user = model_to_dict(user)
+        wx_user = OeWxUser.objects.filter(id=comment['wx_user']).first()
+        wx_user = model_to_dict(wx_user)
         show_dict = {
-            'username': user['user_name'],
+            'username': wx_user['nickname'],
             'rateTime':  comment['create_time'].strftime('%Y-%m-%d %H:%M:%S'),
             'text': comment['content'],
-            'avatar': user['head_path']
+            'avatar': wx_user['headimgurl']
         }
         comment_list.append(show_dict)
     comment_dict = {'ratings': comment_list}
@@ -599,6 +634,7 @@ def exhibit(request, offset):
     return HttpResponse(json.dumps(exhibit_dict), content_type='application/json')
 
 def exhibits(request):
+    print request.COOKIES
     exhibit_l=[]
     exhibition = request.GET.get('exhibition', 'error')
     artist_id = request.GET.get('artist', 'error')
@@ -630,7 +666,7 @@ def exhibits(request):
     return HttpResponse(json.dumps(exhibit_l), content_type='application/json')
 
 def exhibit_readings(request, offset):
-
+    print request.COOKIES
     # get exhibit image_text readings info
     image_text_reading_list = []
     image_text_readings = OeExhibitInterpretation.objects.filter(exhibit__id=offset, type=0)
@@ -684,27 +720,40 @@ def exhibit_readings(request, offset):
 @csrf_exempt
 def exhibit_ratings(request, offset):
     if request.method == 'POST':
+        print request.COOKIES
+        cookie = request.COOKIES.get('sessionid','error')
+        if cookie != 'error':
+            try:
+                openid = Session.objects.get(session_key=cookie).get_decoded()['openid']
+            except:
+                openid = ''
+            nickname = OeWxUser.objects.filter(appid=openid).first().nickname
         timeArray = time.localtime()
+
         otherStyleTime = time.strftime("%Y-%m-%d %H:%M:%S", timeArray)
 
         rating = {}
-        if not OeUser.objects.filter(user_name=request.POST.get('username', '')).first():
-            user = {
-                'user_name': request.POST.get('username', ''),
-                'head_path': request.POST.get('avatar', ''),
-                'create_time': otherStyleTime,
-                'id': str(int(OeUser.objects.latest('id').id) + 1)
-            }
-            OeUser.objects.create(**user)
-            rating['user'] = OeUser.objects.filter(id=str(OeUser.objects.all().count() - 1)).first()
-        else:
-            rating['user'] = OeUser.objects.filter(user_name=request.POST.get('username', '')).first()
+        # if not OeUser.objects.filter(user_name=request.POST.get('username', '')).first():
+        #     user = {
+        #         'user_name': request.POST.get('username', ''),
+        #         'head_path': request.POST.get('avatar', ''),
+        #         'create_time': otherStyleTime,
+        #         'id': str(int(OeUser.objects.latest('id').id) + 1)
+        #     }
+        #     OeUser.objects.create(**user)
+        #     rating['user'] = OeUser.objects.filter(id=str(OeUser.objects.all().count() - 1)).first()
+        # else:
+        #     rating['user'] = OeUser.objects.filter(user_name=request.POST.get('username', '')).first()
 
+        # rating['user'] = OeUser.objects.filter().first()
+        rating['wx_user'] = OeWxUser.objects.filter(nickname=nickname).first()
         rating['exhibit'] = OeExhibit.objects.filter(id=offset).first()
         rating['create_time'] = otherStyleTime
         rating['content'] = request.POST.get('text', '')
-        rating['id'] = str(int(OeExhibitComment.objects.latest('id').id) + 1)
-
+        try:
+            rating['id'] = str(int(OeExhibitComment.objects.latest('create_time').id) + 1)
+        except:
+            rating['id'] = '1'
         OeExhibitComment.objects.create(**rating)
 
 
@@ -713,7 +762,7 @@ def exhibit_ratings(request, offset):
 @csrf_exempt
 def exhibition(request, offset):
     if request.method == 'GET':
-
+        print request.COOKIES
         # get exhibition base infomation
         exhibition = OeExhibition.objects.filter(id=offset).first()
         exhibition = model_to_dict(exhibition)
@@ -823,6 +872,7 @@ def exhibition(request, offset):
 
 
 def exhibitions(request):
+    print request.COOKIES
     exhibition_l = []
     exhibition_id_list = []
     artist = request.GET.get('artist', '0')
@@ -908,12 +958,12 @@ def exhibit_image_text_readings(request, offset):
         offset = int(offset)
     except ValueError:
         raise Http404()
-    exhibit_reading = OeExhibitImageTextReading.objects.filter(id=offset).first()
+    exhibit_reading = OeExhibitInterpretation.objects.filter(id=offset).first()
     exhibit_reading = model_to_dict(exhibit_reading)
 
     image_text_readings = {
         'id': exhibit_reading['id'],
-        'image_path': exhibit_reading['image_path'],
+        'image_path': exhibit_reading['origin'],
         'reading_content': '张大千（Chang Dai-Chien），男,四川内江人，祖籍广东省番禺，1899年5月10日出生于四川省内江市中区城郊安良里的\
           一个书香门第的家庭，中国泼墨画家，书法家。20 世纪50年代，张大千游历世界，获得巨大的国际声誉，被西方艺坛赞为“东方之笔”。[1]\
           他与二哥张善子昆仲创立“大风堂派”，是二十世纪中国画坛最具传奇色彩的泼墨画工。特别在山水画方面卓有成就。后旅居海外，画风工写结合，\
@@ -931,12 +981,12 @@ def exhibit_vedio_readings(request, offset):
         offset = int(offset)
     except ValueError:
         raise Http404()
-    exhibit_reading = OeExhibitVideoReading.objects.filter(id=offset).first()
+    exhibit_reading = OeExhibitInterpretation.objects.filter(id=offset).first()
     exhibit_reading = model_to_dict(exhibit_reading)
 
     video_readings = {
         'id': exhibit_reading['id'],
-        'video_src': exhibit_reading['video_path'],
+        'video_src': exhibit_reading['origin'],
         'poster':'/static/exhibition/head1.jpeg',
         'reading_content':'张大千（Chang Dai-Chien），男,四川内江人，祖籍广东省番禺，1899年5月10日出生于四川省内江市中区城郊安良里的\
       一个书香门第的家庭，中国泼墨画家，书法家。20 世纪50年代，张大千游历世界，获得巨大的国际声誉，被西方艺坛赞为“东方之笔”。[1]\
@@ -1037,14 +1087,20 @@ def achievement(request):
 def artist_html(request):
     return render_to_response('artist.html', locals())
 
-def production_html(request):
-    return render_to_response('production.html', locals())
+def exhibit_html(request):
+    return render_to_response('exhibit.html', locals())
 
 def exhibition_html(request):
     return render_to_response('exhibition.html', locals())
 
 def home_html(request):
     return render_to_response('home.html', locals())
+
+def video_readings_html(request):
+    return render_to_response('video_readings.html', locals())
+
+def image_text_readings_html(request):
+    return render_to_response('image_text_readings.html', locals())
 
 
 def motified_signature(request):

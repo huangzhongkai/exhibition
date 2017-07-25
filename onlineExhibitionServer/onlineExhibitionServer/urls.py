@@ -6,7 +6,8 @@ from art.views import artist, artists, achievement, introduction, exhibit, exhib
 from art.views import exhibition, exhibitions, exhibit_readings,exhibition_readings,\
     exhibit_image_text_readings, exhibit_vedio_readings, exhibition_image_text_readings,\
     exhibition_vedio_readings, get_signature, motified_signature
-from art.views import home_html, exhibition_html, production_html, artist_html, exhibit_ratings
+from art.views import home_html, exhibition_html, exhibit_html, artist_html, exhibit_ratings, \
+    image_text_readings_html, video_readings_html
 
 admin.autodiscover()
 
@@ -36,15 +37,17 @@ urlpatterns = [
     url(r'^exhibition_image_text_readings/(\d+)/$', exhibition_image_text_readings),
     url(r'^exhibition_vedio_readings/(\d+)/$', exhibition_vedio_readings),
 
-    #url(r'^get_signature/$', get_signature),
-    #url(r'^motified_signature/$', motified_signature),
+    url(r'^get_signature/$', get_signature),
+    url(r'^motified_signature/$', motified_signature),
 
     # url(r'^attention/$', attention),
 
     url(r'^home_html/$', home_html),
     url(r'^exhibition_html/$', exhibition_html),
-    url(r'^production_html/$', production_html),
+    url(r'^exhibit_html/$', exhibit_html),
     url(r'^artist_html/$', artist_html),
+    url(r'^image_text_readings_html/$', image_text_readings_html),
+    url(r'^video_readings_html/$', video_readings_html),
 
     # url(r'^server_manage/$', server_manage)
 ]

@@ -95,10 +95,40 @@ var webpackConfig = merge(baseWebpackConfig, {
       chunksSortMode: 'dependency'
     }),
     new HtmlWebpackPlugin({
-      filename: '../dist/production.html',
-      template: './src/view/production/production.html',
+      filename: '../dist/exhibit.html',
+      template: './src/view/exhibit/exhibit.html',
       inject: true,
-      chunks:['production','vendor','manifest'],
+      chunks:['exhibit','vendor','manifest'],
+      minify: {
+        removeComments: true,
+        collapseWhitespace: true,
+        removeAttributeQuotes: true
+        // more options:
+        // https://github.com/kangax/html-minifier#options-quick-reference
+      },
+      // necessary to consistently work with multiple chunks via CommonsChunkPlugin
+      chunksSortMode: 'dependency'
+    }),
+    new HtmlWebpackPlugin({
+      filename: '../dist/image_text_readings.html',
+      template: './src/view/readings/image_text_readings/image_text_readings.html',
+      inject: true,
+      chunks:['image_text_readings','vendor','manifest'],
+      minify: {
+        removeComments: true,
+        collapseWhitespace: true,
+        removeAttributeQuotes: true
+        // more options:
+        // https://github.com/kangax/html-minifier#options-quick-reference
+      },
+      // necessary to consistently work with multiple chunks via CommonsChunkPlugin
+      chunksSortMode: 'dependency'
+    }),
+    new HtmlWebpackPlugin({
+      filename: '../dist/video_readings.html',
+      template: './src/view/readings/video_readings/video_readings.html',
+      inject: true,
+      chunks:['video_readings','vendor','manifest'],
       minify: {
         removeComments: true,
         collapseWhitespace: true,

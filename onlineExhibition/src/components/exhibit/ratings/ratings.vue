@@ -35,7 +35,7 @@
         rating['rateTime'] = Date.parse(new Date())/1000;
         rating['text'] = this.ratings;
         rating['avatar'] = 'http://static.galileo.xiaojukeji.com/static/tms/default_header.png';
-        this.$http.post('http://10.50.101.66:8887/exhibit_ratings/'+ this.exhibition_id+'/',rating,{emulateJSON:true} ).then(response => {
+        this.$http.post('http://qb4dwjh.hk1.mofasuidao.cn/exhibit_ratings/'+ this.exhibition_id+'/',rating,{emulateJSON:true} ).then(response => {
           this.showFlag = false;
           document.body.style.height = '';
           document.body.style.overflow = '';

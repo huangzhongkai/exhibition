@@ -22,7 +22,7 @@
       }
     },
     created() {
-      this.$http.get('http://10.50.101.66:8887/achievement?artist='+ this.params.artist).then(response => {
+      this.$http.get('http://qb4dwjh.hk1.mofasuidao.cn/achievement?artist='+ this.params.artist).then(response => {
         this.achievement = response.body;
       },response => {
       });

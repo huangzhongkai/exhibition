@@ -1,6 +1,6 @@
 <template>
   <div>
-    <v-header :header="header"></v-header>
+    <v-header :header="artist"></v-header>
     <div class="tab">
       <div class="tab-item">
         <router-link to="/exhibit" >作品</router-link>
@@ -28,21 +28,26 @@
       data (){
         return {
           config:{},
+          artist:{},
           header: {
             artist: (() => {
               let queryParam = urlParse();
               return queryParam.artist;
+            })(),
+            code: (() => {
+              let queryParam = urlParse();
+              return queryParam.code;
             })()
           },
         };
       },
       created() {
-        this.$http.get('http://10.50.101.66:8887/artists/'+ this.header.artist + '/').then(response => {
-          this.header = response.body;
+        this.$http.get('http://qb4dwjh.hk1.mofasuidao.cn/artists/'+ this.header.artist + '/?code=' + this.header.code).then(response => {
+          this.artist = response.body;
         },response => {
         });
 
-        this.$http.get('http://10.50.101.66:8887/get_signature/?' +
+        this.$http.get('http://qb4dwjh.hk1.mofasuidao.cn/get_signature/?' +
           '&url='+ encodeURIComponent(location.href.split('#')[0])).then(response => {
           this.config = response.body;
           let _this = this;
@@ -121,6 +126,11 @@
 
         },response => {
         });
+        if(this.header.code === undefined){
+//          window.location = 'https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx522cca3d4b048aa9&redirect_uri=http%3A//kll2cwa.hk1.mofasuidao.cn/artist.html%3Fartist%3D0&response_type=code&scope=snsapi_userinfo&state=123#wechat_redirect'
+          window.location = 'https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx522cca3d4b048aa9&redirect_uri=http%3A//qb4dwjh.hk1.mofasuidao.cn/artist_html/%3Fartist%3D0&response_type=code&scope=snsapi_userinfo&state=123#wechat_redirect'
+
+        }
       },
       components: {
         'v-header':header
