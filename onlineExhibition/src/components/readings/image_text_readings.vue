@@ -3,8 +3,13 @@
     <div class="top_image">
       <img width="100%" :src="reading.image_path">
     </div>
-    <div class="image_text_readings">
-      {{reading.reading_content}}
+    <!--<div class="image_text_readings" v-for="item in reading.reading_content">-->
+      <!--{{item}}-->
+    <!--</div>-->
+    <div class="reading">
+      <div v-for="item in reading.reading_content" class="my_section">
+        {{item}}
+      </div>
     </div>
     <span style="float: right;">
       —— 张大千
@@ -70,7 +75,7 @@
           wx.onMenuShareAppMessage({
             title: '在线艺术品超市分享给朋友', // 分享标题
             desc: '在线艺术品超市，展厅,高大上的艺术家都在这里，加关注，不迷路', // 分享描述
-            link: 'http://kll2cwa.hk1.mofasuidao.cn/exhibition/exhibition.html?id=0', // 分享链接，该链接域名或路径必须与当前页面对应的公众号JS安全域名一致
+            link: location.href, // 分享链接，该链接域名或路径必须与当前页面对应的公众号JS安全域名一致
             imgUrl: 'http://picturebank.oss-cn-qingdao.aliyuncs.com/onlineExhibition/backround.jpg', // 分享图标
             type: '', // 分享类型,music、video或link，不填默认为link
             dataUrl: '', // 如果type是music或video，则要提供数据链接，默认为空
@@ -85,7 +90,7 @@
           });
           wx.onMenuShareTimeline({
             title: '在线艺术品超市分享到朋友圈', // 分享标题
-            link: 'http://kll2cwa.hk1.mofasuidao.cn/exhibition/exhibition.html?id=0', // 分享链接，该链接域名或路径必须与当前页面对应的公众号JS安全域名一致
+            link: location.href, // 分享链接，该链接域名或路径必须与当前页面对应的公众号JS安全域名一致
             imgUrl: 'http://picturebank.oss-cn-qingdao.aliyuncs.com/onlineExhibition/backround.jpg', // 分享图标
             success: function () {
             },
@@ -95,7 +100,7 @@
           wx.onMenuShareQQ({
             title: '在线艺术品超市分享到qq', // 分享标题
             desc: '在线艺术品超市，展厅,高大上的艺术家都在这里，加关注，不迷路', // 分享描述
-            link: 'http://kll2cwa.hk1.mofasuidao.cn/exhibition/exhibition.html?id=0', // 分享链接
+            link: location.href, // 分享链接
             imgUrl: 'http://picturebank.oss-cn-qingdao.aliyuncs.com/onlineExhibition/backround.jpg', // 分享图标
             success: function () {
             },
@@ -105,7 +110,7 @@
           wx.onMenuShareQZone({
             title: '在线艺术品超市分享到QZone', // 分享标题
             desc: '在线艺术品超市，展厅,高大上的艺术家都在这里，加关注，不迷路', // 分享描述
-            link: 'http://kll2cwa.hk1.mofasuidao.cn/exhibition/exhibition.html?id=0', // 分享链接
+            link: location.href, // 分享链接
             imgUrl: 'http://picturebank.oss-cn-qingdao.aliyuncs.com/onlineExhibition/backround.jpg', // 分享图标
             success: function () {
               // 用户确认分享后执行的回调函数
@@ -117,7 +122,7 @@
         });
 
         wx.error(function(res){
-          _this.$http.get('http://10.50.101.66:8887/motified_signature/?' +
+          _this.$http.get('http://qb4dwjh.hk1.mofasuidao.cn/motified_signature/?' +
             'url='+ encodeURIComponent(location.href.split('#')[0])).then(response => {
             window.location.reload();
           },response => {
@@ -131,9 +136,9 @@
 </script>
 
 <style lang="stylus" rel="stylesheet/stylus">
-  .image_text_readings
+  .reading
     position: relative
-    margin: 2px 2px 2px 2px
+    margin: 5px 5px 5px 5px
     height: 200px
     border-color: antiquewhite
     border: 2px
@@ -141,6 +146,8 @@
     border-radius: 5px
     background-color: antiquewhite
     padding-top: 10px
-    overflow: auto
     line-height: 20px
+    overflow: auto
+    .my_section
+      margin: 10px
 </style>
