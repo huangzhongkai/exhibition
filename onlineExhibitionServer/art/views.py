@@ -486,7 +486,6 @@ exhibitions_list = [
 
 
 def artist(request, offset):
-    print 'offset=', offset
     code = request.GET.get('code', 'error')
     print request.COOKIES
     cookies = request.COOKIES
@@ -548,7 +547,6 @@ def artists(request):
     return HttpResponse(json.dumps(artist_list), content_type='application/json')
 
 def exhibit(request, offset):
-    print 'offset=', offset
     print request.COOKIES
     # try:
     #     offset = int(offset)
@@ -721,12 +719,14 @@ def exhibit_readings(request, offset):
 def exhibit_ratings(request, offset):
     if request.method == 'POST':
         print request.COOKIES
+        print request.session.get('openid', default=None)
         cookie = request.COOKIES.get('sessionid','error')
         if cookie != 'error':
-            try:
-                openid = Session.objects.get(session_key=cookie).get_decoded()['openid']
-            except:
-                openid = ''
+            # try:
+            #     openid = Session.objects.get(session_key=cookie).get_decoded()['openid']
+            # except:
+            #     openid = ''
+            openid = request.session.get('openid', default=None)
             nickname = OeWxUser.objects.filter(appid=openid).first().nickname
         timeArray = time.localtime()
 
@@ -953,7 +953,6 @@ def exhibition_readings(request, offset):
     return HttpResponse(json.dumps(reading_dict), content_type='application/json')
 
 def exhibit_image_text_readings(request, offset):
-    print 'offset=', offset
     try:
         offset = int(offset)
     except ValueError:
@@ -976,7 +975,6 @@ def exhibit_image_text_readings(request, offset):
 
 
 def exhibit_vedio_readings(request, offset):
-    print 'offset=', offset
     try:
         offset = int(offset)
     except ValueError:
@@ -999,7 +997,6 @@ def exhibit_vedio_readings(request, offset):
 
 
 def exhibition_image_text_readings(request, offset):
-    print 'offset=', offset
     try:
         offset = int(offset)
     except ValueError:
@@ -1022,7 +1019,6 @@ def exhibition_image_text_readings(request, offset):
 
 
 def exhibition_vedio_readings(request, offset):
-    print 'offset=', offset
     try:
         offset = int(offset)
     except ValueError:
