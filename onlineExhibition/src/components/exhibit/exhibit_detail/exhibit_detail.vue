@@ -2,8 +2,9 @@
   <div>
     <div class="production_detail">
       <div class="top_image" :style="{height: isEnlarge? 'auto' : '150px'}">
-        <img width="100%" :src="exhibit.image_path">
+        <img id="image" width="100%" :src="exhibit.image_path">
       </div>
+      <!--<span @click="save()" class="save">保存</span>-->
       <div class="enlarge_icon" @click="enlarge_image(isEnlarge)">
         <i :class="{'icon-zoom-in':!isEnlarge, 'icon-zoom-out':isEnlarge}"></i>
       </div>
@@ -20,7 +21,7 @@
       <!--<audio_reading class='audio_reading' :name="exhibit.audio_name" ref="audio_reading"></audio_reading>-->
       <!--<audio :src="exhibit.audio_src" ref="audio"></audio>-->
 
-      <div class="reading_top">
+      <div title="作品解读" class="reading_top">
         <span class="left">作品解读</span>
         <span class="right" @click="more_reading()">查看更多</span>
       </div>
@@ -64,19 +65,27 @@
 
     <div class="ratings">
       <span class="left">评论</span>
-      <span class="right" @click="add_rating()">写评论</span>
+      <div class="right">
+        <span  @click="add_rating(0)">写评论</span>
+        <span  @click="image_rating(1)">可圈可点</span>
+      </div>
+
     </div>
     <div class="rating-wrapper">
       <ul>
-        <li v-for="rating in exhibit.ratings" class="rating-item">
+        <li v-for="(rating,index) in exhibit.ratings" class="rating-item">
           <div class="avatar">
             <img width="28" height="28" :src="rating.avatar">
           </div>
           <div class="content">
             <h1 class="name">{{rating.username}}</h1>
+            <p class="time">{{rating.rateTime}}</p>
             <p class="text">{{rating.text}}</p>
-            <div class="time">
-              {{rating.rateTime}}
+            <div>
+              <img v-show="flag[index]" @click="show_rating(index)" class="flag" src="/static/exhibit/rating.png"/>
+            </div>
+            <div v-show="image_ratings[index]" class="js-result">
+              <img @click="zoomout()" :width="w" :height="h" :src="rating.rate_image">
             </div>
           </div>
         </li>
@@ -86,7 +95,7 @@
     <more_reading :exhibit_id="param.id" ref="more_reading">
     </more_reading>
 
-    <ratings :exhibition_id="param.id" ref="edit_ratings">
+    <ratings :exhibit_id="param.id" ref="edit_ratings">
     </ratings>
   </div>
 </template>
@@ -98,6 +107,10 @@
   import {formatDate} from '../../../common/js/date';
   import ratings from '../ratings/ratings.vue'
   import wx from 'weixin-js-sdk'
+  import jQuery from 'jquery'
+  import Cropper from 'cropperjs'
+
+  let host = 'qb4dwjh.hk1.mofasuidao.cn';
 
   export default {
     components: {
@@ -107,6 +120,13 @@
     },
     data () {
       return {
+        flag:[],
+        image_ratings:[],
+        w:'128px',
+        h:'128px',
+        wh:false,
+        result:'',
+        cropper: {},
         play_icon:'/static/exhibition/play.svg',
         isPlaying: false,
         config:{},
@@ -122,13 +142,22 @@
     },
     created() {
       console.log(this.param.id);
-      this.$http.get('http://qb4dwjh.hk1.mofasuidao.cn/exhibits/'+ this.param.id +'/').then(response => {
+      this.$http.get('http://'+ host +'/exhibits/'+ this.param.id +'/').then(response => {
 
         this.exhibit = response.body;
+        for(let i=0; i<this.exhibit.ratings.length; i++){
+          this.image_ratings.push(false);
+          if(this.exhibit.ratings[i].type === 1){
+            this.flag.push(true);
+          }else{
+            this.flag.push(false);
+          }
+
+        }
       },response => {
       });
 
-      this.$http.get('http://qb4dwjh.hk1.mofasuidao.cn/get_signature/?' +
+      this.$http.get('http://'+ host +'/get_signature/?' +
         '&url='+ encodeURIComponent(location.href.split('#')[0])).then(response => {
         this.config = response.body;
         let _this = this;
@@ -222,14 +251,58 @@
 //      },
 //    },
     methods: {
+      zoomout () {
+        if(this.wh === true){
+          this.w = '256px';
+          this.h = '256px';
+          this.wh = false;
+        }else if(this.wh === false){
+          this.w = '128px';
+          this.h = '128px';
+          this.wh = true;
+        }
+      },
       show_video (index) {
         this.$refs.my_video[index].play();
         if(this.$store.state.isPlaying === true){
           this.$refs.audio_reading.play();
         }
       },
+//      save () {
+//        var croppedCanvas;
+//        croppedCanvas = this.cropper.getCroppedCanvas({
+//        });
+//        this.result = croppedCanvas.toDataURL();
+//
+//
+//        let _this = this;
+//        this.cropper.getCroppedCanvas().toBlob(function (blob) {
+//          var formData = new FormData();
+//          formData.append('imageblob',blob)
+//          _this.$http.post('http://'+ host +'/exhibit_image_ratings/'+ _this.param.id+'/', formData ).then(response => {
+//          },response => {
+//          });
+//        });
+//
+//      },
       enlarge_image (bool) {
         this.isEnlarge = !bool;
+//        if(this.isEnlarge === true){
+//          var image = document.getElementById('image');
+//          this.cropper = new Cropper(image, {
+//            aspectRatio: 1 / 1,
+//            autoCropArea:0.5,
+//            dragMode: 'none',
+//            zoomable:false,
+//            crop: function(e) {
+//
+//            },
+//            ready: function () {
+//            }
+//          });
+//        }else{
+//          this.cropper.destroy();
+//        }
       },
       more_reading () {
         document.body.style.height = '100%';
@@ -237,16 +310,20 @@
         this.$refs.more_reading.show();
       },
       show_image_text_readings(key) {
-        window.open("http://qb4dwjh.hk1.mofasuidao.cn/image_text_readings_html/?id=" + key +'&type=exhibit');
+        window.open("http://"+ host +"/image_text_readings_html/?id=" + key +'&type=exhibit');
       },
       show_video_readings(key) {
-        window.open("http://qb4dwjh.hk1.mofasuidao.cn/video_readings_html/?id=" + key +'&type=exhibit');
+        window.open("http://"+ host +"/video_readings_html/?id=" + key +'&type=exhibit');
       },
-      add_rating () {
-//        window.open("http://10.50.101.66:8080/ratings/ratings.html");
+      add_rating (type) {
         document.body.style.height = '100%';
         document.body.style.overflow = 'hidden';
-        this.$refs.edit_ratings.show();
+        this.$refs.edit_ratings.show(type);
+      },
+      image_rating (type) {
+        document.body.style.height = '100%';
+        document.body.style.overflow = 'hidden';
+        this.$refs.edit_ratings.show(type);
       },
       show_audio (index) {
         !this.isPlaying ? this.$refs.my_audio[index].play() : this.$refs.my_audio[index].pause();
@@ -264,6 +341,9 @@
         }else{
           return false;
         }
+      },
+      show_rating(index){
+        this.$set(this.image_ratings, index, !this.image_ratings[index])
       }
     },
     filters: {
@@ -284,6 +364,12 @@
     .top_image
       height: 256px
       overflow: hidden
+      img
+        max-width: 100%
+    .save
+      position: absolute
+      top: 0px
+      right: 0px
     .enlarge_icon
       position: relative
       top: -18px
@@ -407,14 +493,23 @@
           font-size: 10px
           color: rgb(7, 17, 27)
         .text
+          margin-top: 4px
           margin-bottom: 8px
-          line-height: 18px
+          line-height: 12px
           color: rgb(7, 17, 27)
-          font-size: 12px
+          font-size: 14px
         .time
+          margin-top: 4px
+          margin-bottom: 8px
+          line-height: 12px
+          color: rgb(7, 17, 27)
+          font-size: 10px
+        .flag
           position: absolute
           top: 0
           right: 0
+          width: 16px
+          height: 16px
           line-height: 12px
           font-size: 10px
           color: rgb(147, 153, 159)

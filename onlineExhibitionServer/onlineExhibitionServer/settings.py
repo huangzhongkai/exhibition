@@ -83,11 +83,11 @@ ALLOWED_HOSTS = ['10.50.101.66', 'localhost', '127.0.0.1']
 
 
 TEMPLATE_DIRS = (
-    os.path.join(os.path.dirname(BASE_DIR), "onlineExhibition/dist"),
+    os.path.join(os.path.dirname(BASE_DIR), "onlineExhibitionServer/art/dist"),
 )
 
 STATICFILES_DIRS = [
-    os.path.join(os.path.dirname(BASE_DIR), "onlineExhibition/dist/static"),
+    os.path.join(os.path.dirname(BASE_DIR), "onlineExhibitionServer/art/dist/static"),
 ]
 
 

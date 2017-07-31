@@ -17,7 +17,9 @@
     "vue-awesome-swiper": "^2.3.2",
     "better-scroll": "^0.1.11",
     "bootstrap": "^3.3.7",
-    "weixin-js-sdk":""
+    "weixin-js-sdk":"",
+    "cropperjs":"",
+    "jquery":"^3.2.1"
   },
   "devDependencies": {
     "autoprefixer": "^6.7.2",

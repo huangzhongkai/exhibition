@@ -137,7 +137,6 @@
 
 <style lang="stylus" rel="stylesheet/stylus">
   .reading
-    position: relative
     margin: 5px 5px 5px 5px
     height: 200px
     border-color: antiquewhite

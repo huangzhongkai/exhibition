@@ -11,6 +11,9 @@ from art.models import OeUser, OeExhibitComment, OeExhibitionComment
 from django.contrib.sessions.models import Session
 
 from art.utils import Wx
+from django.core.files.storage import default_storage
+from django.core.files.base import ContentFile
+from onlineExhibitionServer.settings import STATICFILES_DIRS
 # Create your views here.
 
 
@@ -514,7 +517,7 @@ def artist(request, offset):
 
         objs = Session.objects.all()
         for obj in objs:
-            if obj.get_decoded()['openid'] == user_info['openid']:
+            if obj.get_decoded().get('openid','') == user_info['openid']:
                 response.set_cookie('sessionid', obj.session_key)
                 print 'set cookie'
                 return response
@@ -601,16 +604,19 @@ def exhibit(request, offset):
 
     #get exhibit rating info
     comment_list = []
-    comments = OeExhibitComment.objects.filter(exhibit__id=offset)
+    comments = OeExhibitComment.objects.filter(exhibit__id=offset).order_by("create_time")
     for comment in comments:
         comment = model_to_dict(comment)
         wx_user = OeWxUser.objects.filter(id=comment['wx_user']).first()
         wx_user = model_to_dict(wx_user)
         show_dict = {
+            'id': int(comment['id']),
             'username': wx_user['nickname'],
             'rateTime':  comment['create_time'].strftime('%Y-%m-%d %H:%M:%S'),
             'text': comment['content'],
-            'avatar': wx_user['headimgurl']
+            'avatar': wx_user['headimgurl'],
+            'type': comment['type'],
+            'rate_image': comment['rate_image']
         }
         comment_list.append(show_dict)
     comment_dict = {'ratings': comment_list}
@@ -728,6 +734,9 @@ def exhibit_ratings(request, offset):
             #     openid = ''
             openid = request.session.get('openid', default=None)
             nickname = OeWxUser.objects.filter(appid=openid).first().nickname
+        else:
+            print '未知人'
+            nickname = '未知人'
         timeArray = time.localtime()
 
         otherStyleTime = time.strftime("%Y-%m-%d %H:%M:%S", timeArray)
@@ -754,10 +763,35 @@ def exhibit_ratings(request, offset):
             rating['id'] = str(int(OeExhibitComment.objects.latest('create_time').id) + 1)
         except:
             rating['id'] = '1'
+
+        if request.GET.get('type','') == '1':
+            image = request.FILES.get('imageblob')
+            path = default_storage.save(STATICFILES_DIRS[0] + '/exhibit/' + image.name + rating['id'] +'.jpeg', ContentFile(image.read()))
+        if request.GET.get('type','') == '1':
+            rating['type'] = 1;
+            rating['rate_image'] = '/static/exhibit/' + image.name + rating['id'] + '.jpeg'
+        else:
+            rating['type'] = 0;
         OeExhibitComment.objects.create(**rating)
 
 
         return HttpResponse(json.dumps(''), content_type='application/json')
+
+# @csrf_exempt
+# def exhibit_image_ratings(request, offset):
+#     if request.method == 'POST':
+#         print offset
+#         image = request.FILES.get('imageblob')
+#         print image
+#         print image.size
+#         print image.name
+#
+#         print request.POST.get('text','')
+#
+#         path = default_storage.save('/Users/huangzhongkai/mygit/exhibition/onlineExhibitionServer/art/dist/static/exhibit/' + image.name +'.jpeg', ContentFile(image.read()))
+#         print path
+#         return HttpResponse(json.dumps(''), content_type='application/json')
+
 
 @csrf_exempt
 def exhibition(request, offset):

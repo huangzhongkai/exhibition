@@ -96,7 +96,6 @@
         });
       },
       _initScroll() {
-        console.log(this.$refs.reading_content);
         this.exhibitionScroll = new BScroll(this.$refs.more_reading_content, {
           click: true,
         });

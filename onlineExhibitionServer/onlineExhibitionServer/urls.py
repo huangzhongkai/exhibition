@@ -25,6 +25,7 @@ urlpatterns = [
     url(r'^exhibits/$', exhibits),
     url(r'^exhibit_readings/(\d+)/$', exhibit_readings),
     url(r'^exhibit_ratings/(\d+)/$', exhibit_ratings),
+    # url(r'^exhibit_image_ratings/(\d+)/$', exhibit_image_ratings),
     url(r'^exhibit_image_text_readings/(\d+)/$', exhibit_image_text_readings),
     url(r'^exhibit_vedio_readings/(\d+)/$', exhibit_vedio_readings),
 
@@ -37,8 +38,8 @@ urlpatterns = [
     url(r'^exhibition_image_text_readings/(\d+)/$', exhibition_image_text_readings),
     url(r'^exhibition_vedio_readings/(\d+)/$', exhibition_vedio_readings),
 
-    url(r'^get_signature/$', get_signature),
-    url(r'^motified_signature/$', motified_signature),
+    # url(r'^get_signature/$', get_signature),
+    # url(r'^motified_signature/$', motified_signature),
 
     # url(r'^attention/$', attention),
 
