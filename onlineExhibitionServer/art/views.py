@@ -657,7 +657,6 @@ def exhibits(request):
     if artist_id != 'error':
         artist = OeArtist.objects.filter(id=artist_id).first()
         exhibits = OeExhibit.objects.filter(author=artist.name)
-        print exhibits
         for exhibit in exhibits:
             exhibit = model_to_dict(exhibit)
             show_dict = {
@@ -741,6 +740,7 @@ def exhibit_ratings(request, offset):
 
         otherStyleTime = time.strftime("%Y-%m-%d %H:%M:%S", timeArray)
 
+
         rating = {}
         # if not OeUser.objects.filter(user_name=request.POST.get('username', '')).first():
         #     user = {
@@ -766,10 +766,10 @@ def exhibit_ratings(request, offset):
 
         if request.GET.get('type','') == '1':
             image = request.FILES.get('imageblob')
-            path = default_storage.save(STATICFILES_DIRS[0] + '/exhibit/' + image.name + rating['id'] +'.jpeg', ContentFile(image.read()))
+            path = default_storage.save(STATICFILES_DIRS[0] + '/exhibit/' + image.name + otherStyleTime +'.jpeg', ContentFile(image.read()))
         if request.GET.get('type','') == '1':
             rating['type'] = 1;
-            rating['rate_image'] = '/static/exhibit/' + image.name + rating['id'] + '.jpeg'
+            rating['rate_image'] = '/static/exhibit/' + image.name + otherStyleTime + '.jpeg'
         else:
             rating['type'] = 0;
         OeExhibitComment.objects.create(**rating)

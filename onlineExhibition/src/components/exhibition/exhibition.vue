@@ -61,8 +61,8 @@
     },
     methods:{
       show_exhibition(key) {
-//        window.open("http://qb4dwjh.hk1.mofasuidao.cn/exhibition_html/?id=" + key);
-        window.location = "http://qb4dwjh.hk1.mofasuidao.cn/exhibition_html/?id=" + key ;
+        window.open("http://qb4dwjh.hk1.mofasuidao.cn/exhibition_html/?id=" + key);
+//        window.location = "http://qb4dwjh.hk1.mofasuidao.cn/exhibition_html/?id=" + key ;
       },
       _initScroll() {
         this.exhibitionScroll = new BScroll(this.$refs.exhibition, {

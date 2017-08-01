@@ -66,8 +66,8 @@
     },
     methods: {
       show_exhibit (key) {
-//        window.open("http://10.50.101.66:8080/exhibit/exhibit.html?id=" + key);
-        window.location = 'http://qb4dwjh.hk1.mofasuidao.cn/exhibit_html/?id=' + key;
+        window.open('http://qb4dwjh.hk1.mofasuidao.cn/exhibit_html/?id=' + key);
+//        window.location = 'http://qb4dwjh.hk1.mofasuidao.cn/exhibit_html/?id=' + key;
       },
     }
   };

@@ -74,6 +74,7 @@
         return new Blob( [ab] , {type : 'image/png'});
       },
       upload(){
+        this.showFlag = false;
         let rating = {};
         rating['rateTime'] = Date.parse(new Date())/1000;
         rating['text'] = this.ratings;
@@ -84,12 +85,11 @@
           this.result = croppedCanvas.toDataURL();
           let _this = this;
 
-          console.log(this.convertBase64UrlToBlob(croppedCanvas.toDataURL()));
           var formData = new FormData();
           formData.append('imageblob',this.convertBase64UrlToBlob(croppedCanvas.toDataURL()));
           formData.append('text',rating['text']);
           this.$http.post('http://'+ host +'/exhibit_ratings/'+ this.exhibit_id+'/?type=1',formData ).then(response => {
-            this.showFlag = false;
+
             document.body.style.height = '';
             document.body.style.overflow = '';
             window.location.reload();
@@ -211,7 +211,7 @@
       position: absolute
       top: 50px
       bottom: 0px
-      height: 600px
+      height:100%
       img
         max-width: 100%
       .flag
