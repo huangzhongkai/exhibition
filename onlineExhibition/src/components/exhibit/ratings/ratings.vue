@@ -1,6 +1,6 @@
 <template>
   <transition name="move">
-  <div v-show="showFlag" class="edit_ratings">
+  <div v-show="showFlag" class="edit_ratings" :style="{height: edit_rating_length}">
     <div class="top">
       <span>【朝奉图】</span>
     </div>
@@ -42,6 +42,7 @@
         cropper: {},
         flag:false,
         rating_image:'',
+        edit_rating_length:'',
         max_length:'',
         type: false,
         ratings:'',
@@ -51,8 +52,13 @@
     created () {
       this.$http.get('http://'+ host +'/exhibits/'+ this.exhibit_id + '/').then(response => {
         this.rating_image = response.body['image_path'];
-        this.max_length = 600 + 350 - screen.height;
+        var img = new Image();
+        img.src = this.rating_image;
+        this.max_length = 550 + 500 ;
         this.max_length = this.max_length.toString() + 'px';
+
+        this.edit_rating_length = img.height/(img.width/screen.width) + 200;
+        this.edit_rating_length = this.edit_rating_length.toString().split('.')[0] + 'px';
 
         this.$nextTick(() => {
           this.rating_initScroll();
@@ -184,7 +190,6 @@
     top: 0
     z-index: 30
     width: 100%
-    height: 100%
     background: #fff
     overflow: hidden
     transform: translate3d(0, 0, 0)
@@ -208,10 +213,9 @@
     .content
       width: 100%
       overflow: hidden
-      position: absolute
       top: 50px
       bottom: 0px
-      height:100%
+      height :100%
       img
         max-width: 100%
       .flag
