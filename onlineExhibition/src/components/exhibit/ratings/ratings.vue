@@ -98,11 +98,15 @@
           formData.append('imageblob',this.convertBase64UrlToBlob(croppedCanvas.toDataURL()));
           formData.append('text',rating['text']);
           this.$http.post('http://'+ host +'/exhibit_ratings/'+ this.exhibit_id+'/?type=1',formData ).then(response => {
-
-            document.body.style.height = '';
-            document.body.style.overflow = '';
-            window.location.reload();
+            if(response.body === 'error'){
+              window.location = 'https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx522cca3d4b048aa9&redirect_uri=http%3A//qb4dwjh.hk1.mofasuidao.cn/artist_html/%3Fartist%3D0&response_type=code&scope=snsapi_userinfo&state=123#wechat_redirect'
+            }else{
+              document.body.style.height = '';
+              document.body.style.overflow = '';
+              window.location.reload();
+            }
           },response => {
+            alert('request error');
           });
 
 //          this.cropper.getCroppedCanvas().toBlob(function (blob) {

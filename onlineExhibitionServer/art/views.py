@@ -734,8 +734,8 @@ def exhibit_ratings(request, offset):
             openid = request.session.get('openid', default=None)
             nickname = OeWxUser.objects.filter(appid=openid).first().nickname
         else:
-            print '未知人'
-            nickname = '未知人'
+            print '未知'
+            nickname = '未知'
         timeArray = time.localtime()
 
         otherStyleTime = time.strftime("%Y-%m-%d %H:%M:%S", timeArray)
@@ -755,6 +755,7 @@ def exhibit_ratings(request, offset):
         #     rating['user'] = OeUser.objects.filter(user_name=request.POST.get('username', '')).first()
 
         # rating['user'] = OeUser.objects.filter().first()
+
         rating['wx_user'] = OeWxUser.objects.filter(nickname=nickname).first()
         rating['exhibit'] = OeExhibit.objects.filter(id=offset).first()
         rating['create_time'] = otherStyleTime
@@ -763,7 +764,8 @@ def exhibit_ratings(request, offset):
             rating['id'] = str(int(OeExhibitComment.objects.latest('create_time').id) + 1)
         except:
             rating['id'] = '1'
-
+        if cookie == 'error':
+            return HttpResponse(json.dumps('error'), content_type='application/json')
         if request.GET.get('type','') == '1':
             image = request.FILES.get('imageblob')
             path = default_storage.save(STATICFILES_DIRS[0] + '/exhibit/' + image.name + otherStyleTime +'.jpeg', ContentFile(image.read()))
