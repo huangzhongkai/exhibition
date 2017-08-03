@@ -1,6 +1,6 @@
 <template>
   <transition name="move">
-  <div v-show="showFlag" class="edit_ratings" :style="{height: edit_rating_length}">
+  <div v-show="showFlag" class="edit_ratings" >
     <div class="top">
       <span>【朝奉图】</span>
     </div>
@@ -8,7 +8,7 @@
       <i class="icon-arrow_lift"></i>
     </div>
     <div class="content" ref="content">
-      <ul :style="{height: max_length}">
+      <ul :style="max_length">
         <div v-show="type">
           <img id="img" :src="rating_image" ref="rating_image">
           <!--<div>-->
@@ -16,7 +16,7 @@
           <!--</div>-->
         </div>
         <div>
-          <textarea v-model="ratings" ref="ratings" class="ratings_input" placeholder="留言将由作者删选显示"/>
+          <textarea @click="ratings_input()" v-model="ratings" ref="ratings" class="ratings_input" placeholder="留言将由作者删选显示"/>
         </div>
         <div class="commit">
           <div  @click="upload()"  class="btn btn-primary">提交</div>
@@ -39,6 +39,7 @@
     },
     data () {
       return {
+        img_length:'',
         cropper: {},
         flag:false,
         rating_image:'',
@@ -53,16 +54,18 @@
       this.$http.get('http://'+ host +'/exhibits/'+ this.exhibit_id + '/').then(response => {
         this.rating_image = response.body['image_path'];
         var img = new Image();
+        let _this = this;
         img.src = this.rating_image;
-        this.max_length = 550 + 500 ;
-        this.max_length = this.max_length.toString() + 'px';
-
-        this.edit_rating_length = img.height/(img.width/screen.width) + 200;
-        this.edit_rating_length = this.edit_rating_length.toString().split('.')[0] + 'px';
-
-        this.$nextTick(() => {
-          this.rating_initScroll();
-        });
+        img.onload = function() {
+          _this.img_length = img.height/(img.width/screen.width);
+          _this.max_length = img.height/(img.width/screen.width) + 350 - screen.height
+          _this.max_length = 'height:'+ _this.max_length.toString() + 'px';
+          _this.$nextTick(() => {
+            _this.rating_initScroll();
+          });
+        }
+//        this.edit_rating_length = 500 + 200;
+//        this.edit_rating_length = this.edit_rating_length.toString().split('.')[0] + 'px';
 
       },response => {
       });
@@ -179,6 +182,9 @@
           click: true,
         });
       },
+      ratings_input() {
+        this.max_length = 'height:' + (this.img_length + screen.height).toString() + 'px';
+      }
     }
   }
 </script>
@@ -190,6 +196,7 @@
     top: 0
     z-index: 30
     width: 100%
+    height : 100%
     background: #fff
     overflow: hidden
     transform: translate3d(0, 0, 0)
