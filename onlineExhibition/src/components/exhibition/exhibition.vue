@@ -79,7 +79,7 @@
     width: 100%
     overflow: hidden
     position: absolute
-    top: 189px
+    top: 173px
     bottom: 0px
     .my_exhibition
       .exhibition_info

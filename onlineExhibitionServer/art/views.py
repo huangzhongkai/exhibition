@@ -535,7 +535,7 @@ def artist(request, offset):
                                 headimgurl=user_info['headimgurl'])
         print nickname
         return response
-
+    return response
 
 def artists(request):
     artist_list = []
