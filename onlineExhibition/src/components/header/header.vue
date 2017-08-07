@@ -10,7 +10,7 @@
     </div>
     <div class="attention-wrapper">
       <div class="attention">
-        <button v-on:click="addOne" v-bind:class="[attention_condition ? 'add_attention' : 'not_attention']"></button>
+        <button @click="addOne()" v-bind:class="[attention_condition ? 'add_attention' : 'not_attention']"></button>
       </div>
       <div class="content_attention">
         <span>{{header.attention_count}}人关注</span>
@@ -24,31 +24,44 @@
 
 <script type="text/ecmascript-6">
   export default {
-    data () {
-      return {
-        attention_condition: false,
-      }
-    },
     props: {
       header: {
         type: Object
       }
     },
+    data () {
+      return {
+        attention_condition: false,
+      }
+    },
     methods: {
-        addOne: function () {
-//          if(this.attention_condition === true){
-//            this.$http.delete('http://10.50.101.66:8887/attention/?artist='+ this.header.name).then(response => {
-//                this.attention_condition = false;
-//                this.header.attention_count -=1;
-//            },response => {
-//            });
-//          }else{
-//            this.$http.post('http://10.50.101.66:8887/attention/?artist=' + this.header.name).then(response => {
-//              this.attention_condition = true;
-//              this.header.attention_count +=1;
-//            },response => {
-//            });
-//          }
+        addOne() {
+          if(this.attention_condition === true){
+            this.attention_condition = false;
+            this.header.attention_count -=1;
+            this.$http.delete('http://qb4dwjh.hk1.mofasuidao.cn/attention/?artist_id='+ this.header.id).then(response => {
+
+            },response => {
+              this.attention_condition = true;
+              this.header.attention_count +=1;
+            });
+          }else{
+            this.attention_condition = true;
+            this.header.attention_count +=1;
+            this.$http.post('http://qb4dwjh.hk1.mofasuidao.cn/attention/?artist_id=' + this.header.id).then(response => {
+
+            },response => {
+              this.attention_condition = false;
+              this.header.attention_count -=1;
+            });
+          }
+        },
+        update(isAttention){
+          if(isAttention === 'true'){
+            this.attention_condition = true;
+          }else{
+            this.attention_condition = false;
+          }
         }
     }
   };
@@ -77,8 +90,10 @@
         border-radius: 10px
         color: black
       .add_attention::after
+        size: 16px
         content: "已关注";
       .not_attention::after
+        size: 16px
         content: "+关注";
     .background
       position: absolute

@@ -352,3 +352,10 @@ class OeWxUser(models.Model):
     headimgurl = models.CharField(db_column='HEADIMGURL', max_length=1000)
     class Meta:
         db_table = 'oe_wx_user'
+
+class OeWxUserAttentionArtist(models.Model):
+    id = models.AutoField(db_column='ID', primary_key=True)
+    wx_user = models.ForeignKey(OeWxUser, db_column='WX_USER_ID')
+    artist = models.ForeignKey(OeArtist, db_column='ARTIST_ID')
+    class Meta:
+        db_table = 'oe_wx_user_attention_artist'

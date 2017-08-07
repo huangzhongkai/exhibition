@@ -7,7 +7,7 @@ from art.views import exhibition, exhibitions, exhibit_readings,exhibition_readi
     exhibit_image_text_readings, exhibit_vedio_readings, exhibition_image_text_readings,\
     exhibition_vedio_readings, get_signature, motified_signature
 from art.views import home_html, exhibition_html, exhibit_html, artist_html, exhibit_ratings, \
-    image_text_readings_html, video_readings_html
+    image_text_readings_html, video_readings_html,attention
 
 admin.autodiscover()
 
@@ -41,7 +41,7 @@ urlpatterns = [
     # url(r'^get_signature/$', get_signature),
     # url(r'^motified_signature/$', motified_signature),
 
-    # url(r'^attention/$', attention),
+    url(r'^attention/$', attention),
 
     url(r'^home_html/$', home_html),
     url(r'^exhibition_html/$', exhibition_html),

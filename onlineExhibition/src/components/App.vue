@@ -1,6 +1,6 @@
 <template>
   <div>
-    <v-header :header="artist"></v-header>
+    <v-header :header="artist" ref="header"></v-header>
     <div class="tab">
       <div class="tab-item">
         <router-link to="/exhibit" >作品</router-link>
@@ -44,6 +44,7 @@
       created() {
         this.$http.get('http://qb4dwjh.hk1.mofasuidao.cn/artists/'+ this.header.artist + '/?code=' + this.header.code).then(response => {
           this.artist = response.body;
+          this.$refs.header.update(this.artist.isAttention);
         },response => {
         });
 
@@ -127,9 +128,7 @@
         },response => {
         });
         if(this.header.code === undefined){
-//          window.location = 'https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx522cca3d4b048aa9&redirect_uri=http%3A//kll2cwa.hk1.mofasuidao.cn/artist.html%3Fartist%3D0&response_type=code&scope=snsapi_userinfo&state=123#wechat_redirect'
           window.location = 'https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx522cca3d4b048aa9&redirect_uri=http%3A//qb4dwjh.hk1.mofasuidao.cn/artist_html/%3Fartist%3D0&response_type=code&scope=snsapi_userinfo&state=123#wechat_redirect'
-
         }
       },
       components: {

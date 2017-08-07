@@ -6,7 +6,7 @@ from art.models import OeArtist, OeExhibit, OeExhibition, OeExhibitInterpretatio
     OeArtistExhibitionRelation, OeWxConfig, OeWxDeveloper, OeExhibitionInterpretation, OeWxUser
 from django.forms.models import model_to_dict
 from django.views.decorators.csrf import csrf_exempt
-from art.models import OeUser, OeExhibitComment, OeExhibitionComment
+from art.models import OeUser, OeExhibitComment, OeExhibitionComment, OeWxUserAttentionArtist
 
 from django.contrib.sessions.models import Session
 
@@ -495,10 +495,24 @@ def artist(request, offset):
 
     artist = OeArtist.objects.filter(id=offset).first()
     artist = model_to_dict(artist)
+    attention_count = OeWxUserAttentionArtist.objects.filter(artist=artist['id']).count()
+
+    cookie = request.COOKIES.get('sessionid', 'error')
+    if cookie != 'error':
+        openid = request.session.get('openid', default=None)
+        wx_user = OeWxUser.objects.filter(appid=openid).first().id
+        if OeWxUserAttentionArtist.objects.filter(artist=artist['id'], wx_user=wx_user).count() > 0:
+            isattention = 'true'
+        else:
+            isattention = 'false'
+    else:
+        isattention = 'false'
     artist_dict = {
+        'id': artist['id'],
         'avatar': artist['head_path'],
         'name': artist['name'],
-        'attention_count': 200
+        'attention_count': attention_count,
+        'isAttention': isattention
     }
     response = HttpResponse(json.dumps(artist_dict), content_type='application/json')
 
@@ -1075,22 +1089,25 @@ def exhibition_vedio_readings(request, offset):
     }
     return HttpResponse(json.dumps(video_readings), content_type='application/json')
 
-# @csrf_exempt
-# def attention(request):
-#     if request.method == 'POST':
-#         print request.GET.get('artist', '')
-#         artist = request.GET.get('artist', '0')
-#         attention_count = OeArtist.objects.filter(name=artist).first().attention_count
-#
-#         Artist.objects.filter(name=artist).update(attention_count=attention_count + 1)
-#         return HttpResponse(json.dumps({}), content_type='application/json')
-#     if request.method == 'DELETE':
-#         print request.GET.get('artist', '')
-#         artist = request.GET.get('artist', '0')
-#         attention_count = Artist.objects.filter(name=artist).first().attention_count
-#
-#         Artist.objects.filter(name=artist).update(attention_count=attention_count - 1)
-#         return HttpResponse(json.dumps({}), content_type='application/json')
+@csrf_exempt
+def attention(request):
+    print request.COOKIES
+    print request.session.get('openid', default=None)
+    cookie = request.COOKIES.get('sessionid', 'error')
+    if cookie == 'error':
+        return HttpResponse(json.dumps('error'), content_type='application/json')
+    openid = request.session.get('openid', default=None)
+    wx_user = OeWxUser.objects.filter(appid=openid).first()
+    if request.method == 'POST':
+        artist_id = request.GET.get('artist_id', '0')
+        artist = OeArtist.objects.filter(id=artist_id).first()
+        OeWxUserAttentionArtist.objects.create(wx_user=wx_user, artist=artist)
+        return HttpResponse(json.dumps({}), content_type='application/json')
+    if request.method == 'DELETE':
+        artist_id = request.GET.get('artist_id', '0')
+        artist = OeArtist.objects.filter(id=artist_id).first()
+        OeWxUserAttentionArtist.objects.filter(wx_user=wx_user, artist=artist).delete()
+        return HttpResponse(json.dumps({}), content_type='application/json')
 #
 def introduction(request):
     artist = request.GET.get('artist', '0')

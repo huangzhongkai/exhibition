@@ -58,7 +58,6 @@
         },response => {
         });
       };
-
       this.$http.get('http://10.50.101.66:8887/get_signature/?' +
         '&url='+ encodeURIComponent(location.href.split('#')[0])).then(response => {
         this.config = response.body;
