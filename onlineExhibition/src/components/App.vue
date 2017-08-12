@@ -24,7 +24,7 @@
   import {urlParse} from '../common/js/util';
   import wx from 'weixin-js-sdk'
 
-  import global_ from '../Global.vue'
+  import global_ from './Global.vue'
 
   let host = global_.host;
 

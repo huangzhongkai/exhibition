@@ -56,7 +56,7 @@
   import audio_reading from '../../audio/audio_reading.vue'
   import BScroll from 'better-scroll';
 
-  import global_ from '../Global.vue'
+  import global_ from '../../Global.vue'
 
   let host = global_.host;
 

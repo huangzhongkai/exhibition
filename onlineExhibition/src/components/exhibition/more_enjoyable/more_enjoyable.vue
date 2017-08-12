@@ -42,7 +42,7 @@
   import {urlParse} from '../../../common/js/util';
   import BScroll from 'better-scroll';
 
-  import global_ from '../Global.vue'
+  import global_ from '../../Global.vue'
 
   let host = global_.host;
 

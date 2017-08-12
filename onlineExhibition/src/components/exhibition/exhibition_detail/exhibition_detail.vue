@@ -102,7 +102,7 @@
   import more_enjoyable from "../more_enjoyable/more_enjoyable.vue"
   import wx from 'weixin-js-sdk'
 
-  import global_ from '../Global.vue'
+  import global_ from '../../Global.vue'
 
   let host = global_.host;
 
