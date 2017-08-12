@@ -42,6 +42,10 @@
   import {urlParse} from '../../../common/js/util';
   import BScroll from 'better-scroll';
 
+  import global_ from '../Global.vue'
+
+  let host = global_.host;
+
   export default {
     props: {
       exhibition_id:0
@@ -65,7 +69,7 @@
         document.body.style.overflow = '';
       },
       show_exhibit (key) {
-        window.open("http://qb4dwjh.hk1.mofasuidao.cn/exhibit_html/?id=" + key);
+        window.open("http://"+ host +"/exhibit_html/?id=" + key);
       },
       _initScroll() {
         this.exhibitionScroll = new BScroll(this.$refs.more_content, {
@@ -75,7 +79,7 @@
     },
     created() {
       if(this.exhibition_id != undefined){
-        this.$http.get('http://qb4dwjh.hk1.mofasuidao.cn/exhibits/?exhibition='+ this.exhibition_id + '&type=charactor').then(response => {
+        this.$http.get('http://'+ host +'/exhibits/?exhibition='+ this.exhibition_id + '&type=charactor').then(response => {
           this.exhibits = [];
           this.exhibits_right = [];
           if(response.body.length%2 === 0){

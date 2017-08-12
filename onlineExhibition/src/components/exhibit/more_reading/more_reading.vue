@@ -56,6 +56,10 @@
   import audio_reading from '../../audio/audio_reading.vue'
   import BScroll from 'better-scroll';
 
+  import global_ from '../Global.vue'
+
+  let host = global_.host;
+
   export default {
     props: {
       exhibit_id:0
@@ -101,15 +105,15 @@
         });
       },
       show_image_text_readings(key) {
-        window.open("http://qb4dwjh.hk1.mofasuidao.cn/image_text_readings_html/?id=" + key +'&type=exhibit');
+        window.open("http://"+ host +"/image_text_readings_html/?id=" + key +'&type=exhibit');
       },
       show_video_readings(key) {
-        window.open("http://qb4dwjh.hk1.mofasuidao.cn/video_readings_html/?id=" + key +'&type=exhibit');
+        window.open("http://"+ host +"/video_readings_html/?id=" + key +'&type=exhibit');
       },
     },
     created() {
       if(this.exhibit_id != undefined){
-        this.$http.get('http://qb4dwjh.hk1.mofasuidao.cn/exhibit_readings/'+ this.exhibit_id + '/').then(response => {
+        this.$http.get('http://'+ host +'/exhibit_readings/'+ this.exhibit_id + '/').then(response => {
           this.exhibit = response.body;
           this.max_length = (this.exhibit.image_text_readings.length + this.exhibit.audio_readings.length+ this.exhibit.video_readings.length) *100 - screen.height
           for(let i=0; i<this.exhibit.audio_readings.length; i++){

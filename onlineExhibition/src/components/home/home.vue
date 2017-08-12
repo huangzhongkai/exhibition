@@ -113,6 +113,9 @@
   import { swiper, swiperSlide,} from 'vue-awesome-swiper'
   import more_charactor from "../exhibition/more_charactor/more_charactor.vue"
   import wx from 'weixin-js-sdk'
+  import global_ from '../Global.vue'
+
+  let host = global_.host;
 
   export default{
     components: {
@@ -162,12 +165,12 @@
       }
     },
     created(){
-      this.$http.get('http://qb4dwjh.hk1.mofasuidao.cn/exhibitions/?artist=0').then(response => {
+      this.$http.get('http://'+ host +'/exhibitions/?artist=0').then(response => {
         this.exhibitions = response.body;
       },response => {
       });
 
-      this.$http.get('http://qb4dwjh.hk1.mofasuidao.cn/get_signature/?' +
+      this.$http.get('http://'+ host +'/get_signature/?' +
         '&url='+ encodeURIComponent(location.href.split('#')[0])).then(response => {
         this.config = response.body;
         let _this = this;
@@ -265,7 +268,7 @@
           'image_path':''
         }
       ]
-      this.$http.get('http://qb4dwjh.hk1.mofasuidao.cn/exhibits/?artist=0').then(response => {
+      this.$http.get('http://'+ host +'/exhibits/?artist=0').then(response => {
         this.exhibits = response.body;
       },response => {
       });
@@ -277,10 +280,10 @@
     },
     methods: {
       show_exhibit(key) {
-        window.open("http://qb4dwjh.hk1.mofasuidao.cn/exhibit_html/?id=" + key);
+        window.open("http://"+ host +"/exhibit_html/?id=" + key);
       },
       show_exhibition(key) {
-        window.open("http://qb4dwjh.hk1.mofasuidao.cn/exhibition_html/?id=" + key);
+        window.open("http://"+ host +"/exhibition_html/?id=" + key);
       },
       more_charactor () {
         document.body.style.height = '100%';

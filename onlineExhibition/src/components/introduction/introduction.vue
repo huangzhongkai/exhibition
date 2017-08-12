@@ -9,6 +9,10 @@
 <script>
   import {urlParse} from '../../common/js/util';
 
+  import global_ from '../Global.vue'
+
+  let host = global_.host;
+
   export default {
     data () {
       return {
@@ -22,7 +26,7 @@
       }
     },
     created() {
-      this.$http.get('http://qb4dwjh.hk1.mofasuidao.cn/introduction/?artist='+ this.params.artist).then(response => {
+      this.$http.get('http://'+ host +'/introduction/?artist='+ this.params.artist).then(response => {
         this.introduction = response.body;
       },response => {
       });

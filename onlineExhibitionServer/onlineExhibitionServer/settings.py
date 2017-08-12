@@ -83,12 +83,12 @@ ALLOWED_HOSTS = ['10.50.101.66', 'localhost', '127.0.0.1']
 
 
 TEMPLATE_DIRS = (
-    os.path.join(os.path.dirname(BASE_DIR), "onlineExhibitionServer/art/dist"),
+    os.path.join(os.path.dirname(BASE_DIR), "art/dist"),
 )
 
-STATICFILES_DIRS = [
-    os.path.join(os.path.dirname(BASE_DIR), "onlineExhibitionServer/art/dist/static"),
-]
+STATICFILES_DIRS = (
+    os.path.join(os.path.dirname(BASE_DIR), "art/dist/static"),
+)
 
 
 ROOT_URLCONF = 'onlineExhibitionServer.urls'
@@ -131,3 +131,4 @@ APPEND_SLASH = True
 # https://docs.djangoproject.com/en/1.6/howto/static-files/
 
 STATIC_URL = '/static/'
+

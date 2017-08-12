@@ -34,6 +34,10 @@
   import {urlParse} from '../../common/js/util';
   import BScroll from 'better-scroll';
 
+  import global_ from '../Global.vue'
+
+  let host = global_.host;
+
   export default {
     data () {
       return {
@@ -47,7 +51,7 @@
       }
     },
     created() {
-      this.$http.get('http://qb4dwjh.hk1.mofasuidao.cn/exhibitions/?artist='+this.params.artist).then(response => {
+      this.$http.get('http://'+ host +'/exhibitions/?artist='+this.params.artist).then(response => {
         this.exhibitions = response.body;
         this.$nextTick(() => {
           this._initScroll();
@@ -61,7 +65,7 @@
     },
     methods:{
       show_exhibition(key) {
-        window.open("http://qb4dwjh.hk1.mofasuidao.cn/exhibition_html/?id=" + key);
+        window.open("http://"+ host +"/exhibition_html/?id=" + key);
 //        window.location = "http://qb4dwjh.hk1.mofasuidao.cn/exhibition_html/?id=" + key ;
       },
       _initScroll() {

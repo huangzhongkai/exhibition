@@ -547,7 +547,6 @@ def artist(request, offset):
                                 city=user_info['city'].encode("ISO-8859-1").decode('utf-8'),
                                 country=user_info['country'].encode("ISO-8859-1").decode('utf-8'),
                                 headimgurl=user_info['headimgurl'])
-        print nickname
         return response
     return response
 
@@ -739,6 +738,7 @@ def exhibit_ratings(request, offset):
     if request.method == 'POST':
         print request.COOKIES
         print request.session.get('openid', default=None)
+
         cookie = request.COOKIES.get('sessionid','error')
         if cookie != 'error':
             # try:
@@ -782,32 +782,16 @@ def exhibit_ratings(request, offset):
             return HttpResponse(json.dumps('error'), content_type='application/json')
         if request.GET.get('type','') == '1':
             image = request.FILES.get('imageblob')
-            path = default_storage.save(STATICFILES_DIRS[0] + '/exhibit/' + image.name + otherStyleTime +'.jpeg', ContentFile(image.read()))
+            path = default_storage.save(STATICFILES_DIRS[0] + '/exhibit/image_rating/' + image.name + otherStyleTime +'.jpeg', ContentFile(image.read()))
         if request.GET.get('type','') == '1':
             rating['type'] = 1;
-            rating['rate_image'] = '/static/exhibit/' + image.name + otherStyleTime + '.jpeg'
+            rating['rate_image'] = '/static/exhibit/image_rating/' + image.name + otherStyleTime + '.jpeg'
         else:
             rating['type'] = 0;
         OeExhibitComment.objects.create(**rating)
 
 
         return HttpResponse(json.dumps(''), content_type='application/json')
-
-# @csrf_exempt
-# def exhibit_image_ratings(request, offset):
-#     if request.method == 'POST':
-#         print offset
-#         image = request.FILES.get('imageblob')
-#         print image
-#         print image.size
-#         print image.name
-#
-#         print request.POST.get('text','')
-#
-#         path = default_storage.save('/Users/huangzhongkai/mygit/exhibition/onlineExhibitionServer/art/dist/static/exhibit/' + image.name +'.jpeg', ContentFile(image.read()))
-#         print path
-#         return HttpResponse(json.dumps(''), content_type='application/json')
-
 
 @csrf_exempt
 def exhibition(request, offset):

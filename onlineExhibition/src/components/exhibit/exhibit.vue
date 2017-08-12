@@ -28,6 +28,10 @@
 <script>
   import {urlParse} from '../../common/js/util';
 
+  import global_ from '../Global.vue'
+
+  let host = global_.host;
+
   export default {
     data () {
       return {
@@ -45,7 +49,7 @@
     props: {
     },
     created() {
-      this.$http.get('http://qb4dwjh.hk1.mofasuidao.cn/exhibits/?artist='+ this.params.artist).then(response => {
+      this.$http.get('http://'+ host +'/exhibits/?artist='+ this.params.artist).then(response => {
         this.exhibits = [];
         this.exhibits_right = [];
         if(response.body.length%2 === 0){
@@ -66,7 +70,7 @@
     },
     methods: {
       show_exhibit (key) {
-        window.open('http://qb4dwjh.hk1.mofasuidao.cn/exhibit_html/?id=' + key);
+        window.open('http://'+ host +'/exhibit_html/?id=' + key);
 //        window.location = 'http://qb4dwjh.hk1.mofasuidao.cn/exhibit_html/?id=' + key;
       },
     }

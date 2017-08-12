@@ -110,7 +110,9 @@
   import jQuery from 'jquery'
   import Cropper from 'cropperjs'
 
-  let host = 'qb4dwjh.hk1.mofasuidao.cn';
+  import global_ from '../Global.vue'
+
+  let host = global_.host;
 
   export default {
     components: {
@@ -312,11 +314,8 @@
       show_image_text_readings(key) {
         window.open("http://"+ host +"/image_text_readings_html/?id=" + key +'&type=exhibit');
       },
-//      show_video_readings(key) {
-//        window.open("http://"+ host +"/video_readings_html/?id=" + key +'&type=exhibit');
-//      },
       show_video_readings(key) {
-        window.open("http://10.50.101.66:8080/readings/video_readings.html?id=" + key +'&type=exhibit');
+        window.open("http://"+ host +"/video_readings_html/?id=" + key +'&type=exhibit');
       },
       add_rating (type) {
         document.body.style.height = '100%';

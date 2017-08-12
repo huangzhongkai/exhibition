@@ -20,6 +20,9 @@
 <script>
   import {urlParse} from '../../common/js/util';
   import wx from 'weixin-js-sdk'
+  import global_ from '../Global.vue'
+
+  let host = global_.host;
 
   export default {
     data () {
@@ -41,18 +44,18 @@
     },
     created() {
       if(this.params.type === 'exhibit'){
-        this.$http.get('http://qb4dwjh.hk1.mofasuidao.cn/exhibit_image_text_readings/'+ this.params.id +'/').then(response => {
+        this.$http.get('http://'+ host +'/exhibit_image_text_readings/'+ this.params.id +'/').then(response => {
           this.reading = response.body;
         },response => {
         });
       }else if(this.params.type === 'exhibition'){
-        this.$http.get('http://qb4dwjh.hk1.mofasuidao.cn/exhibition_image_text_readings/'+ this.params.id + '/').then(response => {
+        this.$http.get('http://'+ host +'/exhibition_image_text_readings/'+ this.params.id + '/').then(response => {
           this.reading = response.body;
         },response => {
         });
       };
 
-      this.$http.get('http://qb4dwjh.hk1.mofasuidao.cn/get_signature/?' +
+      this.$http.get('http://'+ host +'/get_signature/?' +
         '&url='+ encodeURIComponent(location.href.split('#')[0])).then(response => {
         this.config = response.body;
         let _this = this;

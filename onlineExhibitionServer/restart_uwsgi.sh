@@ -1,7 +1,5 @@
 #!/bin/sh
 
-sudo killall uwsgi << hm
-
-sleep 3
+killall -9 uwsgi
 
 uwsgi --ini onlineExhibition_uwsgi.ini

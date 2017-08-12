@@ -23,6 +23,11 @@
 </template>
 
 <script type="text/ecmascript-6">
+
+  import global_ from '../Global.vue'
+
+  let host = global_.host;
+
   export default {
     props: {
       header: {
@@ -39,7 +44,7 @@
           if(this.attention_condition === true){
             this.attention_condition = false;
             this.header.attention_count -=1;
-            this.$http.delete('http://qb4dwjh.hk1.mofasuidao.cn/attention/?artist_id='+ this.header.id).then(response => {
+            this.$http.delete('http://'+ host +'/attention/?artist_id='+ this.header.id).then(response => {
 
             },response => {
               this.attention_condition = true;
@@ -48,7 +53,7 @@
           }else{
             this.attention_condition = true;
             this.header.attention_count +=1;
-            this.$http.post('http://qb4dwjh.hk1.mofasuidao.cn/attention/?artist_id=' + this.header.id).then(response => {
+            this.$http.post('http://'+ host +'/attention/?artist_id=' + this.header.id).then(response => {
 
             },response => {
               this.attention_condition = false;

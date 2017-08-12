@@ -96,15 +96,19 @@
 
 <script type="text/ecmascript-6">
   import {urlParse} from '../../../common/js/util';
-  import audio_reading from '../../audio/audio_reading.vue'
+//  import audio_reading from '../../audio/audio_reading.vue'
   import more_reading from "../more_reading/more_reading.vue"
   import more_charactor from "../more_charactor/more_charactor.vue"
   import more_enjoyable from "../more_enjoyable/more_enjoyable.vue"
   import wx from 'weixin-js-sdk'
 
+  import global_ from '../Global.vue'
+
+  let host = global_.host;
+
   export default {
     components: {
-      audio_reading,
+//      audio_reading,
       more_reading,
       more_charactor,
       more_enjoyable
@@ -128,13 +132,13 @@
     },
     created() {
       if(this.param.id != undefined ){
-        this.$http.get('http://qb4dwjh.hk1.mofasuidao.cn/exhibitions/'+ this.param.id +'/').then(response => {
+        this.$http.get('http://'+ host +'/exhibitions/'+ this.param.id +'/').then(response => {
           this.exhibition = response.body;
         },response => {
         });
       }
 
-      this.$http.get('http://qb4dwjh.hk1.mofasuidao.cn/get_signature/?' +
+      this.$http.get('http://'+ host +'/get_signature/?' +
         '&url='+ encodeURIComponent(location.href.split('#')[0])).then(response => {
         this.config = response.body;
         let _this = this;
@@ -260,16 +264,16 @@
         });
       },
       show_charactor(key) {
-        window.open("http://qb4dwjh.hk1.mofasuidao.cn/exhibit_html/?id=" + key);
+        window.open("http://"+ host +"/exhibit_html/?id=" + key);
       },
       show_enjoyable(key) {
-        window.open("http://qb4dwjh.hk1.mofasuidao.cn/exhibit_html/?id=" + key);
+        window.open("http://"+ host +"/exhibit_html/?id=" + key);
       },
       show_image_text_readings(key) {
-        window.open("http://qb4dwjh.hk1.mofasuidao.cn/image_text_readings_html/?id=" + key +'&type=exhibition');
+        window.open("http://"+ host +"/image_text_readings_html/?id=" + key +'&type=exhibition');
       },
       show_video_readings(key) {
-        window.open("http://qb4dwjh.hk1.mofasuidao.cn/video_readings_html/?id=" + key +'&type=exhibition');
+        window.open("http://"+ host +"/video_readings_html/?id=" + key +'&type=exhibition');
       },
       isShow (index) {
         if(index < 1){

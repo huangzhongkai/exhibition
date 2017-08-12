@@ -24,6 +24,10 @@
   import {urlParse} from '../common/js/util';
   import wx from 'weixin-js-sdk'
 
+  import global_ from '../Global.vue'
+
+  let host = global_.host;
+
   export default {
       data (){
         return {
@@ -42,13 +46,13 @@
         };
       },
       created() {
-        this.$http.get('http://qb4dwjh.hk1.mofasuidao.cn/artists/'+ this.header.artist + '/?code=' + this.header.code).then(response => {
+        this.$http.get('http://'+ host +'/artists/'+ this.header.artist + '/?code=' + this.header.code).then(response => {
           this.artist = response.body;
           this.$refs.header.update(this.artist.isAttention);
         },response => {
         });
 
-        this.$http.get('http://qb4dwjh.hk1.mofasuidao.cn/get_signature/?' +
+        this.$http.get('http://'+ host +'/get_signature/?' +
           '&url='+ encodeURIComponent(location.href.split('#')[0])).then(response => {
           this.config = response.body;
           let _this = this;
@@ -128,7 +132,7 @@
         },response => {
         });
         if(this.header.code === undefined){
-          window.location = 'https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx522cca3d4b048aa9&redirect_uri=http%3A//qb4dwjh.hk1.mofasuidao.cn/artist_html/%3Fartist%3D0&response_type=code&scope=snsapi_userinfo&state=123#wechat_redirect'
+          window.location = 'https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx522cca3d4b048aa9&redirect_uri=http%3A//'+ host +'/artist_html/%3Fartist%3D0&response_type=code&scope=snsapi_userinfo&state=123#wechat_redirect'
         }
       },
       components: {
