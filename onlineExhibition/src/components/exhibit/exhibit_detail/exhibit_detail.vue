@@ -148,6 +148,7 @@
 
         this.exhibit = response.body;
         for(let i=0; i<this.exhibit.ratings.length; i++){
+          this.exhibit.ratings[i]['text'] = this.utf8ToUtf16(this.exhibit.ratings[i]['text']);
           this.image_ratings.push(false);
           if(this.exhibit.ratings[i].type === 1){
             this.flag.push(true);
@@ -253,6 +254,18 @@
 //      },
 //    },
     methods: {
+      utf8ToUtf16(str){
+        let patt = /&#(\d+);/g;
+        return str.replace(patt,function(char){
+          let code = char.match(/(\d+)/g)[0];
+          let H = Math.floor((parseInt(code)-0x10000) / 0x400)+0xD800 // 高位
+
+          let L = (parseInt(code) - 0x10000) % 0x400 + 0xDC00 // 低位
+
+          return unescape('%u'+ H.toString(16) + '%u' + L.toString(16))
+        });
+
+      },
       zoomout () {
         if(this.wh === true){
           this.w = '256px';
