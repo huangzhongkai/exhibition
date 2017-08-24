@@ -321,7 +321,7 @@
       border: 2px
       border-style: solid
       border-radius: 5px
-      background-color: #7e8c8d
+      background-color: white
       .reading_video
         top: 0
         left: 0

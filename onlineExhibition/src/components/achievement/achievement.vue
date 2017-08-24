@@ -40,14 +40,14 @@
     position: relative
     margin: 5px 5px 5px 5px
     height: 200px
-    border-color: antiquewhite
-    border: 2px
-    border-style: solid
-    border-radius: 5px
-    background-color: antiquewhite
+    /*border-color: antiquewhite*/
+    /*border: 2px*/
+    /*border-style: solid*/
+    /*border-radius: 5px*/
+    /*background-color: antiquewhite*/
     padding-top: 10px
     line-height: 20px
-    overflow: auto
+    /*overflow: auto*/
     .my_section
       margin: 10px
 </style>

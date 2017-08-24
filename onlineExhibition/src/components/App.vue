@@ -131,9 +131,9 @@
 
         },response => {
         });
-        if(this.header.code === undefined){
-          window.location = 'https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx522cca3d4b048aa9&redirect_uri=http%3A//'+ host +'/artist_html/%3Fartist%3D0&response_type=code&scope=snsapi_userinfo&state=123#wechat_redirect'
-        }
+//        if(this.header.code === undefined){
+//          window.location = 'https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx522cca3d4b048aa9&redirect_uri=http%3A//'+ encodeURIComponent(host) +'/artist_html/%3Fartist%3D0&response_type=code&scope=snsapi_userinfo&state=123#wechat_redirect'
+//        }
       },
       components: {
         'v-header':header
@@ -157,6 +157,10 @@
       font-size: 14px
       color: rgb(77, 85, 93)
       &.active
+        /*border-bottom:2px solid red*/
+        background-color: darkgrey;
+        border-radius:5px;
+        text-decoration: underline
         color: rgb(240, 20, 20)
 
 </style>

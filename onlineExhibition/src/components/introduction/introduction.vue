@@ -38,14 +38,14 @@
   .introduction
     position: relative
     margin: 5px 5px 5px 5px
-    height: 200px
-    border-color: antiquewhite
-    border: 2px
-    border-style: solid
-    border-radius: 5px
-    background-color: antiquewhite
+    height: 800px
+    /*border-color: antiquewhite*/
+    /*border: 2px*/
+    /*border-style: solid*/
+    /*border-radius: 5px*/
+    /*background-color: antiquewhite*/
     padding-top: 10px
-    overflow: auto
+    /*overflow: auto*/
     .my_section
       margin: 10px
 </style>

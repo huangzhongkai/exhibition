@@ -1,5 +1,8 @@
 <template>
   <div>
+    <div class="title">
+      【{{reading.title}}】
+    </div>
     <div class="top_image">
       <img width="100%" :src="reading.image_path">
     </div>
@@ -11,9 +14,9 @@
         {{item}}
       </div>
     </div>
-    <span style="float: right;">
-      —— 张大千
-    </span>
+    <!--<span style="float: right;">-->
+      <!--—— 张大千-->
+    <!--</span>-->
   </div>
 </template>
 
@@ -139,17 +142,24 @@
 </script>
 
 <style lang="stylus" rel="stylesheet/stylus">
+  .title
+    margin-top: 20px
+    margin-bottom: 10px
+    text-align: center
+    font-size: 24px
+  .top_image
+    margin: 0 10px 5px 10px
   .reading
     margin: 5px 5px 5px 5px
     height: 200px
-    border-color: antiquewhite
-    border: 2px
-    border-style: solid
-    border-radius: 5px
-    background-color: antiquewhite
+    /*border-color: antiquewhite*/
+    /*border: 2px*/
+    /*border-style: solid*/
+    /*border-radius: 5px*/
+    /*background-color: antiquewhite*/
     padding-top: 10px
     line-height: 20px
-    overflow: auto
+    /*overflow: auto*/
     .my_section
       margin: 10px
 </style>

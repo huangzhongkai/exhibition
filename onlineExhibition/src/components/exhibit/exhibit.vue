@@ -81,27 +81,32 @@
   .production
     display: flex
     width: 100%
-    margin-top: 5px
     .left_product
       margin-left: 5px
       margin-right: 5px
       flex: 1
       width:50%
       .exhibit_block
-        margin-top:2px
-        border-color: antiquewhite
+        margin-top:10px
+        border-color: darkgrey
         border-style: solid
         border-radius: 5px
-        background-color: antiquewhite
+        border-width:1px
+        background-color: white
+        .exhibit_author
+          color: darkgrey
     .right_product
       margin-left: 5px
       margin-right: 5px
       flex: 1
       width:50%
       .exhibit_block
-        margin-top:2px
-        border-color: antiquewhite
+        margin-top:10px
+        border-color: darkgrey
         border-style: solid
         border-radius: 5px
-        background-color: antiquewhite
+        border-width:1px
+        background-color: white
+        .exhibit_author
+          color: darkgrey
 </style>

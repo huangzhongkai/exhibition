@@ -784,10 +784,10 @@ def exhibit_ratings(request, offset):
             image = request.FILES.get('imageblob')
             path = default_storage.save(STATICFILES_DIRS[0] + '/exhibit/image_rating/' + image.name + otherStyleTime +'.jpeg', ContentFile(image.read()))
         if request.GET.get('type','') == '1':
-            rating['type'] = 1;
+            rating['type'] = 1
             rating['rate_image'] = '/static/exhibit/image_rating/' + image.name + otherStyleTime + '.jpeg'
         else:
-            rating['type'] = 0;
+            rating['type'] = 0
         OeExhibitComment.objects.create(**rating)
 
 
@@ -994,8 +994,12 @@ def exhibit_image_text_readings(request, offset):
     exhibit_reading = OeExhibitInterpretation.objects.filter(id=offset).first()
     exhibit_reading = model_to_dict(exhibit_reading)
 
+    exhibit = OeExhibit.objects.filter(id=exhibit_reading['exhibit']).first()
+    exhibit = model_to_dict(exhibit)
+
     image_text_readings = {
         'id': exhibit_reading['id'],
+        'title':exhibit['name'],
         'image_path': exhibit_reading['origin'],
         'reading_content': '张大千（Chang Dai-Chien），男,四川内江人，祖籍广东省番禺，1899年5月10日出生于四川省内江市中区城郊安良里的\
           一个书香门第的家庭，中国泼墨画家，书法家。20 世纪50年代，张大千游历世界，获得巨大的国际声誉，被西方艺坛赞为“东方之笔”。[1]\

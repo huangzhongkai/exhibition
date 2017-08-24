@@ -2,11 +2,12 @@
   <transition name="move">
   <div v-show="showFlag" class="edit_ratings" >
     <div class="top">
-      <span>【朝奉图】</span>
+      <span>发评论</span>
     </div>
     <div class="back" @click="hide">
       <i class="icon-arrow_lift"></i>
     </div>
+    <button class="send btn btn-default">发布</button>
     <div class="content" ref="content">
       <ul :style="max_length">
         <div v-show="type">
@@ -16,11 +17,11 @@
           <!--</div>-->
         </div>
         <div>
-          <textarea @click="ratings_input()" v-model="ratings" ref="ratings" class="ratings_input" placeholder="留言将由作者删选显示"/>
+          <textarea autofocus="autofocus" @click="ratings_input()" v-model="ratings" ref="ratings" class="ratings_input" placeholder="写评论..."/>
         </div>
-        <div class="commit">
-          <div  @click="upload()"  class="btn btn-primary">提交</div>
-        </div>
+        <!--<div class="commit">-->
+          <!--<div  @click="upload()"  class="btn btn-primary">提交</div>-->
+        <!--</div>-->
       </ul>
     </div>
   </div>
@@ -116,7 +117,7 @@
           formData.append('text',rating['text']);
           this.$http.post('http://'+ host +'/exhibit_ratings/'+ this.exhibit_id+'/?type=1',formData ).then(response => {
             if(response.body === 'error'){
-              window.location = 'https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx522cca3d4b048aa9&redirect_uri=http%3A//'+ host +'/artist_html/%3Fartist%3D0&response_type=code&scope=snsapi_userinfo&state=123#wechat_redirect'
+              window.location = 'https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx522cca3d4b048aa9&redirect_uri=http%3A//'+ encodeURIComponent(host) +'/artist_html/%3Fartist%3D0&response_type=code&scope=snsapi_userinfo&state=123#wechat_redirect'
             }else{
               document.body.style.height = '';
               document.body.style.overflow = '';
@@ -224,7 +225,7 @@
     &.move-enter-active, &.move-leave-active
       transition: all 0.2s linear
     &.move-enter, &.move-leave-active
-      transform: translate3d(100%, 0, 0)
+      transform: translate3d(0, 100%, 0)
     .top
       text-align: center
       font-size: 15px
@@ -238,6 +239,11 @@
         padding: 10px
         font-size: 20px
         color: black
+    .send
+      position: absolute
+      top: 5px
+      right: 2px
+      font-size: 14px
     .content
       width: 100%
       overflow: hidden
@@ -256,13 +262,15 @@
         font-size: 10px
         color: rgb(147, 153, 159)
       .ratings_input
+        overflow-y:hidden
+        overflow-x:hidden
         width: 100%
         height: 150px
-        border-color: darkgrey
-        border-top: 2px
-        border-bottom: 2px
-        border-style: solid
-        background-color: antiquewhite
+        border-color: transparent
+        /*border-top: 2px*/
+        /*border-bottom: 2px*/
+        /*border-style: solid*/
+        /*background-color: antiquewhite*/
         padding-top: 10px
         line-height: 20px
         overflow: auto

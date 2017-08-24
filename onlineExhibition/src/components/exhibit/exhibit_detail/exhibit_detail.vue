@@ -91,12 +91,36 @@
         </li>
       </ul>
     </div>
+    <div class="bottom-box">
+      <div class="tab">
+        <div class="tab-item">
+          <span>
+            <span><img src="/static/exhibit/rating.png" width="20px" height="20px"/></span>
+            <span style="margin-left: 1px">可圈可点</span>
+          </span>
+        </div>
+        <div class="tab-item">
+          <span>
+            <span><img src="/static/exhibit/rating.png" width="20px" height="20px"/></span>
+            <span @click="add_rating(0)" style="margin-left: 1px">评论</span>
+          </span>
+        </div>
+        <div class="tab-item">
+          <span>
+            <span><img src="/static/exhibit/rating.png" width="20px" height="20px"/></span>
+            <span style="margin-left: 1px">收藏</span>
+          </span>
+        </div>
+      </div>
+    </div>
+
 
     <more_reading :exhibit_id="param.id" ref="more_reading">
     </more_reading>
 
     <ratings :exhibit_id="param.id" ref="edit_ratings">
     </ratings>
+    <div style="height: 48px"></div>
   </div>
 </template>
 
@@ -122,6 +146,7 @@
     },
     data () {
       return {
+        input:'你好',
         flag:[],
         image_ratings:[],
         w:'128px',
@@ -133,7 +158,7 @@
         isPlaying: false,
         config:{},
         exhibit:{},
-        isEnlarge: false,
+        isEnlarge: true,
         param: {
           id: (() => {
             let queryParam = urlParse();
@@ -327,9 +352,9 @@
       show_image_text_readings(key) {
         window.open("http://"+ host +"/image_text_readings_html/?id=" + key +'&type=exhibit');
       },
-      show_video_readings(key) {
-        window.open("http://"+ host +"/video_readings_html/?id=" + key +'&type=exhibit');
-      },
+//      show_video_readings(key) {
+//        window.open("http://"+ host +"/video_readings_html/?id=" + key +'&type=exhibit');
+//      },
       add_rating (type) {
         document.body.style.height = '100%';
         document.body.style.overflow = 'hidden';
@@ -421,7 +446,7 @@
       border: 2px
       border-style: solid
       border-radius: 5px
-      background-color: #7e8c8d
+      background-color: white
       .reading_video
         top: 0
         left: 0
@@ -528,5 +553,26 @@
           line-height: 12px
           font-size: 10px
           color: rgb(147, 153, 159)
+  .bottom-box
+    position: fixed
+    left: 0
+    bottom: 0
+    z-index: 20
+    width: 100%
+    height: 48px
+    background-color: white
+    border-top:1px solid gainsboro
+    .tab
+      display: flex
+      width: 100%
+      height: 48px
+      line-height: 40px
+      border-color: white
+      border-1px(rgba(7, 17, 27, 0.1))
+      .tab-item
+        flex: 1
+        margin-top: 2px
+        margin-bottom: 2px
+        text-align: center
 </style>
 
