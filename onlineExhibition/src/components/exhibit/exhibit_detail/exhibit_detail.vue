@@ -66,8 +66,8 @@
     <div class="ratings">
       <span class="left">评论</span>
       <div class="right">
-        <span  @click="add_rating(0)">写评论</span>
-        <span  @click="image_rating(1)">可圈可点</span>
+        <!--<span  @click="add_rating(0)">写评论</span>-->
+        <!--<span  @click="image_rating(1)">可圈可点</span>-->
       </div>
 
     </div>
@@ -75,9 +75,9 @@
       <ul>
         <li v-for="(rating,index) in exhibit.ratings" class="rating-item">
           <div class="avatar">
-            <img width="28" height="28" :src="rating.avatar">
+            <img @click="show_information(rating.wx_id)" width="28" height="28" :src="rating.avatar">
           </div>
-          <div class="content">
+          <div class="content" @click="add_rating(0,'回复',rating.id)">
             <h1 class="name">{{rating.username}}</h1>
             <p class="time">{{rating.rateTime}}</p>
             <p class="text">{{rating.text}}</p>
@@ -95,26 +95,29 @@
       <div class="tab">
         <div class="tab-item">
           <span>
-            <span><img src="/static/exhibit/rating.png" width="20px" height="20px"/></span>
+            <i class="fa fa-hand-o-up fa-1x" aria-hidden="true"></i>
+            <!--<span><img src="/static/exhibit/rating.png" width="20px" height="20px"/></span>-->
             <span style="margin-left: 1px">可圈可点</span>
           </span>
         </div>
         <div class="tab-item">
           <span>
-            <span><img src="/static/exhibit/rating.png" width="20px" height="20px"/></span>
-            <span @click="add_rating(0)" style="margin-left: 1px">评论</span>
+            <i class="fa fa-commenting-o fa-1x" aria-hidden="true"></i>
+            <!--<span><img src="/static/exhibit/rating.png" width="20px" height="20px"/></span>-->
+            <span @click="add_rating(0,'发评论',-1)" style="margin-left: 1px">评论</span>
           </span>
         </div>
         <div class="tab-item">
           <span>
-            <span><img src="/static/exhibit/rating.png" width="20px" height="20px"/></span>
-            <span style="margin-left: 1px">收藏</span>
+            <i :class="collect_icon" aria-hidden="true"></i>
+            <!--<span><img src="/static/exhibit/rating.png" width="20px" height="20px"/></span>-->
+            <span @click="collect(0)" style="margin-left: 1px">{{collect_flag}}</span>
           </span>
         </div>
       </div>
     </div>
 
-
+    <div class="alert"></div>
     <more_reading :exhibit_id="param.id" ref="more_reading">
     </more_reading>
 
@@ -133,6 +136,7 @@
   import wx from 'weixin-js-sdk'
   import jQuery from 'jquery'
   import Cropper from 'cropperjs'
+  import 'font-awesome-webpack'
 
   import global_ from '../../Global.vue'
 
@@ -146,7 +150,8 @@
     },
     data () {
       return {
-        input:'你好',
+        collect_icon:'fa fa-star-o',
+        collect_flag:'收藏',
         flag:[],
         image_ratings:[],
         w:'128px',
@@ -168,9 +173,10 @@
       };
     },
     created() {
-      console.log(this.param.id);
       this.$http.get('http://'+ host +'/exhibits/'+ this.param.id +'/').then(response => {
-
+        if(response.body === 'error'){
+//          window.location = 'https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx522cca3d4b048aa9&redirect_uri=http%3A//'+ encodeURIComponent(host) +'/artist_html/%3Fartist%3D0&response_type=code&scope=snsapi_userinfo&state=123#wechat_redirect'
+        }
         this.exhibit = response.body;
         for(let i=0; i<this.exhibit.ratings.length; i++){
           this.exhibit.ratings[i]['text'] = this.utf8ToUtf16(this.exhibit.ratings[i]['text']);
@@ -180,8 +186,12 @@
           }else{
             this.flag.push(false);
           }
-
         }
+        if(this.exhibit.collect_flag === true){
+          this.collect_flag = '已收藏';
+          this.collect_icon = 'fa fa-star';
+        }
+
       },response => {
       });
 
@@ -279,6 +289,26 @@
 //      },
 //    },
     methods: {
+      collect(type){
+        if(this.collect_flag === '收藏'){
+          $('.alert').html('收藏成功').addClass('alert-success').show().delay(1500).fadeOut();
+          this.$http.post('http://' + host + '/collect/' + this.param.id + '/'+ "?type=" + type).then(response => {
+            if(response.body === 'error'){
+              window.location = 'https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx522cca3d4b048aa9&redirect_uri=http%3A//'+ encodeURIComponent(host) +'/artist_html/%3Fartist%3D0&response_type=code&scope=snsapi_userinfo&state=123#wechat_redirect'
+            }else{
+              this.collect_flag = '已收藏';
+              this.collect_icon = 'fa fa-star';
+            }
+          }, response => {
+          });
+        }else if(this.collect_flag === '已收藏'){
+          $('.alert').html('已收藏').addClass('alert-warning').show().delay(1500).fadeOut();
+        }
+      },
+      show_information(id){
+        let url = "http://"+ host +"/personal_information_html/?id=" + id
+        window.open(url);
+      },
       utf8ToUtf16(str){
         let patt = /&#(\d+);/g;
         return str.replace(patt,function(char){
@@ -355,10 +385,10 @@
 //      show_video_readings(key) {
 //        window.open("http://"+ host +"/video_readings_html/?id=" + key +'&type=exhibit');
 //      },
-      add_rating (type) {
+      add_rating (type,content,parent_id) {
         document.body.style.height = '100%';
         document.body.style.overflow = 'hidden';
-        this.$refs.edit_ratings.show(type);
+        this.$refs.edit_ratings.show(type,content,parent_id);
       },
       image_rating (type) {
         document.body.style.height = '100%';
@@ -399,8 +429,10 @@
   @import "../../../common/stylus/mixin.styl"
 
   .production_detail
-    width: 100%
+    /*width: 100%*/
     background: #fff
+    margin-left: 5px
+    margin-right 5px
     .top_image
       height: 256px
       overflow: hidden
@@ -504,6 +536,7 @@
   .ratings
     margin-top: 20px
     margin-bottom: 5px
+    margin-left: 5px
     display:flex
     .left
       margin-left: 2px
@@ -516,7 +549,7 @@
     padding: 0 18px
     .rating-item
       display: flex
-      padding: 18px 0
+      padding: 12px 0
       border-1px(rgba(7, 17, 27, 0.1))
       .avatar
         flex: 0 0 28px
@@ -529,19 +562,19 @@
         flex: 1
         .name
           margin-top: 0px
-          line-height: 12px
+          line-height: 8px
           font-size: 10px
           color: rgb(7, 17, 27)
         .text
           margin-top: 4px
           margin-bottom: 8px
-          line-height: 12px
+          line-height: 8px
           color: rgb(7, 17, 27)
           font-size: 14px
         .time
           margin-top: 4px
           margin-bottom: 8px
-          line-height: 12px
+          line-height: 8px
           color: rgb(7, 17, 27)
           font-size: 10px
         .flag
@@ -574,5 +607,27 @@
         margin-top: 2px
         margin-bottom: 2px
         text-align: center
+  .alert
+    display: none
+    position: fixed
+    top: 50%
+    left: 50%
+    min-width: 200px
+    margin-left: -100px
+    z-index: 99999
+    padding: 15px
+    border: 1px solid transparent
+    border-radius: 4px
+    text-align: center
+  .alert-success
+    color: #3c763d
+    background-color: #dff0d8
+    border-color: #d6e9c6
+  .alert-warning
+    color: #8a6d3b
+    background-color: #fcf8e3
+    border-color: #faebcc
+
+
 </style>
 

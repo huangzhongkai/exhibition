@@ -83,6 +83,55 @@
         <img @click="show_enjoyable(enjoyable.id)" :src="enjoyable.image_path" v-for="enjoyable in exhibition.enjoyables"/>
       </div>
     </div>
+
+    <div class="ratings">
+      <span class="left">评论</span>
+      <div class="right">
+        <!--<span  @click="add_rating(0)">写评论</span>-->
+        <!--<span  @click="image_rating(1)">可圈可点</span>-->
+      </div>
+
+    </div>
+    <div class="rating-wrapper">
+      <ul>
+        <li v-for="(rating,index) in exhibition.ratings" class="rating-item">
+          <div class="avatar">
+            <img @click="show_information(rating.wx_id)" width="28" height="28" :src="rating.avatar">
+          </div>
+          <div class="content" @click="add_rating(0,'回复',rating.id)">
+            <h1 class="name">{{rating.username}}</h1>
+            <p class="time">{{rating.rateTime}}</p>
+            <p class="text">{{rating.text}}</p>
+          </div>
+        </li>
+      </ul>
+    </div>
+    <div class="bottom-box">
+      <div class="tab">
+        <div class="tab-item">
+          <span>
+            <i class="fa fa-hand-o-up fa-1x" aria-hidden="true"></i>
+            <!--<span><img src="/static/exhibit/rating.png" width="20px" height="20px"/></span>-->
+            <span style="margin-left: 1px">可圈可点</span>
+          </span>
+        </div>
+        <div class="tab-item">
+          <span>
+            <i class="fa fa-commenting-o fa-1x" aria-hidden="true"></i>
+            <!--<span><img src="/static/exhibit/rating.png" width="20px" height="20px"/></span>-->
+            <span @click="add_rating(0,'发评论',-1)" style="margin-left: 1px">评论</span>
+          </span>
+        </div>
+        <div class="tab-item">
+          <span>
+            <i :class="collect_icon" aria-hidden="true"></i>
+            <!--<span><img src="/static/exhibit/rating.png" width="20px" height="20px"/></span>-->
+            <span @click="collect(1)" style="margin-left: 1px">{{collect_flag}}</span>
+          </span>
+        </div>
+      </div>
+    </div>
+
     <more_reading :exhibition_id="param.id" ref="more_reading">
     </more_reading>
 
@@ -91,6 +140,11 @@
 
     <more_enjoyable :exhibition_id="param.id" ref="more_enjoyable">
     </more_enjoyable>
+
+    <ratings :exhibition_id="param.id" ref="edit_ratings">
+    </ratings>
+    <div style="height: 72px"></div>
+    <div class="alert"></div>
   </div>
 </template>
 
@@ -101,20 +155,25 @@
   import more_charactor from "../more_charactor/more_charactor.vue"
   import more_enjoyable from "../more_enjoyable/more_enjoyable.vue"
   import wx from 'weixin-js-sdk'
-
+  import ratings from '../ratings/ratings.vue'
+  import 'font-awesome-webpack'
   import global_ from '../../Global.vue'
 
   let host = global_.host;
 
   export default {
     components: {
-//      audio_reading,
+      ratings,
       more_reading,
       more_charactor,
       more_enjoyable
     },
     data () {
       return {
+        flag:[],
+        image_ratings:[],
+        collect_icon:'fa fa-star-o',
+        collect_flag:'收藏',
         play_icon:'/static/exhibition/play.svg',
         isPlaying: false,
         config:{},
@@ -133,7 +192,23 @@
     created() {
       if(this.param.id != undefined ){
         this.$http.get('http://'+ host +'/exhibitions/'+ this.param.id +'/').then(response => {
+          if(response.body === 'error'){
+            window.location = 'https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx522cca3d4b048aa9&redirect_uri=http%3A//'+ encodeURIComponent(host) +'/artist_html/%3Fartist%3D0&response_type=code&scope=snsapi_userinfo&state=123#wechat_redirect'
+          }
           this.exhibition = response.body;
+          for(let i=0; i<this.exhibition.ratings.length; i++){
+            this.exhibition.ratings[i]['text'] = this.utf8ToUtf16(this.exhibition.ratings[i]['text']);
+            this.image_ratings.push(false);
+            if(this.exhibition.ratings[i].type === 1){
+              this.flag.push(true);
+            }else{
+              this.flag.push(false);
+            }
+          }
+          if(this.exhibition.collect_flag === true){
+            this.collect_flag = '已收藏';
+            this.collect_icon = 'fa fa-star';
+          }
         },response => {
         });
       }
@@ -232,6 +307,43 @@
 //      },
 //    },
     methods: {
+      collect(type){
+        if(this.collect_flag === '收藏'){
+          $('.alert').html('收藏成功').addClass('alert-success').show().delay(1500).fadeOut();
+          this.$http.post('http://' + host + '/collect/' + this.param.id + '/'+ "?type=" + type).then(response => {
+            if(response.body === 'error'){
+              window.location = 'https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx522cca3d4b048aa9&redirect_uri=http%3A//'+ encodeURIComponent(host) +'/artist_html/%3Fartist%3D0&response_type=code&scope=snsapi_userinfo&state=123#wechat_redirect'
+            }else{
+              this.collect_flag = '已收藏';
+              this.collect_icon = 'fa fa-star';
+            }
+          }, response => {
+          });
+        }else if(this.collect_flag === '已收藏'){
+          $('.alert').html('已收藏').addClass('alert-warning').show().delay(1500).fadeOut();
+        }
+      },
+      show_information(id){
+        let url = "http://"+ host +"/personal_information_html/?id=" + id;
+        window.open(url);
+      },
+      utf8ToUtf16(str){
+        let patt = /&#(\d+);/g;
+        return str.replace(patt,function(char){
+          let code = char.match(/(\d+)/g)[0];
+          let H = Math.floor((parseInt(code)-0x10000) / 0x400)+0xD800 // 高位
+
+          let L = (parseInt(code) - 0x10000) % 0x400 + 0xDC00 // 低位
+
+          return unescape('%u'+ H.toString(16) + '%u' + L.toString(16))
+        });
+
+      },
+      add_rating (type,content,parent_id) {
+        document.body.style.height = '100%';
+        document.body.style.overflow = 'hidden';
+        this.$refs.edit_ratings.show(type,content,parent_id);
+      },
       more_reading () {
         document.body.style.height = '100%';
         document.body.style.overflow = 'hidden';
@@ -287,6 +399,7 @@
 </script>
 
 <style lang="stylus" rel="stylesheet/stylus">
+  @import "../../../common/stylus/mixin.styl"
   .exhibition_detail
     width: 100%
     background: #fff
@@ -408,4 +521,98 @@
         margin-left: 5px
         margin-right: 5px
         width:140px
+  .ratings
+    margin-top: 20px
+    margin-bottom: 5px
+    margin-left: 5px
+    display:flex
+    .left
+      margin-left: 2px
+      margin-right: auto
+    .right
+      color: #7e8c8d
+      margin-left: auto
+      margin-right: 2px
+  .rating-wrapper
+    padding: 0 18px
+    .rating-item
+      display: flex
+      padding: 12px 0
+      border-1px(rgba(7, 17, 27, 0.1))
+      .avatar
+        flex: 0 0 28px
+        width: 28px
+        margin-right: 12px
+        img
+          border-radius: 50%
+      .content
+        position: relative
+        flex: 1
+        .name
+          margin-top: 0px
+          line-height: 8px
+          font-size: 10px
+          color: rgb(7, 17, 27)
+        .text
+          margin-top: 4px
+          margin-bottom: 8px
+          line-height: 8px
+          color: rgb(7, 17, 27)
+          font-size: 14px
+        .time
+          margin-top: 4px
+          margin-bottom: 8px
+          line-height: 8px
+          color: rgb(7, 17, 27)
+          font-size: 10px
+        .flag
+          position: absolute
+          top: 0
+          right: 0
+          width: 16px
+          height: 16px
+          line-height: 12px
+          font-size: 10px
+          color: rgb(147, 153, 159)
+  .bottom-box
+    position: fixed
+    left: 0
+    bottom: 0
+    z-index: 20
+    width: 100%
+    height: 48px
+    background-color: white
+    border-top:1px solid gainsboro
+    .tab
+      display: flex
+      width: 100%
+      height: 48px
+      line-height: 40px
+      border-color: white
+      border-1px(rgba(7, 17, 27, 0.1))
+      .tab-item
+        flex: 1
+        margin-top: 2px
+        margin-bottom: 2px
+        text-align: center
+  .alert
+    display: none
+    position: fixed
+    top: 50%
+    left: 50%
+    min-width: 200px
+    margin-left: -100px
+    z-index: 99999
+    padding: 15px
+    border: 1px solid transparent
+    border-radius: 4px
+    text-align: center
+  .alert-success
+    color: #3c763d
+    background-color: #dff0d8
+    border-color: #d6e9c6
+  .alert-warning
+    color: #8a6d3b
+    background-color: #fcf8e3
+    border-color: #faebcc
 </style>

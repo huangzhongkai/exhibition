@@ -4,6 +4,8 @@ var config = require('../config')
 var vueLoaderConfig = require('./vue-loader.conf')
 var ExtractTextPlugin = require('extract-text-webpack-plugin')
 
+var webpack = require('webpack')
+
 
 function resolve (dir) {
   return path.join(__dirname, '..', dir)
@@ -17,7 +19,8 @@ module.exports = {
     'exhibit': './src/view/exhibit/exhibit.js',
     'image_text_readings': './src/view/readings/image_text_readings/image_text_readings.js',
     'video_readings': './src/view/readings/video_readings/video_readings.js',
-    'ratings':'./src/view/ratings/ratings.js'
+    'ratings':'./src/view/ratings/ratings.js',
+    'information':'./src/view/personal_information/information.js'
   },
   output: {
     path: config.build.assetsRoot,
@@ -31,9 +34,17 @@ module.exports = {
     alias: {
       'vue$': 'vue/dist/vue.esm.js',
       '@': resolve('src'),
-      'bootstrap':  path.resolve(__dirname, '../node_modules/bootstrap')
-    }
+      'bootstrap':  path.resolve(__dirname, '../node_modules/bootstrap'),
+      'jquery': 'jquery'
+    },
+    // 增加一个plugins
   },
+  plugins: [
+    new webpack.ProvidePlugin({
+      $: "jquery",
+      jQuery: "jquery"
+    })
+  ],
   module: {
     rules: [
       {

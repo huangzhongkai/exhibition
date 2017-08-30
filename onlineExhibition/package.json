@@ -19,7 +19,11 @@
     "bootstrap": "^3.3.7",
     "weixin-js-sdk":"",
     "cropperjs":"",
-    "jquery":"^3.2.1"
+    "jquery":"^3.2.1",
+    "font-awesome":"",
+    "font-awesome-webpack":"",
+    "less":"^2.3.1",
+    "less-loader":"^2.2.3"
   },
   "devDependencies": {
     "autoprefixer": "^6.7.2",

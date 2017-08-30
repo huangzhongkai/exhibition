@@ -39,7 +39,7 @@
             <div class="reading_video">
               <video :src="reading.video_src" ref="my_video" class="my_video"></video>
             </div>
-            <div @click="show_video_readings(reading.id)" class="more_reading_content">
+            <div class="more_reading_content">
               <div class="title">{{reading.reading_title}}</div>
               <div class="description">{{reading.reading_content}}</div>
             </div>

@@ -6,6 +6,8 @@ import VueRouter from 'vue-router'
 import VUeResource from 'vue-resource'
 import Vuex from 'vuex'
 import "../../common/stylus/index.styl"
+import "bootstrap/dist/css/bootstrap.css"
+
 
 Vue.config.productionTip = false
 

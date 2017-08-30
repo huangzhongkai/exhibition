@@ -38,7 +38,7 @@
 
   export default {
     props: {
-      exhibit_id:0
+      exhibition_id:0
     },
     data () {
       return {
@@ -56,7 +56,7 @@
       }
     },
     created () {
-      this.$http.get('http://'+ host +'/exhibits/'+ this.exhibit_id + '/').then(response => {
+      this.$http.get('http://'+ host +'/exhibitions/'+ this.exhibition_id + '/').then(response => {
         this.rating_image = response.body['image_path'];
         var img = new Image();
         let _this = this;
@@ -118,7 +118,7 @@
 
           formData.append('imageblob',this.convertBase64UrlToBlob(croppedCanvas.toDataURL()));
           formData.append('text',rating['text']);
-          this.$http.post('http://'+ host +'/exhibit_ratings/'+ this.exhibit_id+'/?type=1',formData ).then(response => {
+          this.$http.post('http://'+ host +'/exhibition_ratings/'+ this.exhibition_id+'/?type=1',formData ).then(response => {
             if(response.body === 'error'){
               window.location = 'https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx522cca3d4b048aa9&redirect_uri=http%3A//'+ encodeURIComponent(host) +'/artist_html/%3Fartist%3D0&response_type=code&scope=snsapi_userinfo&state=123#wechat_redirect'
             }else{
@@ -146,7 +146,7 @@
 //            });
 //          });
         }else{
-          this.$http.post('http://'+ host +'/exhibit_ratings/'+ this.exhibit_id+'/?type=0',rating, {emulateJSON:true} ).then(response => {
+          this.$http.post('http://'+ host +'/exhibition_ratings/'+ this.exhibition_id+'/?type=0',rating, {emulateJSON:true} ).then(response => {
             if(response.body === 'error'){
               window.location = 'https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx522cca3d4b048aa9&redirect_uri=http%3A//'+ encodeURIComponent(host) +'/artist_html/%3Fartist%3D0&response_type=code&scope=snsapi_userinfo&state=123#wechat_redirect'
             }else{

@@ -3,17 +3,18 @@ import json
 import datetime,time
 from django.shortcuts import render_to_response, HttpResponse, Http404
 from art.models import OeArtist, OeExhibit, OeExhibition, OeExhibitInterpretation,\
-    OeArtistExhibitionRelation, OeWxConfig, OeWxDeveloper, OeExhibitionInterpretation, OeWxUser
+    OeArtistExhibitionRelation, OeWxConfig, OeWxDeveloper, OeExhibitionInterpretation, OeWxUser, OeUserExhibitionCollection
 from django.forms.models import model_to_dict
 from django.views.decorators.csrf import csrf_exempt
-from art.models import OeUser, OeExhibitComment, OeExhibitionComment, OeWxUserAttentionArtist
-
+from art.models import OeUser, OeExhibitComment, OeExhibitionComment, OeWxUserAttentionArtist, OeUserExhibitCollection
 from django.contrib.sessions.models import Session
 
 from art.utils import Wx
 from django.core.files.storage import default_storage
 from django.core.files.base import ContentFile
 from onlineExhibitionServer.settings import STATICFILES_DIRS
+from django.utils.encoding import smart_unicode
+
 # Create your views here.
 
 
@@ -499,11 +500,15 @@ def artist(request, offset):
 
     cookie = request.COOKIES.get('sessionid', 'error')
     if cookie != 'error':
-        openid = request.session.get('openid', default=None)
-        wx_user = OeWxUser.objects.filter(appid=openid).first().id
-        if OeWxUserAttentionArtist.objects.filter(artist=artist['id'], wx_user=wx_user).count() > 0:
-            isattention = 'true'
-        else:
+        # openid = request.session.get('openid', default=None)
+        try:
+            openid = Session.objects.get(session_key=cookie).get_decoded()['openid']
+            wx_user = OeWxUser.objects.filter(appid=openid).first().id
+            if OeWxUserAttentionArtist.objects.filter(artist=artist['id'], wx_user=wx_user).count() > 0:
+                isattention = 'true'
+            else:
+                isattention = 'false'
+        except:
             isattention = 'false'
     else:
         isattention = 'false'
@@ -547,6 +552,20 @@ def artist(request, offset):
                                 city=user_info['city'].encode("ISO-8859-1").decode('utf-8'),
                                 country=user_info['country'].encode("ISO-8859-1").decode('utf-8'),
                                 headimgurl=user_info['headimgurl'])
+
+        try:
+            user_id = str(int(OeExhibitComment.objects.latest('create_time').id) + 1)
+        except:
+            user_id = '1'
+
+        timeArray = time.localtime()
+        otherStyleTime = time.strftime("%Y-%m-%d %H:%M:%S", timeArray)
+        OeUser.objects.create(id=user_id,
+                              nickname=user_info['nickname'].encode("ISO-8859-1").decode('utf-8'),
+                              sex=str(user_info['sex']),
+                              head_path=user_info['headimgurl'],
+                              create_time=otherStyleTime)
+
         return response
     return response
 
@@ -564,6 +583,7 @@ def artists(request):
 
 def exhibit(request, offset):
     print request.COOKIES
+    print request.session.get('openid', default=None)
     # try:
     #     offset = int(offset)
     # except ValueError:
@@ -622,17 +642,41 @@ def exhibit(request, offset):
         comment = model_to_dict(comment)
         wx_user = OeWxUser.objects.filter(id=comment['wx_user']).first()
         wx_user = model_to_dict(wx_user)
+
+        if comment['parent'] != '' and comment['parent'] != None:
+            parent_wx_user_id = OeExhibitComment.objects.filter(id=comment['parent']).first().wx_user_id
+            parent_wx_user = OeWxUser.objects.filter(id=parent_wx_user_id).first()
+            parent_wx_user = model_to_dict(parent_wx_user)
+            text = smart_unicode('回复 ') + parent_wx_user['nickname'] + smart_unicode(' 的评论:') + comment['content']
+        else:
+            text = comment['content']
         show_dict = {
             'id': int(comment['id']),
             'username': wx_user['nickname'],
             'rateTime':  comment['create_time'].strftime('%Y-%m-%d %H:%M:%S'),
-            'text': comment['content'],
+            'text': text,
             'avatar': wx_user['headimgurl'],
+            'wx_id':wx_user['id'],
             'type': comment['type'],
             'rate_image': comment['rate_image']
         }
         comment_list.append(show_dict)
     comment_dict = {'ratings': comment_list}
+
+    cookie = request.COOKIES.get('sessionid', 'error')
+    if cookie == 'error':
+        return HttpResponse(json.dumps('error'), content_type='application/json')
+    try:
+        openid = Session.objects.get(session_key=cookie).get_decoded()['openid']
+        nickname = OeWxUser.objects.filter(appid=openid).first().nickname
+    except:
+        openid = ''
+        nickname = ''
+    user = OeUser.objects.filter(nickname=nickname).first()
+    if OeUserExhibitCollection.objects.filter(user=user.id, exhibit=offset).first():
+        collect_flag = True
+    else:
+        collect_flag = False
 
     exhibit_dict = {
         'id': offset,
@@ -641,6 +685,7 @@ def exhibit(request, offset):
         'author': exhibit['author'],
         'audio_name': '作品解读',
         'audio_src': '/static/exhibit/lyg.mp3',
+        'collect_flag': collect_flag
     }
 
     exhibit_dict = dict(exhibit_dict, **image_text_reading_dict)
@@ -741,11 +786,11 @@ def exhibit_ratings(request, offset):
 
         cookie = request.COOKIES.get('sessionid','error')
         if cookie != 'error':
-            # try:
-            #     openid = Session.objects.get(session_key=cookie).get_decoded()['openid']
-            # except:
-            #     openid = ''
-            openid = request.session.get('openid', default=None)
+            try:
+                openid = Session.objects.get(session_key=cookie).get_decoded()['openid']
+            except:
+                openid = ''
+            # openid = request.session.get('openid', default=None)
             nickname = OeWxUser.objects.filter(appid=openid).first().nickname
         else:
             print '未知'
@@ -773,7 +818,13 @@ def exhibit_ratings(request, offset):
         rating['wx_user'] = OeWxUser.objects.filter(nickname=nickname).first()
         rating['exhibit'] = OeExhibit.objects.filter(id=offset).first()
         rating['create_time'] = otherStyleTime
-        rating['content'] = request.POST.get('text', '')
+
+        parent_id = request.POST.get('parent_id', '')
+        if parent_id == '-1':
+            rating['content'] = request.POST.get('text', '')
+        else:
+            rating['content'] = request.POST.get('text', '')
+            rating['parent'] = OeExhibitComment.objects.filter(id=parent_id).first()
         try:
             rating['id'] = str(int(OeExhibitComment.objects.latest('create_time').id) + 1)
         except:
@@ -845,18 +896,30 @@ def exhibition(request, offset):
             video_reading_list.append(show_dict)
         video_reading_dict = {'video_readings': video_reading_list}
 
-        # get exhibition rating info
+        # get exhibit rating info
         comment_list = []
-        comments = OeExhibitionComment.objects.filter(exhibition__id=offset)
+        comments = OeExhibitionComment.objects.filter(exhibition__id=offset).order_by("create_time")
         for comment in comments:
             comment = model_to_dict(comment)
-            user = OeUser.objects.filter(id=comment['user']).first()
-            user = model_to_dict(user)
+            wx_user = OeWxUser.objects.filter(id=comment['wx_user']).first()
+            wx_user = model_to_dict(wx_user)
+
+            if comment['parent'] != '' and comment['parent'] != None:
+                parent_wx_user_id = OeExhibitionComment.objects.filter(id=comment['parent']).first().wx_user_id
+                parent_wx_user = OeWxUser.objects.filter(id=parent_wx_user_id).first()
+                parent_wx_user = model_to_dict(parent_wx_user)
+                text = smart_unicode('回复 ') + parent_wx_user['nickname'] + smart_unicode(' 的评论:') + comment['content']
+            else:
+                text = comment['content']
             show_dict = {
-                'username': user['user_name'],
+                'id': int(comment['id']),
+                'username': wx_user['nickname'],
                 'rateTime': comment['create_time'].strftime('%Y-%m-%d %H:%M:%S'),
-                'text': comment['content'],
-                'avatar': user['head_path']
+                'text': text,
+                'avatar': wx_user['headimgurl'],
+                'wx_id': wx_user['id'],
+                'type': comment['type'],
+                'rate_image': comment['rate_image']
             }
             comment_list.append(show_dict)
         comment_dict = {'ratings': comment_list}
@@ -885,6 +948,21 @@ def exhibition(request, offset):
             enjoyable_list.append(show_dict)
         enjoyable_dict = {'enjoyables': enjoyable_list}
 
+        cookie = request.COOKIES.get('sessionid', 'error')
+        if cookie == 'error':
+            return HttpResponse(json.dumps('error'), content_type='application/json')
+        try:
+            openid = Session.objects.get(session_key=cookie).get_decoded()['openid']
+            nickname = OeWxUser.objects.filter(appid=openid).first().nickname
+        except:
+            openid = ''
+            nickname = ''
+        user = OeUser.objects.filter(nickname=nickname).first()
+        if OeUserExhibitionCollection.objects.filter(user=user.id, exhibition=offset).first():
+            collect_flag = True
+        else:
+            collect_flag = False
+
         exhibition_dict = {
             'id': offset,
             'image_path': exhibition['image_path'],
@@ -894,6 +972,7 @@ def exhibition(request, offset):
             'exhibition_date': '2017-7-4',
             'exhibition_site': '中国艺术馆',
             'exhibition_curator': '大佬',
+            'collect_flag': collect_flag
         }
 
         exhibition_dict = dict(exhibition_dict, **image_text_reading_dict)
@@ -1033,6 +1112,72 @@ def exhibit_vedio_readings(request, offset):
     }
     return HttpResponse(json.dumps(video_readings), content_type='application/json')
 
+@csrf_exempt
+def exhibition_ratings(request, offset):
+    if request.method == 'POST':
+        print request.COOKIES
+        print request.session.get('openid', default=None)
+
+        cookie = request.COOKIES.get('sessionid','error')
+        if cookie != 'error':
+            try:
+                openid = Session.objects.get(session_key=cookie).get_decoded()['openid']
+            except:
+                openid = ''
+            # openid = request.session.get('openid', default=None)
+            nickname = OeWxUser.objects.filter(appid=openid).first().nickname
+        else:
+            print '未知'
+            nickname = '未知'
+        timeArray = time.localtime()
+
+        otherStyleTime = time.strftime("%Y-%m-%d %H:%M:%S", timeArray)
+
+
+        rating = {}
+        # if not OeUser.objects.filter(user_name=request.POST.get('username', '')).first():
+        #     user = {
+        #         'user_name': request.POST.get('username', ''),
+        #         'head_path': request.POST.get('avatar', ''),
+        #         'create_time': otherStyleTime,
+        #         'id': str(int(OeUser.objects.latest('id').id) + 1)
+        #     }
+        #     OeUser.objects.create(**user)
+        #     rating['user'] = OeUser.objects.filter(id=str(OeUser.objects.all().count() - 1)).first()
+        # else:
+        #     rating['user'] = OeUser.objects.filter(user_name=request.POST.get('username', '')).first()
+
+        # rating['user'] = OeUser.objects.filter().first()
+
+        rating['wx_user'] = OeWxUser.objects.filter(nickname=nickname).first()
+        rating['exhibition'] = OeExhibition.objects.filter(id=offset).first()
+        rating['create_time'] = otherStyleTime
+
+        parent_id = request.POST.get('parent_id', '')
+        if parent_id == '-1':
+            rating['content'] = request.POST.get('text', '')
+        else:
+            rating['content'] = request.POST.get('text', '')
+            rating['parent'] = OeExhibitionComment.objects.filter(id=parent_id).first()
+        try:
+            rating['id'] = str(int(OeExhibitionComment.objects.latest('create_time').id) + 1)
+        except:
+            rating['id'] = '1'
+        if cookie == 'error':
+            return HttpResponse(json.dumps('error'), content_type='application/json')
+        if request.GET.get('type','') == '1':
+            image = request.FILES.get('imageblob')
+            path = default_storage.save(STATICFILES_DIRS[0] + '/exhibit/image_rating/' + image.name + otherStyleTime +'.jpeg', ContentFile(image.read()))
+        if request.GET.get('type','') == '1':
+            rating['type'] = 1
+            rating['rate_image'] = '/static/exhibit/image_rating/' + image.name + otherStyleTime + '.jpeg'
+        else:
+            rating['type'] = 0
+        print rating
+        OeExhibitionComment.objects.create(**rating)
+
+        return HttpResponse(json.dumps(''), content_type='application/json')
+
 
 def exhibition_image_text_readings(request, offset):
     try:
@@ -1120,6 +1265,121 @@ def achievement(request):
     achievement_list = achievement_dict['achievement'].split(';')
     return HttpResponse(json.dumps(achievement_list), content_type='application/json')
 
+def information(request,offset):
+    if request.method == "GET":
+        wxUser = OeWxUser.objects.filter(id=int(offset)).first()
+        wxUser = model_to_dict(wxUser)
+        person_dict = {
+            'id': wxUser['id'],
+            'avatar': wxUser['headimgurl'],
+            'name': wxUser['nickname'],
+        }
+        response = HttpResponse(json.dumps(person_dict), content_type='application/json')
+        return response
+
+@csrf_exempt
+def collect(request, offset):
+    if request.method == "GET":
+        print offset
+        wx_user_nickname = OeWxUser.objects.filter(id=int(offset)).first().nickname
+        user_id = OeUser.objects.filter(nickname=wx_user_nickname).first().id
+
+        exhibit_collect_list = []
+        exhibit_collects = OeUserExhibitCollection.objects.filter(user=user_id)
+        for exhibit_collect in exhibit_collects:
+            exhibit_collect = model_to_dict(exhibit_collect)
+            exhibit = OeExhibit.objects.filter(id=exhibit_collect['exhibit']).first()
+            exhibit = model_to_dict(exhibit)
+            collect_dict = {
+                'flag':'flag' + exhibit['id'],
+                'id': exhibit['id'],
+                'image_path': exhibit['image_path'],
+                'name': exhibit['name'],
+                'author': exhibit['author'],
+            }
+            exhibit_collect_list.append(collect_dict)
+
+        exhibition_collect_list = []
+        exhibition_collects = OeUserExhibitionCollection.objects.filter(user=user_id)
+        for exhibition_collect in exhibition_collects:
+            exhibition_collect = model_to_dict(exhibition_collect)
+            exhibition = OeExhibition.objects.filter(id=exhibition_collect['exhibition']).first()
+            exhibition = model_to_dict(exhibition)
+            collect_dict = {
+                'flag': '_flag' + exhibition['id'],
+                'id': exhibition['id'],
+                'image_path': exhibition['image_path'],
+                'name': exhibition['name'],
+                'exhibition_date': '2017-7-4',
+                'exhibition_site': '中国艺术馆',
+                'exhibition_curator': '大佬',
+            }
+            exhibition_collect_list.append(collect_dict)
+        return_collect_dict = {
+            'exhibits':exhibit_collect_list,
+            'exhibitions': exhibition_collect_list
+        }
+
+        response = HttpResponse(json.dumps(return_collect_dict), content_type='application/json')
+        return response
+    if request.method == "POST":
+        cookie = request.COOKIES.get('sessionid', 'error')
+        if cookie == 'error':
+            return HttpResponse(json.dumps('error'), content_type='application/json')
+
+        try:
+            openid = Session.objects.get(session_key=cookie).get_decoded()['openid']
+            nickname = OeWxUser.objects.filter(appid=openid).first().nickname
+        except:
+            openid = ''
+            nickname = ''
+        if request.GET.get('type') == '0':
+            user = OeUser.objects.filter(nickname=nickname).first()
+            exhibit = OeExhibit.objects.filter(id=offset).first()
+            try:
+                collection_id = str(int(OeUserExhibitCollection.objects.latest('id').id) + 1)
+            except:
+                collection_id = '1'
+            if not OeUserExhibitCollection.objects.filter(user=user,exhibit=exhibit).first():
+                OeUserExhibitCollection.objects.create(id=collection_id,
+                                                       user=user,
+                                                       exhibit=exhibit)
+        if request.GET.get('type') == '1':
+            user = OeUser.objects.filter(nickname=nickname).first()
+            exhibition = OeExhibition.objects.filter(id=offset).first()
+            try:
+                collection_id = str(int(OeUserExhibitionCollection.objects.latest('id').id) + 1)
+            except:
+                collection_id = '1'
+            if not OeUserExhibitionCollection.objects.filter(user=user, exhibition=exhibition).first():
+                OeUserExhibitionCollection.objects.create(id=collection_id,
+                                                          user=user,
+                                                          exhibition=exhibition)
+
+        response = HttpResponse(json.dumps({}), content_type='application/json')
+        return response
+    if request.method == "DELETE":
+        cookie = request.COOKIES.get('sessionid', 'error')
+        if cookie == 'error':
+            return HttpResponse(json.dumps('error'), content_type='application/json')
+
+        try:
+            openid = Session.objects.get(session_key=cookie).get_decoded()['openid']
+            nickname = OeWxUser.objects.filter(appid=openid).first().nickname
+        except:
+            openid = ''
+            nickname = ''
+        print request.GET.get('type')
+        if request.GET.get('type') == '0':
+            user = OeUser.objects.filter(nickname=nickname).first()
+            OeUserExhibitCollection.objects.filter(user=user.id, exhibit=offset).delete()
+        if request.GET.get('type') == '1':
+            user = OeUser.objects.filter(nickname=nickname).first()
+            OeUserExhibitionCollection.objects.filter(user=user.id, exhibition=offset).delete()
+
+        response = HttpResponse(json.dumps({}), content_type='application/json')
+        return response
+
 
 def artist_html(request):
     return render_to_response('artist.html', locals())
@@ -1138,6 +1398,9 @@ def video_readings_html(request):
 
 def image_text_readings_html(request):
     return render_to_response('image_text_readings.html', locals())
+
+def personal_information_html(request):
+    return render_to_response('information.html', locals())
 
 
 def motified_signature(request):

@@ -80,12 +80,19 @@ class OeExhibition(models.Model):
         db_table = 'oe_exhibition'
 
 class OeExhibitionComment(models.Model):
+    type_choice = (
+        (0, '评论'),
+        (1, '可圈可点'),
+    )
     id = models.CharField(db_column='ID', primary_key=True, max_length=32) # Field name made lowercase.
     content = models.TextField(db_column='CONTENT') # Field name made lowercase.
     create_time = models.DateTimeField(db_column='CREATE_TIME') # Field name made lowercase.
     exhibition = models.ForeignKey(OeExhibition, db_column='EXHIBITION_ID', blank=True, null=True) # Field name made lowercase.
+    wx_user = models.ForeignKey('OeWxUser', db_column='WX_USER_ID')  # Field name made lowercase.
     parent = models.ForeignKey('self', db_column='PARENT_ID', blank=True, null=True) # Field name made lowercase.
-    user = models.ForeignKey('OeUser', db_column='USER_ID') # Field name made lowercase.
+    user = models.ForeignKey('OeUser', db_column='USER_ID', null=True) # Field name made lowercase.
+    rate_image = models.CharField(db_column='RATE_IMAGE', max_length=300)
+    type = models.IntegerField(db_column='TYPE', choices=type_choice)
     class Meta:
         db_table = 'oe_exhibition_comment'
 

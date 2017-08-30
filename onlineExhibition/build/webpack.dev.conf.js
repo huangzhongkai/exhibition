@@ -70,6 +70,12 @@ module.exports = merge(baseWebpackConfig, {
       inject: true,
       chunks: ['ratings']
     }),
+    new HtmlWebpackPlugin({
+      filename: 'personal_information/information.html',
+      template: './src/view/personal_information/information.html',
+      inject: true,
+      chunks: ['information']
+    }),
     new FriendlyErrorsPlugin()
   ]
 })
