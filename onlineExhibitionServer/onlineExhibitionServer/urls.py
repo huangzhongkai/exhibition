@@ -7,13 +7,14 @@ from art.views import exhibition, exhibitions, exhibit_readings,exhibition_readi
     exhibit_image_text_readings, exhibit_vedio_readings, exhibition_image_text_readings,\
     exhibition_vedio_readings, get_signature, motified_signature, exhibition_ratings
 from art.views import home_html, exhibition_html, exhibit_html, artist_html, exhibit_ratings, \
-    image_text_readings_html, video_readings_html, attention, information, personal_information_html, collect
+    image_text_readings_html, video_readings_html, attention, information, personal_information_html, collect, \
+    bing_phone_commit, send_auth_code
 
 admin.autodiscover()
 
 urlpatterns = [
 # Examples:
-    # url(r'^$', 'onlineExhibitionServer.views.home', name='home'),
+    # url(r'^$', 'onlineExhibitionServer.view.home', name='home'),
     # url(r'^blog/', include('blog.urls')),
 
     url(r'^admin/', include(admin.site.urls)),
@@ -45,6 +46,8 @@ urlpatterns = [
     url(r'^attention/$', attention),
     url(r'^information/(\d+)/$', information),
     url(r'^collect/(\d+)/$', collect),
+    url(r'^send_auth_code/$', send_auth_code),
+    url(r'^bing_phone_commit/$', bing_phone_commit),
 
     url(r'^home_html/$', home_html),
     url(r'^exhibition_html/$', exhibition_html),

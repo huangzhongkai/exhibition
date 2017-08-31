@@ -1,6 +1,6 @@
 # -*- coding:utf8 -*-
-import json
-import datetime,time
+import json, random, uuid
+import time
 from django.shortcuts import render_to_response, HttpResponse, Http404
 from art.models import OeArtist, OeExhibit, OeExhibition, OeExhibitInterpretation,\
     OeArtistExhibitionRelation, OeWxConfig, OeWxDeveloper, OeExhibitionInterpretation, OeWxUser, OeUserExhibitionCollection
@@ -15,7 +15,8 @@ from django.core.files.base import ContentFile
 from onlineExhibitionServer.settings import STATICFILES_DIRS
 from django.utils.encoding import smart_unicode
 
-# Create your views here.
+from send_msg import send_sms
+# Create your view here.
 
 
 exhibits_list = [
@@ -1269,10 +1270,14 @@ def information(request,offset):
     if request.method == "GET":
         wxUser = OeWxUser.objects.filter(id=int(offset)).first()
         wxUser = model_to_dict(wxUser)
+
+        wx_user_nickname = OeWxUser.objects.filter(id=int(offset)).first().nickname
+        mobile_phone = OeUser.objects.filter(nickname=wx_user_nickname).first().mobile_phone
         person_dict = {
             'id': wxUser['id'],
             'avatar': wxUser['headimgurl'],
             'name': wxUser['nickname'],
+            'phone_number':mobile_phone
         }
         response = HttpResponse(json.dumps(person_dict), content_type='application/json')
         return response
@@ -1380,6 +1385,40 @@ def collect(request, offset):
         response = HttpResponse(json.dumps({}), content_type='application/json')
         return response
 
+@csrf_exempt
+def send_auth_code(request):
+    if request.method == "POST":
+        phone_number = request.POST.get('phone_number', '')
+        wx_user_id = request.POST.get('wx_user_id', '')
+        __business_id = uuid.uuid1()
+        print __business_id
+        code = str(random.randrange(100000, 999999, 6))
+        params = {"code":code}
+        result = send_sms(__business_id, phone_number, "艺术展厅app", "SMS_91030041", json.dumps(params))
+
+        if json.loads(result)['Message'] == 'OK':
+            return_dict = {'code': 200}
+            OeWxUser.objects.filter(id=int(wx_user_id)).update(auth_code=code, bind_phone=phone_number)
+        else:
+            return_dict = {'code': -1}
+        response = HttpResponse(json.dumps(return_dict), content_type='application/json')
+        return response
+
+@csrf_exempt
+def bing_phone_commit(request):
+    if request.method == "POST":
+        phone_number = request.POST.get('phone_number', '')
+        auth_code = request.POST.get('auth_code', '')
+        wx_user_id = request.POST.get('wx_user_id', '')
+
+        if OeWxUser.objects.filter(id=int(wx_user_id), auth_code=auth_code, bind_phone=phone_number):
+            wx_user_nickname = OeWxUser.objects.filter(id=int(wx_user_id)).first().nickname
+            OeUser.objects.filter(nickname=wx_user_nickname).update(mobile_phone=phone_number)
+            return_dict = {'code': 200}
+        else:
+            return_dict = {'code': -1}
+        response = HttpResponse(json.dumps(return_dict), content_type='application/json')
+        return response
 
 def artist_html(request):
     return render_to_response('artist.html', locals())

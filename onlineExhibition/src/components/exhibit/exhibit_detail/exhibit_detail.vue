@@ -134,7 +134,6 @@
   import {formatDate} from '../../../common/js/date';
   import ratings from '../ratings/ratings.vue'
   import wx from 'weixin-js-sdk'
-  import jQuery from 'jquery'
   import Cropper from 'cropperjs'
   import 'font-awesome-webpack'
 
@@ -175,7 +174,7 @@
     created() {
       this.$http.get('http://'+ host +'/exhibits/'+ this.param.id +'/').then(response => {
         if(response.body === 'error'){
-//          window.location = 'https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx522cca3d4b048aa9&redirect_uri=http%3A//'+ encodeURIComponent(host) +'/artist_html/%3Fartist%3D0&response_type=code&scope=snsapi_userinfo&state=123#wechat_redirect'
+          window.location = 'https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx522cca3d4b048aa9&redirect_uri=http%3A//'+ encodeURIComponent(host) +'/artist_html/%3Fartist%3D0&response_type=code&scope=snsapi_userinfo&state=123#wechat_redirect'
         }
         this.exhibit = response.body;
         for(let i=0; i<this.exhibit.ratings.length; i++){

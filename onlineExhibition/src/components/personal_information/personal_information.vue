@@ -13,13 +13,17 @@
       <span class="swaper">收藏</span>
       <i class="fa fa-angle-right fa-2x fa-pull-right" aria-hidden="true"></i>
     </div>
-    <div class="info">
+    <div @click="bind_phone()" class="info">
       <span class="swaper">绑定手机号</span>
       <i class="fa fa-angle-right fa-2x fa-pull-right" aria-hidden="true"></i>
+      <span class="phone_number">{{person.phone_number}}</span>
     </div>
 
     <collect ref="collect">
     </collect>
+
+    <bind_phone ref="bind_phone">
+    </bind_phone>
   </div>
 </template>
 
@@ -28,11 +32,13 @@
   import 'font-awesome-webpack'
   import global_ from '../Global.vue'
   import collect from './collect/collect.vue'
+  import bind_phone from './bind_phone/bind_phone.vue'
 
   let host = global_.host;
   export default {
     components: {
-      collect
+      collect,
+      bind_phone
     },
     data () {
       return {
@@ -58,6 +64,9 @@
         document.body.style.height = '100%';
         document.body.style.overflow = 'hidden';
         this.$refs.collect.show();
+      },
+      bind_phone(){
+        this.$refs.bind_phone.show();
       }
     }
   }
@@ -87,6 +96,8 @@
     border-color: darkgrey
     .swaper
       margin-left: 8px
+    .phone_number
+      float:right
     i
       color: #8c8c8c
 

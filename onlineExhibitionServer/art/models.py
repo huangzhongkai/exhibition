@@ -357,6 +357,8 @@ class OeWxUser(models.Model):
     city = models.CharField(db_column='CITY', max_length=100)
     country = models.CharField(db_column='COUNTRY', max_length=100)
     headimgurl = models.CharField(db_column='HEADIMGURL', max_length=1000)
+    bind_phone = models.CharField(db_column='BIND_PHONE', max_length=20)
+    auth_code = models.CharField(db_column='AUTH_CODE', max_length=20)
     class Meta:
         db_table = 'oe_wx_user'
 
