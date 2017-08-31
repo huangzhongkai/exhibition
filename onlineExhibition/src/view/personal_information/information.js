@@ -17,7 +17,7 @@ Vue.use(VueResource)
 Vue.use(Vuex);
 const store = new Vuex.Store({
   state: {
-    timeout: 21,
+    timeout: 60,
   }
 });
 

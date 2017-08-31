@@ -9,7 +9,7 @@
       </div>
       <div class="content">
         <div class="my_phone input-group input-group-lg">
-          <span class="input-group-addon" id="sizing-addon1">手机</span>
+          <span class="input-group-addon" id="sizing-addon1">手机号</span>
           <input v-model="phone_number" type="text" class="form-control" placeholder="" aria-describedby="sizing-addon1">
         </div>
         <br>
@@ -32,6 +32,7 @@
   import global_ from '../../Global.vue'
 
   let host = global_.host;
+  let count = 60;
 
   export default {
     data () {
@@ -63,10 +64,10 @@
       },
       time() {
         this.$store.state.timeout = this.$store.state.timeout -1;
-        this.operation = '重新发送' + this.$store.state.timeout + 's';
+        this.operation = this.$store.state.timeout +'s后可重发';
         if(this.$store.state.timeout === 0){
           clearInterval(this.time_return_code);
-          this.$store.state.timeout =21;
+          this.$store.state.timeout =count;
           this.operation = '发送验证码'
         }
       },
@@ -77,14 +78,18 @@
         this.showFlag = false;
       },
       sendMsg() {
-        if(this.$store.state.timeout === 21){
-          this.time_return_code = setInterval(this.time, 1000);
-          let params = {'phone_number':this.phone_number, 'wx_user_id': 13};
+        if(this.$store.state.timeout === count){
+          let params = {'phone_number':this.phone_number, 'wx_user_id': this.param.id};
           this.$http.post('http://'+ host +'/send_auth_code/',params, {emulateJSON:true}).then(response => {
             if(response.body.code === 200){
-              $('.alert').html('验证码发送成功').addClass('alert-success').show().delay(1500).fadeOut();
-            }else{
-              $('.alert').html('验证码发送失败').addClass('alert-warning').show().delay(1500).fadeOut();
+              this.time_return_code = setInterval(this.time, 1000);
+              $('.alert').html('验证码发送成功').addClass('alert-success').show().delay(2000).fadeOut();
+            }else if(response.body.code === -1){
+              $('.alert').html('验证码发送失败').addClass('alert-warning').show().delay(2000).fadeOut();
+            }else if(response.body.code === -2){
+              $('.alert').html('已绑定该手机号').addClass('alert-warning').show().delay(2000).fadeOut();
+            }else if(response.body.code === -3){
+              $('.alert').html('请输入正确的手机号码').addClass('alert-warning').show().delay(2000).fadeOut();
             }
           },response => {
           });
@@ -92,9 +97,8 @@
       }
     },
     created() {
-      console.log(this.$store.state.timeout);
-      if(this.$store.state.timeout != 21 && this.$store.state.timeout != 0){
-        this.operation = '重新发送' + this.$store.state.timeout +'s';
+      if(this.$store.state.timeout != count && this.$store.state.timeout != 0){
+        this.operation = this.$store.state.timeout +'s后可重发';
         this.time_return_code = setInterval(this.time, 1000)
       }else{
         this.operation = '发送验证码'

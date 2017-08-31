@@ -1390,6 +1390,25 @@ def send_auth_code(request):
     if request.method == "POST":
         phone_number = request.POST.get('phone_number', '')
         wx_user_id = request.POST.get('wx_user_id', '')
+
+        if phone_number == '' or len(phone_number) != 11:
+            return_dict = {'code': -3}
+            response = HttpResponse(json.dumps(return_dict), content_type='application/json')
+            return response
+
+        try:
+            number = int(phone_number)
+        except:
+            return_dict = {'code': -3}
+            response = HttpResponse(json.dumps(return_dict), content_type='application/json')
+            return response
+
+        wx_user_nickname = OeWxUser.objects.filter(id=int(wx_user_id)).first().nickname
+        if OeUser.objects.filter(nickname=wx_user_nickname, pytmobile_phone=phone_number):
+            return_dict = {'code': -2}
+            response = HttpResponse(json.dumps(return_dict), content_type='application/json')
+            return response
+
         __business_id = uuid.uuid1()
         print __business_id
         code = str(random.randrange(100000, 999999, 6))
