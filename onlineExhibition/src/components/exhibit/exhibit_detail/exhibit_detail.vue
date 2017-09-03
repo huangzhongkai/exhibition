@@ -574,14 +574,14 @@
         .name
           margin-top: 0px
           line-height: 8px
-          font-size: 10px
+          font-size: 14px
           color: rgb(7, 17, 27)
         .text
           margin-top: 4px
           margin-bottom: 8px
-          line-height: 8px
+          line-height: 16px
           color: rgb(7, 17, 27)
-          font-size: 14px
+          font-size: 12px
         .time
           margin-top: 4px
           margin-bottom: 8px
