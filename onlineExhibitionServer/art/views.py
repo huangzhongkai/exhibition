@@ -638,7 +638,7 @@ def exhibit(request, offset):
 
     #get exhibit rating info
     comment_list = []
-    comments = OeExhibitComment.objects.filter(exhibit__id=offset).order_by("create_time")
+    comments = OeExhibitComment.objects.filter(exhibit__id=offset).order_by("create_time")[:5]
     for comment in comments:
         comment = model_to_dict(comment)
         wx_user = OeWxUser.objects.filter(id=comment['wx_user']).first()
@@ -666,20 +666,20 @@ def exhibit(request, offset):
         comment_list.append(show_dict)
     comment_dict = {'ratings': comment_list}
 
-    cookie = request.COOKIES.get('sessionid', 'error')
-    if cookie == 'error':
-        return HttpResponse(json.dumps('error'), content_type='application/json')
-    try:
-        openid = Session.objects.get(session_key=cookie).get_decoded()['openid']
-        nickname = OeWxUser.objects.filter(appid=openid).first().nickname
-    except:
-        openid = ''
-        nickname = ''
-    user = OeUser.objects.filter(nickname=nickname).first()
-    if OeUserExhibitCollection.objects.filter(user=user.id, exhibit=offset).first():
-        collect_flag = True
-    else:
-        collect_flag = False
+    # cookie = request.COOKIES.get('sessionid', 'error')
+    # if cookie == 'error':
+    #     return HttpResponse(json.dumps('error'), content_type='application/json')
+    # try:
+    #     openid = Session.objects.get(session_key=cookie).get_decoded()['openid']
+    #     nickname = OeWxUser.objects.filter(appid=openid).first().nickname
+    # except:
+    #     openid = ''
+    #     nickname = ''
+    # user = OeUser.objects.filter(nickname=nickname).first()
+    # if OeUserExhibitCollection.objects.filter(user=user.id, exhibit=offset).first():
+    #     collect_flag = True
+    # else:
+    #     collect_flag = False
 
     exhibit_dict = {
         'id': offset,
@@ -688,7 +688,7 @@ def exhibit(request, offset):
         'author': exhibit['author'],
         'audio_name': '作品解读',
         'audio_src': '/static/exhibit/lyg.mp3',
-        'collect_flag': collect_flag
+        # 'collect_flag': collect_flag
     }
 
     exhibit_dict = dict(exhibit_dict, **image_text_reading_dict)
@@ -846,6 +846,43 @@ def exhibit_ratings(request, offset):
 
 
         return HttpResponse(json.dumps(''), content_type='application/json')
+    if request.method == 'GET':
+        get_count = int(request.GET.get('get_count','0'))
+        get_offset = int(request.GET.get('get_offset','0'))
+        comment_list = []
+        total = OeExhibitComment.objects.filter(exhibit__id=offset).count()
+        print total
+        get_offset = int(get_offset)
+        if total - get_offset < get_count:
+            get_count = total - get_offset
+        comments = OeExhibitComment.objects.filter(exhibit__id=offset).order_by("create_time")[get_offset:get_offset+get_count]
+        for comment in comments:
+            comment = model_to_dict(comment)
+            wx_user = OeWxUser.objects.filter(id=comment['wx_user']).first()
+            wx_user = model_to_dict(wx_user)
+
+            if comment['parent'] != '' and comment['parent'] != None:
+                parent_wx_user_id = OeExhibitComment.objects.filter(id=comment['parent']).first().wx_user_id
+                parent_wx_user = OeWxUser.objects.filter(id=parent_wx_user_id).first()
+                parent_wx_user = model_to_dict(parent_wx_user)
+                text = smart_unicode('回复 ') + parent_wx_user['nickname'] + smart_unicode(' 的评论:') + comment['content']
+            else:
+                text = comment['content']
+            show_dict = {
+                'id': int(comment['id']),
+                'username': wx_user['nickname'],
+                'rateTime': comment['create_time'].strftime('%Y-%m-%d %H:%M:%S'),
+                'text': text,
+                'avatar': wx_user['headimgurl'],
+                'wx_id': wx_user['id'],
+                'type': comment['type'],
+                'rate_image': comment['rate_image'],
+                'x_coordinate': comment['x_coordinate'],
+                'y_coordinate': comment['y_coordinate']
+            }
+            comment_list.append(show_dict)
+        comment_dict = {'ratings': comment_list}
+        return HttpResponse(json.dumps(comment_dict), content_type='application/json')
 
 @csrf_exempt
 def exhibit_remark(request, offset):
@@ -1451,12 +1488,13 @@ def send_auth_code(request):
             return_dict = {'code': -3}
             response = HttpResponse(json.dumps(return_dict), content_type='application/json')
             return response
-
         wx_user_nickname = OeWxUser.objects.filter(id=int(wx_user_id)).first().nickname
-        if OeUser.objects.filter(nickname=wx_user_nickname, pytmobile_phone=phone_number):
+        if OeUser.objects.filter(nickname=wx_user_nickname, mobile_phone=phone_number):
             return_dict = {'code': -2}
             response = HttpResponse(json.dumps(return_dict), content_type='application/json')
             return response
+
+
 
         __business_id = uuid.uuid1()
         print __business_id
