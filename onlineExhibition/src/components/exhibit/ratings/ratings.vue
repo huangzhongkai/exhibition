@@ -79,17 +79,19 @@
     methods: {
       utf16ToUtf8(str){
         let patt=/[\ud800-\udbff][\udc00-\udfff]/g; // 检测utf16字符正则
-        return str.replace(patt, function(char){
-          let H, L, code;
-          if (char.length===2) {
-            H = char.charCodeAt(0); // 取出高位
-            L = char.charCodeAt(1); // 取出低位
-            code = (H - 0xD800) * 0x400 + 0x10000 + L - 0xDC00; // 转换算法
-            return '&#' + code + ';';
-          } else {
-            return char;
-          }
-        });
+        return str.replace(patt,''
+//          function(char){
+//          let H, L, code;
+//          if (char.length===2) {
+//            H = char.charCodeAt(0); // 取出高位
+//            L = char.charCodeAt(1); // 取出低位
+//            code = (H - 0xD800) * 0x400 + 0x10000 + L - 0xDC00; // 转换算法
+//            return '&#' + code + ';';
+//          } else {
+//            return char;
+//          }
+//        }
+        );
       },
       convertBase64UrlToBlob(urlData){
         var bytes=window.atob(urlData.split(',')[1]);        //去掉url的头，并转换为byte

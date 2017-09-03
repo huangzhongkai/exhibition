@@ -65,8 +65,9 @@
       }
     },
     methods: {
-      send(){
-        alert('aaa');
+      utf16ToUtf8(str){
+        let patt=/[\ud800-\udbff][\udc00-\udfff]/g; // 检测utf16字符正则
+        return str.replace(patt,'');
       },
       enlarge(){
         if( this.is_select === 'show'){
@@ -193,7 +194,7 @@
 
      let _this = this;
       $("#send").click(function(){
-        let content = ($("#content")[0].value);
+        let content = _this.utf16ToUtf8($("#content")[0].value);
         let left = _this.margin_left;
         let top = _this.margin_top;
         if(left == '' || top == ''){
