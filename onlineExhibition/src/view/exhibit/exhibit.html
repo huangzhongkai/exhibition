@@ -9,6 +9,29 @@
 </head>
 <body>
 <div id="app"></div>
+
+<div class="modal fade bs-example-modal-lg" id="myModal" tabindex="-1" role="dialog">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title">添加评论</h4>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <textarea id="content" style="height: 150px" class="form-control"></textarea>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+        <button id="send" type="button" class="btn btn-default">发送评论</button>
+      </div>
+    </div>
+  </div>
+</div>
 <!-- built files will be auto injected -->
+<!--<script type="text/javascript" src="/static/exhibit/jquery.js"></script>-->
 </body>
+
+
 </html>

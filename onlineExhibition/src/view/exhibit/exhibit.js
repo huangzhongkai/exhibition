@@ -8,6 +8,7 @@ import VUeResource from 'vue-resource'
 import Vuex from 'vuex'
 import "../../common/stylus/index.styl"
 import "bootstrap/dist/css/bootstrap.css"
+import "bootstrap/dist/js/bootstrap.min"
 import "cropperjs/dist/cropper.css"
 
 

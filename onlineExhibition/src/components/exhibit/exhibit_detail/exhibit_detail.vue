@@ -77,16 +77,17 @@
           <div class="avatar">
             <img @click="show_information(rating.wx_id)" width="28" height="28" :src="rating.avatar">
           </div>
-          <div class="content" @click="add_rating(0,'回复',rating.id)">
-            <h1 class="name">{{rating.username}}</h1>
-            <p class="time">{{rating.rateTime}}</p>
-            <p class="text">{{rating.text}}</p>
-            <div>
-              <img v-show="flag[index]" @click="show_rating(index)" class="flag" src="/static/exhibit/rating.png"/>
-            </div>
+          <div class="content">
+            <h1 @click="add_rating(0,'回复',rating.id)" class="name">{{rating.username}}</h1>
+            <p @click="add_rating(0,'回复',rating.id)" class="time">{{rating.rateTime}}</p>
+            <p @click="add_rating(0,'回复',rating.id)" class="text">{{rating.text}}</p>
             <div v-show="image_ratings[index]" class="js-result">
-              <img @click="zoomout()" :width="w" :height="h" :src="rating.rate_image">
+              <img :src="exhibit.image_path" :style="{'margin-left':rating.x_coordinate, 'margin-top': rating.y_coordinate}"/>
+              <!--<img @click="zoomout()" :width="w" :height="h" :src="rating.rate_image">-->
             </div>
+          </div>
+          <div>
+            <img v-show="flag[index]" @click="show_rating(index)" class="flag" src="/static/exhibit/rating.png"/>
           </div>
         </li>
       </ul>
@@ -97,7 +98,7 @@
           <span>
             <i class="fa fa-hand-o-up fa-1x" aria-hidden="true"></i>
             <!--<span><img src="/static/exhibit/rating.png" width="20px" height="20px"/></span>-->
-            <span style="margin-left: 1px">可圈可点</span>
+            <span @click="remark_commend()" style="margin-left: 1px">可圈可点</span>
           </span>
         </div>
         <div class="tab-item">
@@ -123,6 +124,9 @@
 
     <ratings :exhibit_id="param.id" ref="edit_ratings">
     </ratings>
+
+    <remark_commend :exhibit_id="param.id" ref="remark_commend">
+    </remark_commend>
     <div style="height: 48px"></div>
   </div>
 </template>
@@ -131,6 +135,7 @@
   import {urlParse} from '../../../common/js/util';
   import audio_reading from '../../audio/audio_reading.vue'
   import more_reading from '../more_reading/more_reading.vue'
+  import remark_commend from './remark_commend.vue'
   import {formatDate} from '../../../common/js/date';
   import ratings from '../ratings/ratings.vue'
   import wx from 'weixin-js-sdk'
@@ -145,7 +150,8 @@
     components: {
       audio_reading,
       more_reading,
-      ratings
+      ratings,
+      remark_commend,
     },
     data () {
       return {
@@ -288,6 +294,11 @@
 //      },
 //    },
     methods: {
+      remark_commend () {
+        document.body.style.height = '100%';
+        document.body.style.overflow = 'hidden';
+        this.$refs.remark_commend.show();
+      },
       collect(type){
         if(this.collect_flag === '收藏'){
           $('.alert').html('收藏成功').addClass('alert-success').show().delay(1500).fadeOut();
@@ -559,6 +570,7 @@
       .content
         position: relative
         flex: 1
+        margin-right: 30px
         .name
           margin-top: 0px
           line-height: 8px
@@ -576,15 +588,22 @@
           line-height: 8px
           color: rgb(7, 17, 27)
           font-size: 10px
-        .flag
-          position: absolute
-          top: 0
-          right: 0
-          width: 16px
-          height: 16px
-          line-height: 12px
-          font-size: 10px
-          color: rgb(147, 153, 159)
+        .js-result
+          width: 128px
+          height: 128px
+          border-color: aliceblue
+          border: 1px
+          border-style: solid
+          border-radius: 5px
+          overflow: hidden
+      .flag
+        position: absolute
+        right: 10px
+        width: 16px
+        height: 16px
+        line-height: 12px
+        font-size: 10px
+        color: rgb(147, 153, 159)
   .bottom-box
     position: fixed
     left: 0

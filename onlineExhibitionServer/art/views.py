@@ -659,7 +659,9 @@ def exhibit(request, offset):
             'avatar': wx_user['headimgurl'],
             'wx_id':wx_user['id'],
             'type': comment['type'],
-            'rate_image': comment['rate_image']
+            'rate_image': comment['rate_image'],
+            'x_coordinate': comment['x_coordinate'],
+            'y_coordinate': comment['y_coordinate']
         }
         comment_list.append(show_dict)
     comment_dict = {'ratings': comment_list}
@@ -844,6 +846,53 @@ def exhibit_ratings(request, offset):
 
 
         return HttpResponse(json.dumps(''), content_type='application/json')
+
+@csrf_exempt
+def exhibit_remark(request, offset):
+    if request.method == 'POST':
+        print offset
+        print request.POST.get('content','')
+        print request.POST.get('left', '')
+        print request.POST.get('top', '')
+
+        print request.COOKIES
+        print request.session.get('openid', default=None)
+
+        cookie = request.COOKIES.get('sessionid', 'error')
+        if cookie != 'error':
+            try:
+                openid = Session.objects.get(session_key=cookie).get_decoded()['openid']
+            except:
+                openid = ''
+            # openid = request.session.get('openid', default=None)
+            nickname = OeWxUser.objects.filter(appid=openid).first().nickname
+        else:
+            print '未知'
+            nickname = '未知'
+
+        timeArray = time.localtime()
+        otherStyleTime = time.strftime("%Y-%m-%d %H:%M:%S", timeArray)
+
+        rating = {}
+        rating['wx_user'] = OeWxUser.objects.filter(nickname=nickname).first()
+        rating['exhibit'] = OeExhibit.objects.filter(id=offset).first()
+        rating['create_time'] = otherStyleTime
+        rating['content'] = request.POST.get('content','')
+        rating['x_coordinate'] = request.POST.get('left', '')
+        rating['y_coordinate'] = request.POST.get('top', '')
+        rating['type'] = 1
+
+        try:
+            rating['id'] = str(int(OeExhibitComment.objects.latest('create_time').id) + 1)
+        except:
+            rating['id'] = '1'
+        # if cookie == 'error':
+        #     return HttpResponse(json.dumps('error'), content_type='application/json')
+
+        OeExhibitComment.objects.create(**rating)
+
+        response = HttpResponse(json.dumps({}), content_type='application/json')
+        return response
 
 @csrf_exempt
 def exhibition(request, offset):

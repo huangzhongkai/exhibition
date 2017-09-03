@@ -63,6 +63,8 @@ class OeExhibitComment(models.Model):
     wx_user = models.ForeignKey('OeWxUser', db_column='WX_USER_ID')  # Field name made lowercase.
     rate_image = models.CharField(db_column='RATE_IMAGE', max_length=300)
     type = models.IntegerField(db_column='TYPE', choices=type_choice)
+    x_coordinate = models.CharField(db_column='X_COORDINATE', max_length=30)
+    y_coordinate = models.CharField(db_column='Y_COORDINATE', max_length=30)
     class Meta:
         db_table = 'oe_exhibit_comment'
 
