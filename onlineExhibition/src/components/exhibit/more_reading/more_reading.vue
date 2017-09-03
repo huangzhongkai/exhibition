@@ -115,7 +115,7 @@
       if(this.exhibit_id != undefined){
         this.$http.get('http://'+ host +'/exhibit_readings/'+ this.exhibit_id + '/').then(response => {
           this.exhibit = response.body;
-          this.max_length = (this.exhibit.image_text_readings.length + this.exhibit.audio_readings.length+ this.exhibit.video_readings.length) *100 - screen.height
+          this.max_length = (this.exhibit.image_text_readings.length + this.exhibit.audio_readings.length+ this.exhibit.video_readings.length) *120 - screen.height
           for(let i=0; i<this.exhibit.audio_readings.length; i++){
             this.play_icon.push('/static/exhibition/play.svg');
             this.isPlaying.push(false);
@@ -166,7 +166,7 @@
       width: 100%
       overflow: hidden
       position: absolute
-      top: 50px
+      top: 42px
       bottom: 0px
       height: 600px
       .more_reading_info
