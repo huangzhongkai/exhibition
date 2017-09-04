@@ -106,6 +106,7 @@
         </li>
       </ul>
     </div>
+    <div style="display: none;" class="load-more-gif" id="loading">loading...</div>
     <div class="bottom-box">
       <div class="tab">
         <div class="tab-item">
@@ -170,6 +171,9 @@
     },
     data () {
       return {
+        is_more_rating:true,
+        get_count:5,
+        get_offset:5,
         flag:[],
         image_ratings:[],
         collect_icon:'fa fa-star-o',
@@ -292,6 +296,33 @@
 
       },response => {
       });
+
+      let _this = this;
+      $(window).scroll(function () {
+        let scrpllTop = $(this).scrollTop();
+        let scroolHeight = $(document).height();
+        let windowHeight = $(this).height();
+        if(_this.is_more_rating === true){
+          if(scrpllTop + windowHeight === scroolHeight){
+            $("#loading").css('display','block');
+            _this.$http.get('http://'+ host +'/exhibition_ratings/'+ _this.param.id+'/?get_count=' + _this.get_count
+              + '&get_offset=' + _this.get_offset ).then(response => {
+              for(let i=0; i<response.body.ratings.length; i++){
+                _this.exhibition.ratings.push(response.body.ratings[i]);
+              }
+              if(response.body.ratings.length < _this.get_count){
+                $("#loading").html('没有更多评论了');
+                _this.is_more_rating = false;
+                _this.get_offset +=response.body.ratings.length;
+              }else{
+                _this.get_offset +=_this.get_count;
+              }
+            },response => {
+            });
+
+          }
+        }
+      })
     },
     mounted() {
       //this.$store.commit('findDOM', {name: 'audio', dom: this.$refs.audio});
@@ -551,14 +582,14 @@
         .name
           margin-top: 0px
           line-height: 8px
-          font-size: 10px
+          font-size: 14px
           color: rgb(7, 17, 27)
         .text
           margin-top: 4px
           margin-bottom: 8px
-          line-height: 8px
+          line-height: 16px
           color: rgb(7, 17, 27)
-          font-size: 14px
+          font-size: 12px
         .time
           margin-top: 4px
           margin-bottom: 8px
@@ -615,4 +646,12 @@
     color: #8a6d3b
     background-color: #fcf8e3
     border-color: #faebcc
+  .load-more-gif
+    width: 100%
+    height: 44px
+    text-align: center
+    line-height: 44px
+    background: #fff
+    border-top: none
+    color: #48B884
 </style>

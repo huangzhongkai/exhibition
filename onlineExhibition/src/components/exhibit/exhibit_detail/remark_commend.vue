@@ -11,8 +11,8 @@
       </div>
 
       <div :class="is_click" ref="content">
-        <ul :style="{height: max_length}">
-          <div class="top_image">
+        <ul :style="{height: scroll_length}">
+          <div class="top_image" :style="{height: max_length}">
             <img class="image" @click="enlarge()" width="100%" height="100%" :src="reading.image_path">
             <div id="moveid" class="div">
               <img :src="reading.image_path" :style="{'margin-left':margin_left, 'margin-top': margin_top}"/>
@@ -50,6 +50,7 @@
         margin_left:'',
         margin_top:'',
         max_length:'',
+        scroll_length:'',
         is_select:'show',
         is_click:'content_show',
         showFlag: false,
@@ -73,9 +74,11 @@
         if( this.is_select === 'show'){
           this.is_select = 'hidden';
           this.is_click  = 'content_hidden'
+          $("#rating").css("display", "block")
         }else{
           this.is_select = 'show'
           this.is_click  = 'content_show'
+          $("#rating").css("display", "none")
         }
 
       },
@@ -100,11 +103,16 @@
         let _this = this;
         img.src = this.reading.image_path;
         img.onload = function() {
-          _this.img_origin_width = img.width,
-          _this.img_origin_height = img.height
-          console.log(_this.img_origin_width, _this.img_origin_height);
+          _this.img_origin_width = img.width;
+          _this.img_origin_height = img.height;
           _this.img_length = img.height/(img.width/screen.width);
-          _this.max_length = img.height/(img.width/screen.width) - screen.height + 65 ;
+          if(img.height/(img.width/screen.width) > screen.height){
+            _this.scroll_length = 42*2 + img.height/(img.width/screen.width) - screen.height;
+          }else{
+            _this.scroll_length = 42*2;
+          }
+          _this.max_length = _this.img_length;
+          _this.scroll_length = _this.scroll_length.toString() + 'px';
           _this.max_length = _this.max_length.toString() + 'px';
           _this.$nextTick(() => {
             _this._initScroll();
@@ -117,7 +125,6 @@
               $("#rating").css("display", "none");
               _x_start=e.touches[0].pageX;
               _y_start=e.touches[0].pageY;
-              // console.log("start",_x_start)
               left_start=$("#search").css("left");
               top_start=$("#search").css("top");
             })
@@ -153,7 +160,6 @@
               let _x_end=e.changedTouches[0].pageX;
               let _y_end=e.changedTouches[0].pageY;
               $("#rating").css("display", "block");
-              // console.log("end",_x_end)
             })
           })
         }
@@ -274,6 +280,8 @@
       .div
         display: none
       .search
+        display: none
+      .rating
         display: none
     .content_hidden
       width: 100%

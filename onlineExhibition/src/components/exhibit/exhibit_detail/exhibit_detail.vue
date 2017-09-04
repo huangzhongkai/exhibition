@@ -286,7 +286,6 @@
 
       let _this = this;
       $(window).scroll(function () {
-        console.log('aa');
         let scrpllTop = $(this).scrollTop();
         let scroolHeight = $(document).height();
         let windowHeight = $(this).height();
@@ -299,8 +298,7 @@
                 _this.exhibit.ratings.push(response.body.ratings[i]);
               }
               if(response.body.ratings.length < _this.get_count){
-                $("#loading").html('没有更多内容了');
-                console.log($("#loading"));
+                $("#loading").html('没有更多评论了');
                 _this.is_more_rating = false;
                 _this.get_offset +=response.body.ratings.length;
               }else{
