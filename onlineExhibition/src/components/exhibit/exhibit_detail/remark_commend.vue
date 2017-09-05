@@ -208,11 +208,14 @@
         }else{
           let remark = {'content':content,'left': left, 'top': top};
           _this.$http.post('http://'+ host +'/exhibit_remark/'+ _this.exhibit_id+'/',remark, {emulateJSON:true} ).then(response => {
-            $("#myModal").modal('hide');
-            $('.alert').html('评论成功').addClass('alert-warning').show().delay(2000).fadeOut(function () {
-              window.location.reload();
-            });
-
+            if(response.body === 'error'){
+              window.location = 'https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx522cca3d4b048aa9&redirect_uri=http%3A//'+ encodeURIComponent(host) +'/home_html/&response_type=code&scope=snsapi_userinfo&state=123#wechat_redirect'
+            }else{
+              $("#myModal").modal('hide');
+              $('.alert').html('评论成功').addClass('alert-warning').show().delay(2000).fadeOut(function () {
+                window.location.reload();
+              });
+            }
           },response => {
             $("#myModal").modal('hide');
           });

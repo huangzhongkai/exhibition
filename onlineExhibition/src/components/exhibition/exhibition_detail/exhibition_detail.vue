@@ -197,7 +197,7 @@
       if(this.param.id != undefined ){
         this.$http.get('http://'+ host +'/exhibitions/'+ this.param.id +'/').then(response => {
           if(response.body === 'error'){
-            window.location = 'https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx522cca3d4b048aa9&redirect_uri=http%3A//'+ encodeURIComponent(host) +'/artist_html/%3Fartist%3D0&response_type=code&scope=snsapi_userinfo&state=123#wechat_redirect'
+            window.location = 'https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx522cca3d4b048aa9&redirect_uri=http%3A//'+ encodeURIComponent(host) +'/home_html/&response_type=code&scope=snsapi_userinfo&state=123#wechat_redirect'
           }
           this.exhibition = response.body;
           for(let i=0; i<this.exhibition.ratings.length; i++){

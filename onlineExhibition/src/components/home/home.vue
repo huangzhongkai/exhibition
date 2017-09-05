@@ -114,6 +114,7 @@
   import more_charactor from "../exhibition/more_charactor/more_charactor.vue"
   import wx from 'weixin-js-sdk'
   import global_ from '../Global.vue'
+  import {urlParse} from '../../common/js/util';
 
   let host = global_.host;
 
@@ -162,6 +163,12 @@
         i_height:'',
         exhibits:[],
         config:{},
+        header: {
+          code: (() => {
+            let queryParam = urlParse();
+            return queryParam.code;
+          })()
+        },
       }
     },
     created(){
@@ -272,6 +279,13 @@
         this.exhibits = response.body;
       },response => {
       });
+      if(this.header.code === undefined){
+        window.location = 'https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx522cca3d4b048aa9&redirect_uri=http%3A//'+ encodeURIComponent(host) +'/home_html/&response_type=code&scope=snsapi_userinfo&state=123#wechat_redirect'
+      }else{
+        this.$http.get('http://'+ host +'/login/?code=' + this.header.code).then(response => {
+        },response => {
+        });
+      }
     },
     mounted() {
       console.log(this.$refs.recommend_left.style);

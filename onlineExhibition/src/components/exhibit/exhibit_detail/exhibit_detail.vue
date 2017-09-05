@@ -184,7 +184,7 @@
     created() {
       this.$http.get('http://'+ host +'/exhibits/'+ this.param.id +'/').then(response => {
         if(response.body === 'error'){
-          window.location = 'https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx522cca3d4b048aa9&redirect_uri=http%3A//'+ encodeURIComponent(host) +'/artist_html/%3Fartist%3D0&response_type=code&scope=snsapi_userinfo&state=123#wechat_redirect'
+          window.location = 'https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx522cca3d4b048aa9&redirect_uri=http%3A//'+ encodeURIComponent(host) +'/home_html/&response_type=code&scope=snsapi_userinfo&state=123#wechat_redirect'
         }
         this.exhibit = response.body;
         for(let i=0; i<this.exhibit.ratings.length; i++){
@@ -296,7 +296,12 @@
               + '&get_offset=' + _this.get_offset ).then(response => {
               for(let i=0; i<response.body.ratings.length; i++){
                 _this.exhibit.ratings.push(response.body.ratings[i]);
-                _this.flag.push(true);
+                if(response.body.ratings[i].type === 1){
+                  _this.flag.push(true);
+                }else{
+                  _this.flag.push(false);
+                }
+
               }
               if(response.body.ratings.length < _this.get_count){
                 $("#loading").html('没有更多评论了');

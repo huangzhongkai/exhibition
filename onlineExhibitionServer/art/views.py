@@ -489,30 +489,67 @@ exhibitions_list = [
     }
 ]
 
+def login(request):
+    if request.method == "GET":
+        code = request.GET.get('code', 'error')
+        if code != 'error':
+            appid = OeWxDeveloper.objects.filter(id=1).first().appid
+            appsecret = OeWxDeveloper.objects.filter(id=1).first().appsecret
+
+            wx = Wx(appid, appsecret, '')
+            access_token = wx.get_web_access_token(code)
+            print access_token
+            user_info = wx.get_user_info(access_token['access_token'], access_token['openid'])
+            print user_info
+
+            if request.session.get('openid', 'error') == 'error':
+                request.session['openid'] = user_info['openid']
+                print 'set cookie'
+
+            if not OeWxUser.objects.filter(appid=user_info['openid']):
+                OeWxUser.objects.create(appid=user_info['openid'],
+                                        nickname=user_info['nickname'].encode("ISO-8859-1").decode('utf-8'),
+                                        sex=str(user_info['sex']),
+                                        province=user_info['province'].encode("ISO-8859-1").decode('utf-8'),
+                                        city=user_info['city'].encode("ISO-8859-1").decode('utf-8'),
+                                        country=user_info['country'].encode("ISO-8859-1").decode('utf-8'),
+                                        headimgurl=user_info['headimgurl'])
+
+                try:
+                    user_id = str(int(OeExhibitComment.objects.latest('create_time').id) + 1)
+                except:
+                    user_id = '1'
+
+                timeArray = time.localtime()
+                otherStyleTime = time.strftime("%Y-%m-%d %H:%M:%S", timeArray)
+                OeUser.objects.create(id=user_id,
+                                      nickname=user_info['nickname'].encode("ISO-8859-1").decode('utf-8'),
+                                      sex=str(user_info['sex']),
+                                      head_path=user_info['headimgurl'],
+                                      create_time=otherStyleTime)
+
+            response = HttpResponse(json.dumps({}), content_type='application/json')
+            return response
+
 
 def artist(request, offset):
     code = request.GET.get('code', 'error')
     print request.COOKIES
-    cookies = request.COOKIES
 
     artist = OeArtist.objects.filter(id=offset).first()
     artist = model_to_dict(artist)
     attention_count = OeWxUserAttentionArtist.objects.filter(artist=artist['id']).count()
 
-    cookie = request.COOKIES.get('sessionid', 'error')
-    if cookie != 'error':
-        # openid = request.session.get('openid', default=None)
-        try:
-            openid = Session.objects.get(session_key=cookie).get_decoded()['openid']
-            wx_user = OeWxUser.objects.filter(appid=openid).first().id
-            if OeWxUserAttentionArtist.objects.filter(artist=artist['id'], wx_user=wx_user).count() > 0:
-                isattention = 'true'
-            else:
-                isattention = 'false'
-        except:
+    if request.session.get('openid', 'error') != 'error':
+        openid = request.session.get('openid', 'error')
+        wx_user = OeWxUser.objects.filter(appid=openid).first().id
+        if OeWxUserAttentionArtist.objects.filter(artist=artist['id'], wx_user=wx_user).count() > 0:
+            isattention = 'true'
+        else:
             isattention = 'false'
     else:
         isattention = 'false'
+        return HttpResponse(json.dumps('error'), content_type='application/json')
     artist_dict = {
         'id': artist['id'],
         'avatar': artist['head_path'],
@@ -521,53 +558,6 @@ def artist(request, offset):
         'isAttention': isattention
     }
     response = HttpResponse(json.dumps(artist_dict), content_type='application/json')
-
-    if Session.objects.filter(session_key=cookies.get('sessionid','none')).first():
-        return response
-
-    if code != 'undefined' and code!= 'error':
-        appid = OeWxDeveloper.objects.filter(id=1).first().appid
-        appsecret = OeWxDeveloper.objects.filter(id=1).first().appsecret
-
-        wx = Wx(appid, appsecret, '')
-        access_token = wx.get_web_access_token(code)
-        print access_token
-        user_info = wx.get_user_info(access_token['access_token'], access_token['openid'])
-        print user_info
-
-        objs = Session.objects.all()
-        for obj in objs:
-            if obj.get_decoded().get('openid','') == user_info['openid']:
-                response.set_cookie('sessionid', obj.session_key)
-                print 'set cookie'
-                return response
-        request.session['openid'] =user_info['openid']
-        nickname = user_info['nickname'].encode("ISO-8859-1").decode('utf-8')
-        # OeUser.objects.create(nickname=user_info['nickname'].encode("ISO-8859-1").decode('utf-8'),
-        #                       sex=user_info['sex'],
-        #                       head_path=user_info['headimgurl'])
-        OeWxUser.objects.create(appid=user_info['openid'],
-                                nickname=user_info['nickname'].encode("ISO-8859-1").decode('utf-8'),
-                                sex=str(user_info['sex']),
-                                province=user_info['province'].encode("ISO-8859-1").decode('utf-8'),
-                                city=user_info['city'].encode("ISO-8859-1").decode('utf-8'),
-                                country=user_info['country'].encode("ISO-8859-1").decode('utf-8'),
-                                headimgurl=user_info['headimgurl'])
-
-        try:
-            user_id = str(int(OeExhibitComment.objects.latest('create_time').id) + 1)
-        except:
-            user_id = '1'
-
-        timeArray = time.localtime()
-        otherStyleTime = time.strftime("%Y-%m-%d %H:%M:%S", timeArray)
-        OeUser.objects.create(id=user_id,
-                              nickname=user_info['nickname'].encode("ISO-8859-1").decode('utf-8'),
-                              sex=str(user_info['sex']),
-                              head_path=user_info['headimgurl'],
-                              create_time=otherStyleTime)
-
-        return response
     return response
 
 def artists(request):
@@ -666,15 +656,12 @@ def exhibit(request, offset):
         comment_list.append(show_dict)
     comment_dict = {'ratings': comment_list}
 
-    cookie = request.COOKIES.get('sessionid', 'error')
-    if cookie == 'error':
+    if request.session.get('openid', 'error') == 'error':
         return HttpResponse(json.dumps('error'), content_type='application/json')
-    try:
-        openid = Session.objects.get(session_key=cookie).get_decoded()['openid']
+    else:
+        openid = request.session.get('openid', 'error')
         nickname = OeWxUser.objects.filter(appid=openid).first().nickname
-    except:
-        openid = ''
-        nickname = ''
+
     user = OeUser.objects.filter(nickname=nickname).first()
     if OeUserExhibitCollection.objects.filter(user=user.id, exhibit=offset).first():
         collect_flag = True
@@ -787,37 +774,27 @@ def exhibit_ratings(request, offset):
         print request.COOKIES
         print request.session.get('openid', default=None)
 
-        cookie = request.COOKIES.get('sessionid','error')
-        if cookie != 'error':
-            try:
-                openid = Session.objects.get(session_key=cookie).get_decoded()['openid']
-            except:
-                openid = ''
-            # openid = request.session.get('openid', default=None)
-            nickname = OeWxUser.objects.filter(appid=openid).first().nickname
+        if request.session.get('openid', 'error') == 'error':
+            return HttpResponse(json.dumps('error'), content_type='application/json')
         else:
-            print '未知'
-            nickname = '未知'
-        timeArray = time.localtime()
+            openid = request.session.get('openid', 'error')
+            nickname = OeWxUser.objects.filter(appid=openid).first().nickname
 
+        # cookie = request.COOKIES.get('sessionid','error')
+        # if cookie != 'error':
+        #     try:
+        #         openid = Session.objects.get(session_key=cookie).get_decoded()['openid']
+        #     except:
+        #         openid = ''
+        #     # openid = request.session.get('openid', default=None)
+        #     nickname = OeWxUser.objects.filter(appid=openid).first().nickname
+        # else:
+        #     print '未知'
+        #     nickname = '未知'
+        timeArray = time.localtime()
         otherStyleTime = time.strftime("%Y-%m-%d %H:%M:%S", timeArray)
 
-
         rating = {}
-        # if not OeUser.objects.filter(user_name=request.POST.get('username', '')).first():
-        #     user = {
-        #         'user_name': request.POST.get('username', ''),
-        #         'head_path': request.POST.get('avatar', ''),
-        #         'create_time': otherStyleTime,
-        #         'id': str(int(OeUser.objects.latest('id').id) + 1)
-        #     }
-        #     OeUser.objects.create(**user)
-        #     rating['user'] = OeUser.objects.filter(id=str(OeUser.objects.all().count() - 1)).first()
-        # else:
-        #     rating['user'] = OeUser.objects.filter(user_name=request.POST.get('username', '')).first()
-
-        # rating['user'] = OeUser.objects.filter().first()
-
         rating['wx_user'] = OeWxUser.objects.filter(nickname=nickname).first()
         rating['exhibit'] = OeExhibit.objects.filter(id=offset).first()
         rating['create_time'] = otherStyleTime
@@ -832,16 +809,16 @@ def exhibit_ratings(request, offset):
             rating['id'] = str(int(OeExhibitComment.objects.latest('create_time').id) + 1)
         except:
             rating['id'] = '1'
-        if cookie == 'error':
-            return HttpResponse(json.dumps('error'), content_type='application/json')
-        if request.GET.get('type','') == '1':
-            image = request.FILES.get('imageblob')
-            path = default_storage.save(STATICFILES_DIRS[0] + '/exhibit/image_rating/' + image.name + otherStyleTime +'.jpeg', ContentFile(image.read()))
-        if request.GET.get('type','') == '1':
-            rating['type'] = 1
-            rating['rate_image'] = '/static/exhibit/image_rating/' + image.name + otherStyleTime + '.jpeg'
-        else:
-            rating['type'] = 0
+        # if cookie == 'error':
+        #     return HttpResponse(json.dumps('error'), content_type='application/json')
+        # if request.GET.get('type','') == '1':
+        #     image = request.FILES.get('imageblob')
+        #     path = default_storage.save(STATICFILES_DIRS[0] + '/exhibit/image_rating/' + image.name + otherStyleTime +'.jpeg', ContentFile(image.read()))
+        # if request.GET.get('type','') == '1':
+        #     rating['type'] = 1
+        #     rating['rate_image'] = '/static/exhibit/image_rating/' + image.name + otherStyleTime + '.jpeg'
+        # else:
+        rating['type'] = 0
         OeExhibitComment.objects.create(**rating)
 
 
@@ -882,6 +859,7 @@ def exhibit_ratings(request, offset):
             }
             comment_list.append(show_dict)
         comment_dict = {'ratings': comment_list}
+        print comment_dict
         return HttpResponse(json.dumps(comment_dict), content_type='application/json')
 
 @csrf_exempt
@@ -895,17 +873,23 @@ def exhibit_remark(request, offset):
         print request.COOKIES
         print request.session.get('openid', default=None)
 
-        cookie = request.COOKIES.get('sessionid', 'error')
-        if cookie != 'error':
-            try:
-                openid = Session.objects.get(session_key=cookie).get_decoded()['openid']
-            except:
-                openid = ''
-            # openid = request.session.get('openid', default=None)
-            nickname = OeWxUser.objects.filter(appid=openid).first().nickname
+        # cookie = request.COOKIES.get('sessionid', 'error')
+        # if cookie != 'error':
+        #     try:
+        #         openid = Session.objects.get(session_key=cookie).get_decoded()['openid']
+        #     except:
+        #         openid = ''
+        #     # openid = request.session.get('openid', default=None)
+        #     nickname = OeWxUser.objects.filter(appid=openid).first().nickname
+        # else:
+        #     print '未知'
+        #     nickname = '未知'
+
+        if request.session.get('openid', 'error') == 'error':
+            return HttpResponse(json.dumps('error'), content_type='application/json')
         else:
-            print '未知'
-            nickname = '未知'
+            openid = request.session.get('openid', 'error')
+            nickname = OeWxUser.objects.filter(appid=openid).first().nickname
 
         timeArray = time.localtime()
         otherStyleTime = time.strftime("%Y-%m-%d %H:%M:%S", timeArray)
@@ -1035,15 +1019,22 @@ def exhibition(request, offset):
             enjoyable_list.append(show_dict)
         enjoyable_dict = {'enjoyables': enjoyable_list}
 
-        cookie = request.COOKIES.get('sessionid', 'error')
-        if cookie == 'error':
+        # cookie = request.COOKIES.get('sessionid', 'error')
+        # if cookie == 'error':
+        #     return HttpResponse(json.dumps('error'), content_type='application/json')
+        # try:
+        #     openid = Session.objects.get(session_key=cookie).get_decoded()['openid']
+        #     nickname = OeWxUser.objects.filter(appid=openid).first().nickname
+        # except:
+        #     openid = ''
+        #     nickname = ''
+
+        if request.session.get('openid', 'error') == 'error':
             return HttpResponse(json.dumps('error'), content_type='application/json')
-        try:
-            openid = Session.objects.get(session_key=cookie).get_decoded()['openid']
+        else:
+            openid = request.session.get('openid', 'error')
             nickname = OeWxUser.objects.filter(appid=openid).first().nickname
-        except:
-            openid = ''
-            nickname = ''
+
         user = OeUser.objects.filter(nickname=nickname).first()
         if OeUserExhibitionCollection.objects.filter(user=user.id, exhibition=offset).first():
             collect_flag = True
@@ -1205,17 +1196,24 @@ def exhibition_ratings(request, offset):
         print request.COOKIES
         print request.session.get('openid', default=None)
 
-        cookie = request.COOKIES.get('sessionid','error')
-        if cookie != 'error':
-            try:
-                openid = Session.objects.get(session_key=cookie).get_decoded()['openid']
-            except:
-                openid = ''
-            # openid = request.session.get('openid', default=None)
-            nickname = OeWxUser.objects.filter(appid=openid).first().nickname
+        # cookie = request.COOKIES.get('sessionid','error')
+        # if cookie != 'error':
+        #     try:
+        #         openid = Session.objects.get(session_key=cookie).get_decoded()['openid']
+        #     except:
+        #         openid = ''
+        #     # openid = request.session.get('openid', default=None)
+        #     nickname = OeWxUser.objects.filter(appid=openid).first().nickname
+        # else:
+        #     print '未知'
+        #     nickname = '未知'
+
+        if request.session.get('openid', 'error') == 'error':
+            return HttpResponse(json.dumps('error'), content_type='application/json')
         else:
-            print '未知'
-            nickname = '未知'
+            openid = request.session.get('openid', 'error')
+            nickname = OeWxUser.objects.filter(appid=openid).first().nickname
+
         timeArray = time.localtime()
 
         otherStyleTime = time.strftime("%Y-%m-%d %H:%M:%S", timeArray)
@@ -1250,16 +1248,16 @@ def exhibition_ratings(request, offset):
             rating['id'] = str(int(OeExhibitionComment.objects.latest('create_time').id) + 1)
         except:
             rating['id'] = '1'
-        if cookie == 'error':
-            return HttpResponse(json.dumps('error'), content_type='application/json')
-        if request.GET.get('type','') == '1':
-            image = request.FILES.get('imageblob')
-            path = default_storage.save(STATICFILES_DIRS[0] + '/exhibit/image_rating/' + image.name + otherStyleTime +'.jpeg', ContentFile(image.read()))
-        if request.GET.get('type','') == '1':
-            rating['type'] = 1
-            rating['rate_image'] = '/static/exhibit/image_rating/' + image.name + otherStyleTime + '.jpeg'
-        else:
-            rating['type'] = 0
+        # if cookie == 'error':
+        #     return HttpResponse(json.dumps('error'), content_type='application/json')
+        # if request.GET.get('type','') == '1':
+        #     image = request.FILES.get('imageblob')
+        #     path = default_storage.save(STATICFILES_DIRS[0] + '/exhibit/image_rating/' + image.name + otherStyleTime +'.jpeg', ContentFile(image.read()))
+        # if request.GET.get('type','') == '1':
+        #     rating['type'] = 1
+        #     rating['rate_image'] = '/static/exhibit/image_rating/' + image.name + otherStyleTime + '.jpeg'
+        # else:
+        rating['type'] = 0
         print rating
         OeExhibitionComment.objects.create(**rating)
 
@@ -1349,9 +1347,10 @@ def exhibition_vedio_readings(request, offset):
 def attention(request):
     print request.COOKIES
     print request.session.get('openid', default=None)
-    cookie = request.COOKIES.get('sessionid', 'error')
-    if cookie == 'error':
+
+    if request.session.get('openid', 'error') == 'error':
         return HttpResponse(json.dumps('error'), content_type='application/json')
+
     openid = request.session.get('openid', default=None)
     wx_user = OeWxUser.objects.filter(appid=openid).first()
     if request.method == 'POST':
@@ -1450,16 +1449,23 @@ def collect(request, offset):
         response = HttpResponse(json.dumps(return_collect_dict), content_type='application/json')
         return response
     if request.method == "POST":
-        cookie = request.COOKIES.get('sessionid', 'error')
-        if cookie == 'error':
-            return HttpResponse(json.dumps('error'), content_type='application/json')
+        # cookie = request.COOKIES.get('sessionid', 'error')
+        # if cookie == 'error':
+        #     return HttpResponse(json.dumps('error'), content_type='application/json')
+        #
+        # try:
+        #     openid = Session.objects.get(session_key=cookie).get_decoded()['openid']
+        #     nickname = OeWxUser.objects.filter(appid=openid).first().nickname
+        # except:
+        #     openid = ''
+        #     nickname = ''
 
-        try:
-            openid = Session.objects.get(session_key=cookie).get_decoded()['openid']
+        if request.session.get('openid', 'error') == 'error':
+            return HttpResponse(json.dumps('error'), content_type='application/json')
+        else:
+            openid = request.session.get('openid', 'error')
             nickname = OeWxUser.objects.filter(appid=openid).first().nickname
-        except:
-            openid = ''
-            nickname = ''
+
         if request.GET.get('type') == '0':
             user = OeUser.objects.filter(nickname=nickname).first()
             exhibit = OeExhibit.objects.filter(id=offset).first()
@@ -1486,17 +1492,24 @@ def collect(request, offset):
         response = HttpResponse(json.dumps({}), content_type='application/json')
         return response
     if request.method == "DELETE":
-        cookie = request.COOKIES.get('sessionid', 'error')
-        if cookie == 'error':
-            return HttpResponse(json.dumps('error'), content_type='application/json')
+        # cookie = request.COOKIES.get('sessionid', 'error')
+        # if cookie == 'error':
+        #     return HttpResponse(json.dumps('error'), content_type='application/json')
+        #
+        # try:
+        #     openid = Session.objects.get(session_key=cookie).get_decoded()['openid']
+        #     nickname = OeWxUser.objects.filter(appid=openid).first().nickname
+        # except:
+        #     openid = ''
+        #     nickname = ''
+        # print request.GET.get('type')
 
-        try:
-            openid = Session.objects.get(session_key=cookie).get_decoded()['openid']
+        if request.session.get('openid', 'error') == 'error':
+            return HttpResponse(json.dumps('error'), content_type='application/json')
+        else:
+            openid = request.session.get('openid', 'error')
             nickname = OeWxUser.objects.filter(appid=openid).first().nickname
-        except:
-            openid = ''
-            nickname = ''
-        print request.GET.get('type')
+
         if request.GET.get('type') == '0':
             user = OeUser.objects.filter(nickname=nickname).first()
             OeUserExhibitCollection.objects.filter(user=user.id, exhibit=offset).delete()

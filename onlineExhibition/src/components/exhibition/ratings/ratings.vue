@@ -120,7 +120,7 @@
           formData.append('text',rating['text']);
           this.$http.post('http://'+ host +'/exhibition_ratings/'+ this.exhibition_id+'/?type=1',formData ).then(response => {
             if(response.body === 'error'){
-              window.location = 'https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx522cca3d4b048aa9&redirect_uri=http%3A//'+ encodeURIComponent(host) +'/artist_html/%3Fartist%3D0&response_type=code&scope=snsapi_userinfo&state=123#wechat_redirect'
+              window.location = 'https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx522cca3d4b048aa9&redirect_uri=http%3A//'+ encodeURIComponent(host) +'/home_html/&response_type=code&scope=snsapi_userinfo&state=123#wechat_redirect'
             }else{
               document.body.style.height = '';
               document.body.style.overflow = '';
