@@ -1512,32 +1512,29 @@ def send_auth_code(request):
     if request.method == "POST":
         phone_number = request.POST.get('phone_number', '')
         wx_user_id = request.POST.get('wx_user_id', '')
+        if request.GET.get('type', '') != 'check':
+            if phone_number == '' or len(phone_number) != 11:
+                return_dict = {'code': -3}
+                response = HttpResponse(json.dumps(return_dict), content_type='application/json')
+                return response
 
-        if phone_number == '' or len(phone_number) != 11:
-            return_dict = {'code': -3}
-            response = HttpResponse(json.dumps(return_dict), content_type='application/json')
-            return response
-
-        try:
-            number = int(phone_number)
-        except:
-            return_dict = {'code': -3}
-            response = HttpResponse(json.dumps(return_dict), content_type='application/json')
-            return response
-        wx_user_nickname = OeWxUser.objects.filter(id=int(wx_user_id)).first().nickname
-        if OeUser.objects.filter(nickname=wx_user_nickname, mobile_phone=phone_number):
-            return_dict = {'code': -2}
-            response = HttpResponse(json.dumps(return_dict), content_type='application/json')
-            return response
-
-
+            try:
+                number = int(phone_number)
+            except:
+                return_dict = {'code': -3}
+                response = HttpResponse(json.dumps(return_dict), content_type='application/json')
+                return response
+            wx_user_nickname = OeWxUser.objects.filter(id=int(wx_user_id)).first().nickname
+            if OeUser.objects.filter(nickname=wx_user_nickname, mobile_phone=phone_number):
+                return_dict = {'code': -2}
+                response = HttpResponse(json.dumps(return_dict), content_type='application/json')
+                return response
 
         __business_id = uuid.uuid1()
-        print __business_id
         code = str(random.randrange(100000, 999999, 6))
         params = {"code":code}
         result = send_sms(__business_id, phone_number, "艺术展厅app", "SMS_91030041", json.dumps(params))
-
+        print result
         if json.loads(result)['Message'] == 'OK':
             return_dict = {'code': 200}
             OeWxUser.objects.filter(id=int(wx_user_id)).update(auth_code=code, bind_phone=phone_number)
@@ -1561,6 +1558,24 @@ def bing_phone_commit(request):
             return_dict = {'code': -1}
         response = HttpResponse(json.dumps(return_dict), content_type='application/json')
         return response
+
+@csrf_exempt
+def check_phone_commit(request):
+    if request.method == "POST":
+        phone_number = request.POST.get('phone_number', '')
+        auth_code = request.POST.get('auth_code', '')
+        wx_user_id = request.POST.get('wx_user_id', '')
+
+        if OeWxUser.objects.filter(id=int(wx_user_id), auth_code=auth_code, bind_phone=phone_number):
+            wx_user_nickname = OeWxUser.objects.filter(id=int(wx_user_id)).first().nickname
+            OeUser.objects.filter(nickname=wx_user_nickname).update(mobile_phone=phone_number)
+            return_dict = {'code': 200}
+        else:
+            return_dict = {'code': -1}
+        response = HttpResponse(json.dumps(return_dict), content_type='application/json')
+        return response
+
+
 
 def artist_html(request):
     return render_to_response('artist.html', locals())

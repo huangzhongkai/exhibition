@@ -296,6 +296,7 @@
               + '&get_offset=' + _this.get_offset ).then(response => {
               for(let i=0; i<response.body.ratings.length; i++){
                 _this.exhibit.ratings.push(response.body.ratings[i]);
+                _this.flag.push(true);
               }
               if(response.body.ratings.length < _this.get_count){
                 $("#loading").html('没有更多评论了');

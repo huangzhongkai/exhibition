@@ -24,6 +24,9 @@
 
     <bind_phone ref="bind_phone">
     </bind_phone>
+
+    <show_phone ref="show_phone">
+    </show_phone>
   </div>
 </template>
 
@@ -33,12 +36,14 @@
   import global_ from '../Global.vue'
   import collect from './collect/collect.vue'
   import bind_phone from './bind_phone/bind_phone.vue'
+  import show_phone from './bind_phone/show_phone.vue'
 
   let host = global_.host;
   export default {
     components: {
       collect,
-      bind_phone
+      bind_phone,
+      show_phone
     },
     data () {
       return {
@@ -66,7 +71,11 @@
         this.$refs.collect.show();
       },
       bind_phone(){
-        this.$refs.bind_phone.show();
+        if(this.person.phone_number != ''){
+          this.$refs.show_phone.show();
+        }else{
+          this.$refs.bind_phone.show();
+        }
       }
     }
   }

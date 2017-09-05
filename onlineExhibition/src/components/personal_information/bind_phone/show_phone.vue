@@ -8,23 +8,26 @@
         <i class="icon-arrow_lift"></i>
       </div>
       <div class="content">
-        <div class="my_phone input-group input-group-lg">
-          <span class="input-group-addon" id="sizing-addon1">手机号</span>
-          <input v-model="phone_number" type="text" class="form-control" placeholder="" aria-describedby="sizing-addon1">
+        <span>为了保证账号安全，请验证身份，验证成功后进行下一步操作</span>
+        <div class="my_phone">
+          <span class="number">{{person.phone_number}}</span>
         </div>
         <br>
         <div class="my_code input-group input-group-lg">
           <input v-model="auth_code" type="text" class="form-control" placeholder="输入验证码" aria-describedby="basic-addon2">
           <span class="input-group-btn">
-            <button id="send_code" @click="sendMsg()" class="btn btn-primary" type="button">{{operation}}</button>
+            <button id="send_check_code" @click="sendMsg()" class="btn btn-primary" type="button">{{operation}}</button>
           </span>
         </div>
         <div class="my_commit">
-          <button @click="commit()" type="button" class="btn btn-default" >提交</button>
+          <button @click="commit()" type="button" class="btn btn-default" >验证身份</button>
         </div>
       </div>
 
       <div class="alert"></div>
+
+      <bind_phone ref="bind_phone">
+      </bind_phone>
     </div>
   </transition>
 </template>
@@ -32,12 +35,18 @@
 <script type="text/ecmascript-6">
   import {urlParse} from '../../../common/js/util';
   import global_ from '../../Global.vue'
+  import bind_phone from './bind_phone.vue'
 
   let host = global_.host;
   let count = 60;
+
   export default {
+    components: {
+      bind_phone,
+    },
     data () {
       return {
+        person:{},
         phone_number:'',
         auth_code:'',
         showFlag: false,
@@ -54,9 +63,10 @@
     methods: {
       commit(){
         let params = {'phone_number':this.phone_number, 'auth_code': this.auth_code, 'wx_user_id': this.param.id};
-        this.$http.post('http://'+ host +'/bing_phone_commit/', params, {emulateJSON:true}).then(response => {
+        this.$http.post('http://'+ host +'/check_phone_commit/', params, {emulateJSON:true}).then(response => {
           if(response.body.code === 200){
-            window.location.reload();
+            $('.alert').html('验证成功，请绑定新手机号').addClass('alert-success').show().delay(1500).fadeOut();
+            this.$refs.bind_phone.show();
           }else if(response.body.code === -1){
             $('.alert').html('验证码错误').addClass('alert-warning').show().delay(1500).fadeOut();
           }
@@ -64,16 +74,16 @@
         });
       },
       time() {
-        this.$store.state.timeout = this.$store.state.timeout -1;
-        this.operation = this.$store.state.timeout +'s后可重发';
-        if(this.$store.state.timeout === count-1){
-          $('#send_code').removeClass('btn-primary').addClass('btn-default');
+        this.$store.state.check_timeout = this.$store.state.check_timeout -1;
+        this.operation = this.$store.state.check_timeout +'s后可重发';
+        if(this.$store.state.check_timeout === count-1){
+          $('#send_check_code').removeClass('btn-primary').addClass('btn-default');
         }
-        if(this.$store.state.timeout === 0){
+        if(this.$store.state.check_timeout === 0){
           clearInterval(this.time_return_code);
-          this.$store.state.timeout =count;
+          this.$store.state.check_timeout =count;
           this.operation = '发送验证码';
-          $('#send_code').removeClass('btn-default').addClass('btn-primary');
+          $('#send_check_code').removeClass('btn-default').addClass('btn-primary');
         }
       },
       show() {
@@ -83,9 +93,9 @@
         this.showFlag = false;
       },
       sendMsg() {
-        if(this.$store.state.timeout === count){
+        if(this.$store.state.check_timeout === count){
           let params = {'phone_number':this.phone_number, 'wx_user_id': this.param.id};
-          this.$http.post('http://'+ host +'/send_auth_code/',params, {emulateJSON:true}).then(response => {
+          this.$http.post('http://'+ host +'/send_auth_code/?type=check',params, {emulateJSON:true}).then(response => {
             if(response.body.code === 200){
               this.time_return_code = setInterval(this.time, 1000);
               $('.alert').html('验证码发送成功').addClass('alert-success').show().delay(2000).fadeOut();
@@ -102,8 +112,13 @@
       }
     },
     created() {
-      if(this.$store.state.timeout != count && this.$store.state.timeout != 0){
-        this.operation = this.$store.state.timeout +'s后可重发';
+      this.$http.get('http://' + host + '/information/' + this.param.id + '/').then(response => {
+        this.person = response.body;
+        this.phone_number = this.person.phone_number;
+      }, response => {
+      });
+      if(this.$store.state.check_timeout != count && this.$store.state.check_timeout != 0){
+        this.operation = this.$store.state.check_timeout +'s后可重发';
         this.time_return_code = setInterval(this.time, 1000)
       }else{
         this.operation = '发送验证码'
@@ -148,9 +163,11 @@
       top: 50px
       bottom: 0px
       .my_phone
-        margin-top: 60px
+        margin-top: 40px
         margin-left: 20px
         margin-right: 20px
+        .number
+          font-size: 32px
       .my_code
         margin-top: 20px
         margin-left: 20px
