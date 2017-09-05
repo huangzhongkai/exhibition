@@ -528,7 +528,9 @@ def login(request):
                                       head_path=user_info['headimgurl'],
                                       create_time=otherStyleTime)
 
-            response = HttpResponse(json.dumps({}), content_type='application/json')
+            user_id = OeWxUser.objects.filter(appid=request.session['openid']).first().id
+            user_info= {'user_id':user_id}
+            response = HttpResponse(json.dumps(user_info), content_type='application/json')
             return response
 
 

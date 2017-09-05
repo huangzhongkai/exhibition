@@ -141,7 +141,7 @@
   import ratings from '../ratings/ratings.vue'
   import wx from 'weixin-js-sdk'
   import Cropper from 'cropperjs'
-  import 'font-awesome-webpack'
+
 
   import global_ from '../../Global.vue'
 
@@ -353,8 +353,7 @@
         }
       },
       show_information(id){
-        let url = "http://"+ host +"/personal_information_html/?id=" + id
-        window.open(url);
+//        window.open("http://"+ host +"/personal_information_html/?id=" + id);
       },
       utf8ToUtf16(str){
         let patt = /&#(\d+);/g;

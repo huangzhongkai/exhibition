@@ -104,6 +104,31 @@
       </div>
     </div>
 
+    <div class="bottom-box">
+      <div class="tab">
+        <div class="tab-item">
+          <span>
+            <i class="fa fa-user-circle fa-1x" aria-hidden="true"></i>
+            <!--<span><img src="/static/exhibit/rating.png" width="20px" height="20px"/></span>-->
+            <span @click="show_artist()" style="margin-left: 1px">艺术家</span>
+          </span>
+        </div>
+        <div class="tab-item">
+          <span>
+            <i class="fa fa-user-o fa-1x" aria-hidden="true"></i>
+            <!--<span><img src="/static/exhibit/rating.png" width="20px" height="20px"/></span>-->
+            <span @click="show_info()" style="margin-left: 1px">个人信息</span>
+          </span>
+        </div>
+        <!--<div class="tab-item">-->
+          <!--<span>-->
+            <!--<i :class="collect_icon" aria-hidden="true"></i>-->
+            <!--&lt;!&ndash;<span><img src="/static/exhibit/rating.png" width="20px" height="20px"/></span>&ndash;&gt;-->
+            <!--<span @click="collect(0)" style="margin-left: 1px">{{collect_flag}}</span>-->
+          <!--</span>-->
+        <!--</div>-->
+      </div>
+    </div>
     <more_charactor :exhibition_id="0" ref="more_charactor">
     </more_charactor>
   </div>
@@ -115,6 +140,7 @@
   import wx from 'weixin-js-sdk'
   import global_ from '../Global.vue'
   import {urlParse} from '../../common/js/util';
+  import 'font-awesome-webpack'
 
   let host = global_.host;
 
@@ -163,6 +189,7 @@
         i_height:'',
         exhibits:[],
         config:{},
+        user_id:'',
         header: {
           code: (() => {
             let queryParam = urlParse();
@@ -283,6 +310,7 @@
         window.location = 'https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx522cca3d4b048aa9&redirect_uri=http%3A//'+ encodeURIComponent(host) +'/home_html/&response_type=code&scope=snsapi_userinfo&state=123#wechat_redirect'
       }else{
         this.$http.get('http://'+ host +'/login/?code=' + this.header.code).then(response => {
+          this.user_id = response.body.user_id;
         },response => {
         });
       }
@@ -304,11 +332,18 @@
         document.body.style.overflow = 'hidden';
         this.$refs.more_charactor.show();
       },
+      show_artist(){
+
+      },
+      show_info(){
+        window.open("http://"+ host +"/personal_information_html/?id=" + this.user_id);
+      }
     }
   }
 </script>
 
 <style lang="stylus" rel="stylesheet/stylus">
+  @import "../../common/stylus/mixin.styl"
   .swiper-inner
     width: 100%;
     height: 240px;
@@ -369,6 +404,27 @@
           margin-right: 5px
         .recommend-right-bottom-right
           width:50%
+  .bottom-box
+    position: fixed
+    left: 0
+    bottom: 0
+    z-index: 20
+    width: 100%
+    height: 48px
+    background-color: white
+    border-top:1px solid gainsboro
+    .tab
+      display: flex
+      width: 100%
+      height: 48px
+      line-height: 40px
+      border-color: white
+      border-1px(rgba(7, 17, 27, 0.1))
+      .tab-item
+        flex: 1
+        margin-top: 2px
+        margin-bottom: 2px
+        text-align: center
 
 
 </style>
