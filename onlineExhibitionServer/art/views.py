@@ -709,6 +709,10 @@ def exhibits(request):
             exhibits = OeExhibit.objects.filter(exhibition__id=exhibition, category__id=1)
             for exhibit in exhibits:
                 exhibit_l.append(model_to_dict(exhibit))
+        elif type =='all':
+            exhibits = OeExhibit.objects.filter(exhibition__id=exhibition)
+            for exhibit in exhibits:
+                exhibit_l.append(model_to_dict(exhibit))
         return HttpResponse(json.dumps(exhibit_l), content_type='application/json')
 
     if artist_id != 'error':

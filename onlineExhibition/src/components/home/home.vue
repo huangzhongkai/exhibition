@@ -122,14 +122,15 @@
         </div>
       </div>
     </div>
-    <more_charactor :exhibition_id="0" ref="more_charactor">
-    </more_charactor>
+
+    <more_exhibit :exhibition_id="0" type="all" ref="more_charactor">
+    </more_exhibit>
   </div>
 </template>
 
 <script type="text/ecmascript-6">
   import { swiper, swiperSlide,} from 'vue-awesome-swiper'
-  import more_charactor from "../exhibition/more_charactor/more_charactor.vue"
+  import more_exhibit from "../exhibition/more_exhibit/more_exhibit.vue"
   import wx from 'weixin-js-sdk'
   import global_ from '../Global.vue'
   import {urlParse} from '../../common/js/util';
@@ -141,7 +142,7 @@
     components: {
       swiper,
       swiperSlide,
-      more_charactor
+      more_exhibit
     },
     data(){
       return {

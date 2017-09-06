@@ -136,11 +136,11 @@
     <more_reading :exhibition_id="param.id" ref="more_reading">
     </more_reading>
 
-    <more_charactor :exhibition_id="param.id" ref="more_charactor">
-    </more_charactor>
+    <more_exhibit :exhibition_id="param.id" type="charactor" ref="more_charactor">
+    </more_exhibit>
 
-    <more_enjoyable :exhibition_id="param.id" ref="more_enjoyable">
-    </more_enjoyable>
+    <more_exhibit :exhibition_id="param.id" type="enjoyable" ref="more_enjoyable">
+    </more_exhibit>
 
     <ratings :exhibition_id="param.id" ref="edit_ratings">
     </ratings>
@@ -153,8 +153,7 @@
   import {urlParse} from '../../../common/js/util';
 //  import audio_reading from '../../audio/audio_reading.vue'
   import more_reading from "../more_reading/more_reading.vue"
-  import more_charactor from "../more_charactor/more_charactor.vue"
-  import more_enjoyable from "../more_enjoyable/more_enjoyable.vue"
+  import more_exhibit from "../more_exhibit/more_exhibit.vue"
   import wx from 'weixin-js-sdk'
   import ratings from '../ratings/ratings.vue'
   import 'font-awesome-webpack'
@@ -166,8 +165,7 @@
     components: {
       ratings,
       more_reading,
-      more_charactor,
-      more_enjoyable
+      more_exhibit
     },
     data () {
       return {

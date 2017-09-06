@@ -48,7 +48,8 @@
 
   export default {
     props: {
-      exhibition_id:0
+      exhibition_id:0,
+      type:''
     },
     data () {
       return {
@@ -79,7 +80,7 @@
     },
     created() {
       if(this.exhibition_id != undefined){
-        this.$http.get('http://'+ host +'/exhibits/?exhibition='+ this.exhibition_id + '&type=charactor').then(response => {
+        this.$http.get('http://'+ host +'/exhibits/?exhibition='+ this.exhibition_id + '&type=' + this.type).then(response => {
           this.exhibits = [];
           this.exhibits_right = [];
           if(response.body.length%2 === 0){
