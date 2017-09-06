@@ -86,7 +86,7 @@
               <!--<img @click="zoomout()" :width="w" :height="h" :src="rating.rate_image">-->
             </div>
           </div>
-          <div>
+          <div class="flags">
             <img v-show="flag[index]" @click="show_rating(index)" class="flag" src="/static/exhibit/rating.png"/>
           </div>
         </li>
@@ -632,14 +632,16 @@
           border-style: solid
           border-radius: 5px
           overflow: hidden
-      .flag
-        position: absolute
-        right: 10px
-        width: 16px
-        height: 16px
-        line-height: 12px
-        font-size: 10px
-        color: rgb(147, 153, 159)
+      .flags
+        margin-left :50px
+        .flag
+          position: absolute
+          right: 10px
+          width: 16px
+          height: 16px
+          line-height: 12px
+          font-size: 10px
+          color: rgb(147, 153, 159)
   .bottom-box
     position: fixed
     left: 0

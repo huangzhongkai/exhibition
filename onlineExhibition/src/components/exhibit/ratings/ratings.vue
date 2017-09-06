@@ -104,6 +104,9 @@
         return new Blob( [ab] , {type : 'image/png'});
       },
       upload(){
+        if(this.ratings === ''){
+          return ;
+        }
         this.showFlag = false;
         let rating = {};
         rating['rateTime'] = Date.parse(new Date())/1000;
