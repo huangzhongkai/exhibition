@@ -505,7 +505,7 @@ def login(request):
                 request.session['openid'] = user_info['openid']
                 print 'set cookie'
 
-            if not OeWxUser.objects.filter(appid=user_info['openid']):
+            if not OeWxUser.objects.filter(appid=request.session.get('openid', 'error')):
                 OeWxUser.objects.create(appid=user_info['openid'],
                                         nickname=user_info['nickname'].encode("ISO-8859-1").decode('utf-8'),
                                         sex=str(user_info['sex']),
@@ -529,6 +529,7 @@ def login(request):
 
             user_id = OeWxUser.objects.filter(appid=request.session['openid']).first().id
             user_info= {'user_id':user_id}
+            print user_info
             response = HttpResponse(json.dumps(user_info), content_type='application/json')
             return response
 
