@@ -26,7 +26,7 @@
 
       <div class="alert"></div>
 
-      <bind_phone ref="bind_phone">
+      <bind_phone title="绑定新手机号" ref="bind_phone">
       </bind_phone>
     </div>
   </transition>

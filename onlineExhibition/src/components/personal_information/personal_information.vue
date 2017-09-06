@@ -22,7 +22,7 @@
     <collect ref="collect">
     </collect>
 
-    <bind_phone ref="bind_phone">
+    <bind_phone title="绑定手机号" ref="bind_phone">
     </bind_phone>
 
     <show_phone ref="show_phone">

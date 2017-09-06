@@ -2,7 +2,7 @@
   <transition name="move">
     <div v-show="showFlag" class="bind">
       <div class="top">
-        绑定手机号
+        {{title}}
       </div>
       <div class="back" @click="hide">
         <i class="icon-arrow_lift"></i>
@@ -36,6 +36,9 @@
   let host = global_.host;
   let count = 60;
   export default {
+    props: {
+      title:'',
+    },
     data () {
       return {
         phone_number:'',
