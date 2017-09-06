@@ -8,7 +8,7 @@ from art.views import exhibition, exhibitions, exhibit_readings,exhibition_readi
     exhibition_vedio_readings, get_signature, motified_signature, exhibition_ratings
 from art.views import home_html, exhibition_html, exhibit_html, artist_html, exhibit_ratings, \
     image_text_readings_html, video_readings_html, attention, information, personal_information_html, collect, \
-    bing_phone_commit, send_auth_code, exhibit_remark, check_phone_commit, login
+    bing_phone_commit, send_auth_code, exhibit_remark, check_phone_commit, login, artists_html
 
 admin.autodiscover()
 
@@ -60,6 +60,7 @@ urlpatterns = [
     url(r'^image_text_readings_html/$', image_text_readings_html),
     url(r'^video_readings_html/$', video_readings_html),
     url(r'^personal_information_html/$', personal_information_html),
+    url(r'^artists_html/$', artists_html),
 
     # url(r'^server_manage/$', server_manage)
 ]

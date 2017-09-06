@@ -20,7 +20,8 @@ module.exports = {
     'image_text_readings': './src/view/readings/image_text_readings/image_text_readings.js',
     'video_readings': './src/view/readings/video_readings/video_readings.js',
     'ratings':'./src/view/ratings/ratings.js',
-    'information':'./src/view/personal_information/information.js'
+    'information':'./src/view/personal_information/information.js',
+    'artists':'./src/view/artists/artists.js'
   },
   output: {
     path: config.build.assetsRoot,

@@ -564,14 +564,21 @@ def artist(request, offset):
 
 def artists(request):
     artist_list = []
+    get_count = int(request.GET.get('get_count', '0'))
+    get_offset = int(request.GET.get('get_offset', '0'))
 
-    artists = OeArtist.objects.all()
+    total = OeArtist.objects.all().count()
+    print total
+    get_offset = int(get_offset)
+    if total - get_offset < get_count:
+        get_count = total - get_offset
+
+    artists = OeArtist.objects.filter()[get_offset:get_offset+get_count]
     for artist in artists:
         artist_dict = model_to_dict(artist)
         artist_dict['modify_time'] = artist_dict['modify_time'].strftime('%Y-%m-%d')
         artist_dict['create_time'] = artist_dict['create_time'].strftime('%Y-%m-%d')
         artist_list.append(artist_dict)
-    print artist_list
     return HttpResponse(json.dumps(artist_list), content_type='application/json')
 
 def exhibit(request, offset):
@@ -1612,6 +1619,9 @@ def image_text_readings_html(request):
 
 def personal_information_html(request):
     return render_to_response('information.html', locals())
+
+def artists_html(request):
+    return render_to_response('artists.html', locals())
 
 
 def motified_signature(request):

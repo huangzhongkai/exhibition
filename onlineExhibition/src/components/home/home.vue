@@ -120,13 +120,6 @@
             <span @click="show_info()" style="margin-left: 1px">个人信息</span>
           </span>
         </div>
-        <!--<div class="tab-item">-->
-          <!--<span>-->
-            <!--<i :class="collect_icon" aria-hidden="true"></i>-->
-            <!--&lt;!&ndash;<span><img src="/static/exhibit/rating.png" width="20px" height="20px"/></span>&ndash;&gt;-->
-            <!--<span @click="collect(0)" style="margin-left: 1px">{{collect_flag}}</span>-->
-          <!--</span>-->
-        <!--</div>-->
       </div>
     </div>
     <more_charactor :exhibition_id="0" ref="more_charactor">
@@ -333,7 +326,7 @@
         this.$refs.more_charactor.show();
       },
       show_artist(){
-
+        window.open("http://"+ host +"/artists_html/");
       },
       show_info(){
         window.open("http://"+ host +"/personal_information_html/?id=" + this.user_id);

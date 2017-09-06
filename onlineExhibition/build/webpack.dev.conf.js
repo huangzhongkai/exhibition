@@ -76,6 +76,12 @@ module.exports = merge(baseWebpackConfig, {
       inject: true,
       chunks: ['information']
     }),
+    new HtmlWebpackPlugin({
+      filename: 'artists/artists.html',
+      template: './src/view/artists/artists.html',
+      inject: true,
+      chunks: ['artists']
+    }),
     new FriendlyErrorsPlugin()
   ]
 })

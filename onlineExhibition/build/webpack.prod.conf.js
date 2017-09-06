@@ -154,6 +154,21 @@ var webpackConfig = merge(baseWebpackConfig, {
       // necessary to consistently work with multiple chunks via CommonsChunkPlugin
       chunksSortMode: 'dependency'
     }),
+    new HtmlWebpackPlugin({
+      filename: '../dist/artists.html',
+      template: './src/view/artists/artists.html',
+      inject: true,
+      chunks:['artists','vendor','manifest'],
+      minify: {
+        removeComments: true,
+        collapseWhitespace: true,
+        removeAttributeQuotes: true
+        // more options:
+        // https://github.com/kangax/html-minifier#options-quick-reference
+      },
+      // necessary to consistently work with multiple chunks via CommonsChunkPlugin
+      chunksSortMode: 'dependency'
+    }),
     //split vendor js into its own file
     new webpack.optimize.CommonsChunkPlugin({
       name: 'vendor',
