@@ -496,13 +496,12 @@ def login(request):
             appid = OeWxDeveloper.objects.filter(id=1).first().appid
             appsecret = OeWxDeveloper.objects.filter(id=1).first().appsecret
 
-            wx = Wx(appid, appsecret, '')
-            access_token = wx.get_web_access_token(code)
-            print access_token
-            user_info = wx.get_user_info(access_token['access_token'], access_token['openid'])
-            print user_info
-
             if request.session.get('openid', 'error') == 'error':
+                wx = Wx(appid, appsecret, '')
+                access_token = wx.get_web_access_token(code)
+                print access_token
+                user_info = wx.get_user_info(access_token['access_token'], access_token['openid'])
+                print user_info
                 request.session['openid'] = user_info['openid']
                 print 'set cookie'
 

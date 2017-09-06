@@ -16,6 +16,24 @@
       </div>
     </div>
     <router-view></router-view>
+    <div class="bottom-box">
+      <div class="tab">
+        <div class="tab-item">
+          <span>
+            <i class="fa fa-reply fa-1x" aria-hidden="true"></i>
+            <!--<span><img src="/static/exhibit/rating.png" width="20px" height="20px"/></span>-->
+            <span @click="back()" style="margin-left: 1px">返回</span>
+          </span>
+        </div>
+        <div class="tab-item">
+          <span>
+            <i class="fa fa-home fa-1x" aria-hidden="true"></i>
+            <!--<span><img src="/static/exhibit/rating.png" width="20px" height="20px"/></span>-->
+            <span @click="home()" style="margin-left: 1px">首页</span>
+          </span>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -25,6 +43,7 @@
   import wx from 'weixin-js-sdk'
 
   import global_ from './../Global.vue'
+  import 'font-awesome-webpack'
 
   let host = global_.host;
 
@@ -131,6 +150,14 @@
       },response => {
       });
     },
+    methods: {
+      back(){
+        window.history.back();
+      },
+      home(){
+        window.open('http://'+ host +'/home_html/');
+      }
+    },
     components: {
       'v-header':header
     },
@@ -158,6 +185,27 @@
         border-radius:5px;
         text-decoration: underline
         color: rgb(240, 20, 20)
+  .bottom-box
+    position: fixed
+    left: 0
+    bottom: 0
+    z-index: 20
+    width: 100%
+    height: 48px
+    background-color: white
+    border-top:1px solid gainsboro
+    .tab
+      display: flex
+      width: 100%
+      height: 48px
+      line-height: 40px
+      border-color: white
+      border-1px(rgba(7, 17, 27, 0.1))
+      .tab-item
+        flex: 1
+        margin-top: 2px
+        margin-bottom: 2px
+        text-align: center
 
 </style>
 

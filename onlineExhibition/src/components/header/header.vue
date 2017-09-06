@@ -81,6 +81,11 @@
     .content_wrapper
       margin: 5px
       text-align:center
+      img
+        border-color: darkgrey
+        border-style: solid
+        border-radius: 5px
+        border-width:1px
     .attention-wrapper
       margin: 5px
       text-align:center

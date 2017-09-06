@@ -376,6 +376,11 @@
   .recommend
     display: flex
     width: 100%
+    img
+      border-color: darkgrey
+      border-style: solid
+      border-radius: 5px
+      border-width:1px
     .recommend-left
       width:50%
       margin: 5px 5px 5px 5px

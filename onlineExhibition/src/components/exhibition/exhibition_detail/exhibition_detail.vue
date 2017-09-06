@@ -111,9 +111,9 @@
       <div class="tab">
         <div class="tab-item">
           <span>
-            <i class="fa fa-hand-o-up fa-1x" aria-hidden="true"></i>
+            <i class="fa fa-reply fa-1x" aria-hidden="true"></i>
             <!--<span><img src="/static/exhibit/rating.png" width="20px" height="20px"/></span>-->
-            <span style="margin-left: 1px">可圈可点</span>
+            <span @click="back()" style="margin-left: 1px">返回</span>
           </span>
         </div>
         <div class="tab-item">
@@ -336,6 +336,9 @@
 //      },
 //    },
     methods: {
+      back(){
+        window.history.back();
+      },
       collect(type){
         if(this.collect_flag === '收藏'){
           $('.alert').html('收藏成功').addClass('alert-success').show().delay(1500).fadeOut();
@@ -538,6 +541,11 @@
       width: 100%
       overflow: hidden
       img
+        border-color: darkgrey
+        border-style: solid
+        border-radius: 5px
+        border-width:1px
+        background-color: white
         margin-left: 5px
         margin-right: 5px
         width:140px
@@ -547,6 +555,11 @@
       width: 100%
       overflow: hidden
       img
+        border-color: darkgrey
+        border-style: solid
+        border-radius: 5px
+        border-width:1px
+        background-color: white
         margin-left: 5px
         margin-right: 5px
         width:140px

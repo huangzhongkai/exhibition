@@ -24,6 +24,17 @@
         </div>
       </div>
     </div>
+    <div class="bottom-box">
+      <div class="tab">
+        <div class="tab-item">
+          <span>
+            <i class="fa fa-reply fa-1x" aria-hidden="true"></i>
+            <!--<span><img src="/static/exhibit/rating.png" width="20px" height="20px"/></span>-->
+            <span @click="back()" style="margin-left: 1px">返回</span>
+          </span>
+        </div>
+      </div>
+    </div>
     <div style="display: none;" class="load-more-gif" id="loading">loading...</div>
   </div>
 </template>
@@ -32,6 +43,7 @@
   import {urlParse} from '../../common/js/util';
 
   import global_ from '../Global.vue'
+  import 'font-awesome-webpack'
 
   let host = global_.host;
 
@@ -115,11 +127,15 @@
       show_artist (key) {
         window.open('http://'+ host +'/artist_html/?artist=' + key);
       },
+      back(){
+        window.history.back();
+      },
     }
   };
 </script>
 
 <style lang="stylus" rel="stylesheet/stylus">
+  @import "../../common/stylus/mixin.styl";
   .production
     display: flex
     width: 100%
@@ -159,4 +175,25 @@
     background: #fff
     border-top: none
     color: #48B884
+  .bottom-box
+    position: fixed
+    left: 0
+    bottom: 0
+    z-index: 20
+    width: 100%
+    height: 48px
+    background-color: white
+    border-top:1px solid gainsboro
+    .tab
+      display: flex
+      width: 100%
+      height: 48px
+      line-height: 40px
+      border-color: white
+      border-1px(rgba(7, 17, 27, 0.1))
+      .tab-item
+        flex: 1
+        margin-top: 2px
+        margin-bottom: 2px
+        text-align: center
 </style>

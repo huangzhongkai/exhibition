@@ -156,11 +156,12 @@
         flex: 1
         width:50%
         .exhibit_block
-          margin-top:2px
-          border-color: antiquewhite
+          border-color: darkgrey
           border-style: solid
           border-radius: 5px
-          background-color: antiquewhite
+          border-width:1px
+          background-color: white
+          margin-top:2px
       .right_product
         margin-left: 5px
         margin-right: 5px
@@ -168,9 +169,10 @@
         width:50%
         .exhibit_block
           margin-top:2px
-          border-color: antiquewhite
+          border-color: darkgrey
           border-style: solid
           border-radius: 5px
-          background-color: antiquewhite
+          border-width:1px
+          background-color: white
 
 </style>

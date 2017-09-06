@@ -18,6 +18,17 @@
       <i class="fa fa-angle-right fa-2x fa-pull-right" aria-hidden="true"></i>
       <span class="phone_number">{{person.phone_number}}</span>
     </div>
+    <div class="bottom-box">
+      <div class="tab">
+        <div class="tab-item">
+            <span>
+              <i class="fa fa-reply fa-1x" aria-hidden="true"></i>
+              <!--<span><img src="/static/exhibit/rating.png" width="20px" height="20px"/></span>-->
+              <span @click="back()" style="margin-left: 1px">返回</span>
+            </span>
+        </div>
+      </div>
+    </div>
 
     <collect ref="collect">
     </collect>
@@ -76,7 +87,10 @@
         }else{
           this.$refs.bind_phone.show();
         }
-      }
+      },
+      back(){
+        window.history.back();
+      },
     }
   }
 </script>
@@ -109,5 +123,26 @@
       float:right
     i
       color: #8c8c8c
+  .bottom-box
+    position: fixed
+    left: 0
+    bottom: 0
+    z-index: 20
+    width: 100%
+    height: 48px
+    background-color: white
+    border-top:1px solid gainsboro
+    .tab
+      display: flex
+      width: 100%
+      height: 48px
+      line-height: 40px
+      border-color: white
+      border-1px(rgba(7, 17, 27, 0.1))
+      .tab-item
+        flex: 1
+        margin-top: 2px
+        margin-bottom: 2px
+        text-align: center
 
 </style>

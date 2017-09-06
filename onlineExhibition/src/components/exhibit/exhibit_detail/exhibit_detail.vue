@@ -97,6 +97,13 @@
       <div class="tab">
         <div class="tab-item">
           <span>
+            <i class="fa fa-reply fa-1x" aria-hidden="true"></i>
+            <!--<span><img src="/static/exhibit/rating.png" width="20px" height="20px"/></span>-->
+            <span @click="back()" style="margin-left: 1px">返回</span>
+          </span>
+        </div>
+        <div class="tab-item">
+          <span>
             <i class="fa fa-hand-o-up fa-1x" aria-hidden="true"></i>
             <!--<span><img src="/static/exhibit/rating.png" width="20px" height="20px"/></span>-->
             <span @click="remark_commend()" style="margin-left: 1px">可圈可点</span>
@@ -141,6 +148,7 @@
   import ratings from '../ratings/ratings.vue'
   import wx from 'weixin-js-sdk'
   import Cropper from 'cropperjs'
+  import 'font-awesome-webpack'
 
 
   import global_ from '../../Global.vue'
@@ -331,6 +339,9 @@
 //      },
 //    },
     methods: {
+      back(){
+        window.history.back();
+      },
       remark_commend () {
         document.body.style.height = '100%';
         document.body.style.overflow = 'hidden';
