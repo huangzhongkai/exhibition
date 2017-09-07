@@ -526,10 +526,12 @@ def login(request):
                                       sex=str(user_info['sex']),
                                       head_path=user_info['headimgurl'],
                                       create_time=otherStyleTime)
-
-            user_id = OeWxUser.objects.filter(appid=request.session['openid']).first().id
+            if request.session.get('openid', 'error') == 'error':
+                user_id = user_info['openid']
+            else:
+                user_id = OeWxUser.objects.filter(appid=request.session['openid']).first().id
             user_info= {'user_id':user_id}
-            print user_info
+            print user_id,'login'
             response = HttpResponse(json.dumps(user_info), content_type='application/json')
             return response
 
