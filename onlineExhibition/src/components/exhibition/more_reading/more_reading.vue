@@ -116,7 +116,7 @@
       if(this.exhibition_id != undefined){
         this.$http.get('http://'+ host +'/exhibition_readings/'+ this.exhibition_id + '/').then(response => {
           this.exhibition = response.body;
-          this.max_length = (this.exhibition.image_text_readings.length + this.exhibition.audio_readings.length + this.exhibition.video_readings.length) *100 - screen.height
+          this.max_length = (this.exhibition.image_text_readings.length + this.exhibition.audio_readings.length + this.exhibition.video_readings.length) *120 - screen.height
           for(let i=0; i<this.exhibition.audio_readings.length; i++){
             this.play_icon.push('/static/exhibition/play.svg');
             this.isPlaying.push(false);

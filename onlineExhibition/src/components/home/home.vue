@@ -102,7 +102,7 @@
       <div class="tab">
         <div class="tab-item">
           <span>
-            <i class="fa fa-user-circle fa-1x" aria-hidden="true"></i>
+            <i class="fa fa-user-secret fa-1x" aria-hidden="true"></i>
             <!--<span><img src="/static/exhibit/rating.png" width="20px" height="20px"/></span>-->
             <span @click="show_artist()" style="margin-left: 1px">艺术家</span>
           </span>

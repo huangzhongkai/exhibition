@@ -7,8 +7,10 @@
       <img width="100%" :src="reading.image_path">
     </div>
     <div class="reading">
-      <div v-for="item in reading.reading_content" class="my_section">
-        {{item}}
+      <div v-for="item in reading.reading_content" v-if="item != '' " class="my_section">
+        <p style="text-indent: 2em">
+          {{item}}。
+        </p>
       </div>
     </div>
     <div class="bottom-box">
