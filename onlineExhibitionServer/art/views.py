@@ -1323,8 +1323,12 @@ def exhibition_image_text_readings(request, offset):
     exhibition_reading = OeExhibitionInterpretation.objects.filter(id=offset).first()
     exhibition_reading = model_to_dict(exhibition_reading)
 
+    exhibition = OeExhibition.objects.filter(id=exhibition_reading['exhibition']).first()
+    exhibition = model_to_dict(exhibition)
+
     image_text_readings = {
         'id': exhibition_reading['id'],
+        'title': exhibition['name'],
         'image_path': exhibition_reading['origin'],
         'reading_content': '张大千（Chang Dai-Chien），男,四川内江人，祖籍广东省番禺，1899年5月10日出生于四川省内江市中区城郊安良里的\
           一个书香门第的家庭，中国泼墨画家，书法家。20 世纪50年代，张大千游历世界，获得巨大的国际声誉，被西方艺坛赞为“东方之笔”。[1]\

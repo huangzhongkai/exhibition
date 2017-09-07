@@ -34,6 +34,7 @@
         </div>
       </div>
     </div>
+    <div style="height: 48px"></div>
   </div>
 </template>
 

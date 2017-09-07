@@ -2,7 +2,7 @@
   <transition name="move">
     <div v-show="showFlag" class="more_charactor">
       <div class="top">
-         人物作品
+         {{title}}
       </div>
       <div class="back" @click="hide">
         <i class="icon-arrow_lift"></i>
@@ -53,6 +53,7 @@
     },
     data () {
       return {
+        title:'',
         exhibit:{},
         exhibits:[],
         exhibits_right:[],
@@ -79,6 +80,13 @@
       }
     },
     created() {
+      if(this.type === 'all'){
+        this.title = '作品推荐';
+      }else if(this.type === 'charactor'){
+        this.title = '人物作品'
+      }else if(this.type === 'enjoyable'){
+        this.title = '写意作品'
+      }
       if(this.exhibition_id != undefined){
         this.$http.get('http://'+ host +'/exhibits/?exhibition='+ this.exhibition_id + '&type=' + this.type).then(response => {
           this.exhibits = [];

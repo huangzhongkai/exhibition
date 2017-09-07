@@ -35,6 +35,7 @@
         </div>
       </div>
     </div>
+    <div style="height: 48px"></div>
     <div style="display: none;" class="load-more-gif" id="loading">loading...</div>
   </div>
 </template>

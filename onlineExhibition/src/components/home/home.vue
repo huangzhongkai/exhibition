@@ -12,24 +12,18 @@
       <span class="right" @click="more_charactor()">查看更多</span>
     </div>
     <div class="recommend">
-      <div class="recommend-left" :style="{height:c_height}" ref="recommend_left">
-        <img @click="show_exhibit(exhibits[0].id)" :src="exhibits[0].image_path" :style="{width:'100%' ,height:c_height}"/>
+      <div class="recommend-left" :style="{height:c_height}" ref="recommend_left" v-for="exhibit in exhibits" v-if="exhibit.id==='0' ">
+        <img @click="show_exhibit(exhibit.id)" :src="exhibit.image_path" :style="{width:'100%' ,height:c_height}"/>
       </div>
       <div class="recommend-right" :style="{height:c_height}">
         <div class="recommend-right-top">
-          <div class="recommend-right-top-left" :style="{height:i_height}">
-            <img @click="show_exhibit(exhibits[1].id)" :src="exhibits[1].image_path" :style="{width:'100%' ,height:i_height}"/>
-          </div>
-          <div class="recommend-right-top-right" :style="{height:i_height}">
-            <img @click="show_exhibit(exhibits[2].id)" :src="exhibits[2].image_path" :style="{width:'100%' ,height:i_height}"/>
+          <div class="recommend-right-top-left" :style="{height:i_height}" v-for="exhibit in exhibits" v-if="exhibit.id==='0' || exhibit.id==='1'">
+            <img @click="show_exhibit(exhibit.id)" :src="exhibit.image_path" :style="{width:'100%' ,height:i_height}"/>
           </div>
         </div>
         <div class="recommend-right-bottom">
-          <div class="recommend-right-bottom-left" :style="{height:i_height}">
-            <img @click="show_exhibit(exhibits[3].id)" :src="exhibits[3].image_path" :style="{width:'100%' ,height:i_height}"/>
-          </div>
-          <div class="recommend-right-bottom-right" :style="{height:i_height}">
-            <img @click="show_exhibit(exhibits[1].id)" :src="exhibits[1].image_path" :style="{width:'100%' ,height:i_height}"/>
+          <div class="recommend-right-bottom-left" :style="{height:i_height}" v-for="exhibit in exhibits" v-if="exhibit.id==='2' || exhibit.id==='3' ">
+            <img @click="show_exhibit(exhibit.id)" :src="exhibit.image_path" :style="{width:'100%' ,height:i_height}"/>
           </div>
         </div>
       </div>
@@ -122,7 +116,7 @@
         </div>
       </div>
     </div>
-
+    <div style="height: 48px"></div>
     <more_exhibit :exhibition_id="0" type="all" ref="more_charactor">
     </more_exhibit>
   </div>
@@ -193,6 +187,10 @@
       }
     },
     created(){
+
+      this.c_height = (window.innerWidth/2+5) +'px';
+      this.i_height = window.innerWidth/4 +'px';
+
       this.$http.get('http://'+ host +'/exhibitions/?artist=0').then(response => {
         this.exhibitions = response.body;
       },response => {
@@ -278,24 +276,6 @@
       },response => {
       });
 
-      this.exhibits = [
-        {
-          'id':0,
-          'image_path':''
-        },
-        {
-          'id':1,
-          'image_path':''
-        },
-        {
-          'id':2,
-          'image_path':''
-        },
-        {
-          'id':3,
-          'image_path':''
-        }
-      ]
       this.$http.get('http://'+ host +'/exhibits/?artist=0').then(response => {
         this.exhibits = response.body;
       },response => {
@@ -308,11 +288,6 @@
         },response => {
         });
       }
-    },
-    mounted() {
-      console.log(this.$refs.recommend_left.style);
-      this.c_height = (window.innerWidth/2+5) +'px';
-      this.i_height = window.innerWidth/4 +'px';
     },
     methods: {
       show_exhibit(key) {
