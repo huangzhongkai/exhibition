@@ -14,7 +14,7 @@ class OeArtist(models.Model):
     head_path = models.CharField(db_column='HEAD_PATH', max_length=200, blank=True) # Field name made lowercase.
     create_time = models.DateTimeField(db_column='CREATE_TIME') # Field name made lowercase.
     modify_time = models.DateTimeField(db_column='MODIFY_TIME', blank=True, null=True) # Field name made lowercase.
-    production_number= models.IntegerField(db_column='PRODUCTION_NUMBER')
+    production_number= models.IntegerField(db_column='')
     class Meta:
         db_table = 'oe_artist'
 
@@ -371,3 +371,38 @@ class OeWxUserAttentionArtist(models.Model):
     artist = models.ForeignKey(OeArtist, db_column='ARTIST_ID')
     class Meta:
         db_table = 'oe_wx_user_attention_artist'
+
+class OeWxShareExhibitInfo(models.Model):
+    id = models.AutoField(db_column='ID', primary_key=True)
+    exhibit = models.ForeignKey(OeExhibit,db_column='EXHIBIT')
+    title = models.CharField(db_column='TITLE', max_length=200)
+    description = models.CharField(db_column='DESCRIPTION', max_length=200)
+    url = models.CharField(db_column='URL', max_length=200)
+    class Meta:
+        db_table = 'oe_wx_share_exhibit_info'
+
+class OeWxShareExhibitionInfo(models.Model):
+    id = models.AutoField(db_column='ID', primary_key=True)
+    exhibition = models.ForeignKey(OeExhibition,db_column='EXHIBITION')
+    title = models.CharField(db_column='TITLE', max_length=200)
+    description = models.CharField(db_column='DESCRIPTION', max_length=200)
+    url = models.CharField(db_column='URL', max_length=200)
+    class Meta:
+        db_table = 'oe_wx_share_exhibition_info'
+
+class OeWxShareArtistInfo(models.Model):
+    id = models.AutoField(db_column='ID', primary_key=True)
+    artist = models.ForeignKey(OeArtist,db_column='ARTIST')
+    title = models.CharField(db_column='TITLE', max_length=200)
+    description = models.CharField(db_column='DESCRIPTION', max_length=200)
+    url = models.CharField(db_column='URL', max_length=200)
+    class Meta:
+        db_table = 'oe_wx_share_artist_info'
+
+class OeWxShareHomeInfo(models.Model):
+    id = models.AutoField(db_column='ID', primary_key=True)
+    title = models.CharField(db_column='TITLE', max_length=200)
+    description = models.CharField(db_column='DESCRIPTION', max_length=200)
+    url = models.CharField(db_column='URL', max_length=200)
+    class Meta:
+        db_table = 'oe_wx_share_home_info'

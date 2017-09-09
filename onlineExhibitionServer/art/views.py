@@ -6,6 +6,7 @@ from art.models import OeArtist, OeExhibit, OeExhibition, OeExhibitInterpretatio
     OeArtistExhibitionRelation, OeWxConfig, OeWxDeveloper, OeExhibitionInterpretation, OeWxUser, OeUserExhibitionCollection
 from django.forms.models import model_to_dict
 from django.views.decorators.csrf import csrf_exempt
+from art.models import OeWxShareExhibitionInfo, OeWxShareExhibitInfo, OeWxShareHomeInfo, OeWxShareArtistInfo
 from art.models import OeUser, OeExhibitComment, OeExhibitionComment, OeWxUserAttentionArtist, OeUserExhibitCollection
 from django.contrib.sessions.models import Session
 
@@ -532,6 +533,11 @@ def login(request):
                 user_id = OeWxUser.objects.filter(appid=request.session['openid']).first().id
             user_info= {'user_id':user_id}
             print user_id,'login'
+
+            wx_share_info = OeWxShareHomeInfo.objects.filter().first()
+            user_info['share'] = {'title': wx_share_info.title, 'description': wx_share_info.description,
+                          'url': wx_share_info.url}
+
             response = HttpResponse(json.dumps(user_info), content_type='application/json')
             return response
 
@@ -554,6 +560,12 @@ def artist(request, offset):
     else:
         isattention = 'false'
         return HttpResponse(json.dumps('error'), content_type='application/json')
+
+    wx_share_info = OeWxShareArtistInfo.objects.filter(artist__id=offset).first()
+    wx_share_dict = {
+        'share': {'title': wx_share_info.title, 'description': wx_share_info.description, 'url': wx_share_info.url}
+    }
+
     artist_dict = {
         'id': artist['id'],
         'avatar': artist['head_path'],
@@ -561,6 +573,8 @@ def artist(request, offset):
         'attention_count': attention_count,
         'isAttention': isattention
     }
+    artist_dict = dict(artist_dict, **wx_share_dict)
+
     response = HttpResponse(json.dumps(artist_dict), content_type='application/json')
     return response
 
@@ -679,6 +693,11 @@ def exhibit(request, offset):
     else:
         collect_flag = False
 
+    wx_share_info = OeWxShareExhibitInfo.objects.filter(exhibit__id=int(offset)).first()
+    wx_share_dict = {
+        'share':{'title': wx_share_info.title,'description': wx_share_info.description,'url': wx_share_info.url}
+    }
+
     exhibit_dict = {
         'id': offset,
         'image_path': exhibit['image_path'],
@@ -693,7 +712,7 @@ def exhibit(request, offset):
     exhibit_dict = dict(exhibit_dict, **audio_reading_dict)
     exhibit_dict = dict(exhibit_dict, **video_reading_dict)
     exhibit_dict = dict(exhibit_dict, **comment_dict)
-
+    exhibit_dict = dict(exhibit_dict, **wx_share_dict)
     return HttpResponse(json.dumps(exhibit_dict), content_type='application/json')
 
 def exhibits(request):
@@ -1056,6 +1075,11 @@ def exhibition(request, offset):
         else:
             collect_flag = False
 
+        wx_share_info = OeWxShareExhibitionInfo.objects.filter(exhibition__id=int(offset)).first()
+        wx_share_dict = {
+            'share': {'title': wx_share_info.title, 'description': wx_share_info.description, 'url': wx_share_info.url}
+        }
+
         exhibition_dict = {
             'id': offset,
             'image_path': exhibition['image_path'],
@@ -1074,6 +1098,7 @@ def exhibition(request, offset):
         exhibition_dict = dict(exhibition_dict, **comment_dict)
         exhibition_dict = dict(exhibition_dict, **charactor_dict)
         exhibition_dict = dict(exhibition_dict, **enjoyable_dict)
+        exhibition_dict = dict(exhibition_dict, **wx_share_dict)
         return HttpResponse(json.dumps(exhibition_dict), content_type='application/json')
 
 
@@ -1719,5 +1744,25 @@ def get_signature(request):
                 'timestamp': config.timestamp,
                 'noncestr': config.noncestr,
                 'signature': config.signature
+            }
+            return HttpResponse(json.dumps(return_dict), content_type='application/json')
+
+
+def get_wx_share_info(request, offset):
+    if request.method == 'GET':
+        if request.GET.get('type','') == 'exhibit':
+            wx_share_info = OeWxShareExhibitInfo.objects.filter(exhibit__id=offset).first()
+            return_dict = {
+                'title': wx_share_info.title,
+                'description': wx_share_info.description,
+                'url': wx_share_info.url
+            }
+            return HttpResponse(json.dumps(return_dict), content_type='application/json')
+        if request.GET.get('type','') == 'exhibition':
+            wx_share_info = OeWxShareExhibitionInfo.objects.filter(exhibition__id=offset).first()
+            return_dict = {
+                'title': wx_share_info.title,
+                'description': wx_share_info.description,
+                'url': wx_share_info.url
             }
             return HttpResponse(json.dumps(return_dict), content_type='application/json')

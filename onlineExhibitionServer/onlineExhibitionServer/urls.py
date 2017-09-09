@@ -8,7 +8,7 @@ from art.views import exhibition, exhibitions, exhibit_readings,exhibition_readi
     exhibition_vedio_readings, get_signature, motified_signature, exhibition_ratings
 from art.views import home_html, exhibition_html, exhibit_html, artist_html, exhibit_ratings, \
     image_text_readings_html, video_readings_html, attention, information, personal_information_html, collect, \
-    bing_phone_commit, send_auth_code, exhibit_remark, check_phone_commit, login, artists_html
+    bing_phone_commit, send_auth_code, exhibit_remark, check_phone_commit, login, artists_html, get_wx_share_info
 
 admin.autodiscover()
 
@@ -41,8 +41,8 @@ urlpatterns = [
     url(r'^exhibition_vedio_readings/(\d+)/$', exhibition_vedio_readings),
     url(r'^exhibition_ratings/(\d+)/$', exhibition_ratings),
 
-    # url(r'^get_signature/$', get_signature),
-    # url(r'^motified_signature/$', motified_signature),
+    url(r'^get_signature/$', get_signature),
+    url(r'^motified_signature/$', motified_signature),
 
     url(r'^attention/$', attention),
     url(r'^information/(\d+)/$', information),
@@ -52,6 +52,7 @@ urlpatterns = [
     url(r'^check_phone_commit/$', check_phone_commit),
 
     url(r'^exhibit_remark/(\d+)/$', exhibit_remark),
+    url(r'^get_wx_share_info/(\d+)/$', get_wx_share_info),
 
     url(r'^home_html/$', home_html),
     url(r'^exhibition_html/$', exhibition_html),
