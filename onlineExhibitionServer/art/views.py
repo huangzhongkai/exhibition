@@ -1659,9 +1659,44 @@ def artists_html(request):
     return render_to_response('artists.html', locals())
 
 
-def motified_signature(request):
+# def motified_signature(request):
+#     if request.method == 'GET':
+#         url = request.GET.get('url', '0').decode('utf-8')
+#         appid = OeWxDeveloper.objects.filter(id=1).first().appid
+#         appsecret = OeWxDeveloper.objects.filter(id=1).first().appsecret
+#
+#         wx = Wx(appid, appsecret, url)
+#         developer = OeWxDeveloper.objects.filter(id=1).first()
+#         if developer.jsapi_ticket and time.time() - developer.create_timestamp < 7200:
+#             print  'use old jsapi_ticket'
+#             timestamp = int(time.time())
+#             signature = wx.get_signature(developer.jsapi_ticket, timestamp)
+#         else:
+#             print 'modified developer info'
+#             access_token = wx.get_access_token()
+#             jsapi_ticket = wx.get_jsapi_ticket(access_token)
+#             timestamp = int(time.time())
+#             signature = wx.get_signature(jsapi_ticket, timestamp)
+#             OeWxDeveloper.objects.filter(id=1).update(access_token=access_token,
+#                                                       jsapi_ticket=jsapi_ticket,
+#                                                       create_timestamp=timestamp)
+#         return_dict = {
+#             'appid': appid,
+#             'appsecret': appsecret,
+#             'url': url,
+#             'timestamp': timestamp,
+#             'noncestr': wx.noncestr,
+#             'signature': signature
+#         }
+#         OeWxConfig.objects.filter(url=url).update(**return_dict)
+#         return HttpResponse(json.dumps({}), content_type='application/json')
+
+
+def get_signature(request):
+
     if request.method == 'GET':
         url = request.GET.get('url', '0').decode('utf-8')
+
         appid = OeWxDeveloper.objects.filter(id=1).first().appid
         appsecret = OeWxDeveloper.objects.filter(id=1).first().appsecret
 
@@ -1680,72 +1715,83 @@ def motified_signature(request):
             OeWxDeveloper.objects.filter(id=1).update(access_token=access_token,
                                                       jsapi_ticket=jsapi_ticket,
                                                       create_timestamp=timestamp)
+
         return_dict = {
             'appid': appid,
-            'appsecret': appsecret,
-            'url': url,
             'timestamp': timestamp,
-            'noncestr': wx.noncestr,
+            'noncestr': 'WecWkTYHZw4WRR0f',
             'signature': signature
         }
-        OeWxConfig.objects.filter(url=url).update(**return_dict)
-        return HttpResponse(json.dumps({}), content_type='application/json')
+        return HttpResponse(json.dumps(return_dict), content_type='application/json')
 
 
-def get_signature(request):
-
-    if request.method == 'GET':
-        url = request.GET.get('url', '0').decode('utf-8')
-
-        # if url.find('&code=') != -1:
-        #     code = url.split('&code=')[1].split('&')[0]
-
-        appid = OeWxDeveloper.objects.filter(id=1).first().appid
-        appsecret = OeWxDeveloper.objects.filter(id=1).first().appsecret
-
-        config = OeWxConfig.objects.filter(url=url, appid=appid, appsecret=appsecret).first()
-        if config:
-            return_dict = {
-                'appid':config.appid,
-                'timestamp': config.timestamp,
-                'noncestr': config.noncestr,
-                'signature': config.signature
-            }
-            return HttpResponse(json.dumps(return_dict), content_type='application/json')
-        else:
-            wx = Wx(appid, appsecret, url)
-            developer = OeWxDeveloper.objects.filter(id=1).first()
-            if developer.jsapi_ticket and time.time() - developer.create_timestamp < 7200:
-                print  'use old jsapi_ticket'
-                timestamp = int(time.time())
-                signature = wx.get_signature(developer.jsapi_ticket, timestamp)
-            else:
-                print 'modified developer info'
-                access_token = wx.get_access_token()
-                jsapi_ticket = wx.get_jsapi_ticket(access_token)
-                timestamp = int(time.time())
-                signature = wx.get_signature(jsapi_ticket, timestamp)
-                OeWxDeveloper.objects.filter(id=1).update(access_token=access_token,
-                                                          jsapi_ticket=jsapi_ticket,
-                                                          create_timestamp=timestamp)
-            return_dict = {
-                'appid': appid,
-                'appsecret': appsecret,
-                'url': url,
-                'timestamp': timestamp,
-                'noncestr': wx.noncestr,
-                'signature': signature
-            }
-            OeWxConfig.objects.create(**return_dict)
-
-            config = OeWxConfig.objects.filter(url=url, appid=appid, appsecret=appsecret).first()
-            return_dict = {
-                'appid': config.appid,
-                'timestamp': config.timestamp,
-                'noncestr': config.noncestr,
-                'signature': config.signature
-            }
-            return HttpResponse(json.dumps(return_dict), content_type='application/json')
+        # config = OeWxConfig.objects.filter(url=url, appid=appid, appsecret=appsecret).first()
+        # if config:
+        #     wx = Wx(appid, appsecret, url)
+        #     developer = OeWxDeveloper.objects.filter(id=1).first()
+        #     print time.time(), developer.create_timestamp
+        #     if time.time() - developer.create_timestamp > 7200:
+        #         print  'modefied signature'
+        #         # access_token = wx.get_access_token()
+        #         # jsapi_ticket = wx.get_jsapi_ticket(access_token)
+        #         # timestamp = int(time.time())
+        #         # signature = wx.get_signature(jsapi_ticket, timestamp)
+        #         # OeWxConfig.objects.filter(url=url, appid=appid, appsecret=appsecret).update(timestamp=timestamp,
+        #         #                                                                             signature=signature)
+        #         # return_dict = {
+        #         #     'appid':config.appid,
+        #         #     'timestamp': timestamp,
+        #         #     'noncestr': config.noncestr,
+        #         #     'signature': signature
+        #         # }
+        #         return_dict = {
+        #             'appid': config.appid,
+        #             'timestamp': config.timestamp,
+        #             'noncestr': config.noncestr,
+        #             'signature': config.signature
+        #         }
+        #     else:
+        #         return_dict = {
+        #             'appid': config.appid,
+        #             'timestamp': config.timestamp,
+        #             'noncestr': config.noncestr,
+        #             'signature': config.signature
+        #         }
+        #     return HttpResponse(json.dumps(return_dict), content_type='application/json')
+        # else:
+        #     wx = Wx(appid, appsecret, url)
+        #     developer = OeWxDeveloper.objects.filter(id=1).first()
+        #     if developer.jsapi_ticket and time.time() - developer.create_timestamp < 7200:
+        #         print  'use old jsapi_ticket'
+        #         timestamp = int(time.time())
+        #         signature = wx.get_signature(developer.jsapi_ticket, timestamp)
+        #     else:
+        #         print 'modified developer info'
+        #         access_token = wx.get_access_token()
+        #         jsapi_ticket = wx.get_jsapi_ticket(access_token)
+        #         timestamp = int(time.time())
+        #         signature = wx.get_signature(jsapi_ticket, timestamp)
+        #         OeWxDeveloper.objects.filter(id=1).update(access_token=access_token,
+        #                                                   jsapi_ticket=jsapi_ticket,
+        #                                                   create_timestamp=timestamp)
+        #     return_dict = {
+        #         'appid': appid,
+        #         'appsecret': appsecret,
+        #         'url': url,
+        #         'timestamp': timestamp,
+        #         'noncestr': wx.noncestr,
+        #         'signature': signature
+        #     }
+        #     OeWxConfig.objects.create(**return_dict)
+        #
+        #     config = OeWxConfig.objects.filter(url=url, appid=appid, appsecret=appsecret).first()
+        #     return_dict = {
+        #         'appid': config.appid,
+        #         'timestamp': config.timestamp,
+        #         'noncestr': config.noncestr,
+        #         'signature': config.signature
+        #     }
+        #     return HttpResponse(json.dumps(return_dict), content_type='application/json')
 
 
 def get_wx_share_info(request, offset):

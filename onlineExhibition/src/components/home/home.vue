@@ -276,13 +276,13 @@
               });
             });
 
-            wx.error(function(res){
-              _this.$http.get('http://qb4dwjh.hk1.mofasuidao.cn/motified_signature/?' +
-                'url='+ encodeURIComponent(location.href.split('#')[0])).then(response => {
-                window.location.reload();
-              },response => {
-              });
-            });
+//            wx.error(function(res){
+//              _this.$http.get('http://qb4dwjh.hk1.mofasuidao.cn/motified_signature/?' +
+//                'url='+ encodeURIComponent(location.href.split('#')[0])).then(response => {
+//                window.location.reload();
+//              },response => {
+//              });
+//            });
 
           },response => {
           });
