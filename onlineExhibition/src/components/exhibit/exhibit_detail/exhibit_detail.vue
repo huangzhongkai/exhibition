@@ -299,6 +299,7 @@
         let windowHeight = $(this).height();
         if(_this.is_more_rating === true){
           if(scrpllTop + windowHeight === scroolHeight){
+            _this.is_more_rating = false;
             $("#loading").css('display','block');
             _this.$http.get('http://'+ host +'/exhibit_ratings/'+ _this.param.id+'/?get_count=' + _this.get_count
               + '&get_offset=' + _this.get_offset ).then(response => {
@@ -316,6 +317,7 @@
                 _this.is_more_rating = false;
                 _this.get_offset +=response.body.ratings.length;
               }else{
+                _this.is_more_rating = true;
                 _this.get_offset +=_this.get_count;
               }
             },response => {
