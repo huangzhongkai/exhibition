@@ -1,7 +1,7 @@
 <template>
   <transition name="move">
     <div v-show="showFlag" class="collect" ref="content">
-      <div class="content">
+      <div>
         <div class="top">
           收藏
         </div>
@@ -9,11 +9,9 @@
           <i class="icon-arrow_lift"></i>
         </div>
         <div class="collect_content" >
-          <!--<ul :style="{height: max_length}">-->
-
             <div class='h' :ref="exhibit.flag" v-for="(exhibit,index) in exhibits" v-if="exhibit !==null">
-              <ul :style="{width: scroll_width}">
-                <div  class="collect_info" :style="{width: max_width}">
+              <ul :style="{width: max_width}">
+                <div  class="collect_info">
                   <div @click.once="show_exhibit(exhibit.id)" class="avatar">
                     <img class="avatar_image_background" :src="exhibit.image_path"/>
                   </div>
@@ -30,8 +28,8 @@
             </div>
 
             <div class='h' :ref="exhibition.flag" v-for="(exhibition,index) in exhibitions" v-if="exhibition !==null">
-              <ul class="a" :style="{width: scroll_width}">
-                <div  class="collect_info" :style="{width: max_width}">
+              <ul class="a" :style="{width: max_width}">
+                <div  class="collect_info">
                   <div @click.once="show_exhibit(exhibition.id)" class="avatar">
                     <img class="avatar_image_background" :src="exhibition.image_path"/>
                   </div>
@@ -79,7 +77,6 @@
                 <!--</div>-->
               <!--</li>-->
             <!--</div>-->
-          <!--</ul>-->
         </div>
       </div>
     </div>
@@ -231,8 +228,7 @@
           height: 80px
           border: 1px
           border-style: solid
-          border-right: transparent
-          border-radius: 5px 0 0 5px
+          border-radius: 5px 5px 5px 5px
           background-color: white
           .avatar
             position: absolute
@@ -268,14 +264,13 @@
               text-overflow: ellipsis
           .delete
             position: absolute
+            margin-right: 2px
             right: 0
             display: inline-block
             border-color: darkgrey
             border: 1px
             border-style: solid
-            border-left: transparent
-            border-top: transparent
-            border-bottom: transparent
+            border: transparent
             text-align: center
             width: 64px
             height: 80px
