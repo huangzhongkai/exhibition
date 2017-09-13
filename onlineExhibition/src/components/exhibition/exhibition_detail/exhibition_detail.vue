@@ -98,7 +98,7 @@
           <div class="avatar">
             <img @click="show_information(rating.wx_id)" width="28" height="28" :src="rating.avatar">
           </div>
-          <div class="content" @click="add_rating(0,'回复',rating.id)">
+          <div class="content" @click="add_rating('回复',rating.id)">
             <h1 class="name">{{rating.username}}</h1>
             <p class="time">{{rating.rateTime}}</p>
             <p class="text">{{rating.text}}</p>
@@ -120,7 +120,7 @@
           <span>
             <i class="fa fa-commenting-o fa-1x" aria-hidden="true"></i>
             <!--<span><img src="/static/exhibit/rating.png" width="20px" height="20px"/></span>-->
-            <span @click="add_rating(0,'发评论',-1)" style="margin-left: 1px">评论</span>
+            <span @click="add_rating('发评论',-1)" style="margin-left: 1px">评论</span>
           </span>
         </div>
         <div class="tab-item">
@@ -371,10 +371,10 @@
         });
 
       },
-      add_rating (type,content,parent_id) {
+      add_rating (content,parent_id) {
         document.body.style.height = '100%';
         document.body.style.overflow = 'hidden';
-        this.$refs.edit_ratings.show(type,content,parent_id);
+        this.$refs.edit_ratings.show(content,parent_id);
       },
       more_reading () {
         document.body.style.height = '100%';

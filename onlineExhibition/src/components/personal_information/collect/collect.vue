@@ -97,7 +97,6 @@
       return {
         user_id:'',
         showFlag: false,
-        max_length:'',
         max_width:'',
         scroll_width:'',
         exhibits:[],
@@ -170,8 +169,6 @@
         this.$http.get('http://'+ host +'/collect/'+ this.param.id + '/').then(response => {
           this.exhibits = response.body.exhibits;
           this.exhibitions = response.body.exhibitions;
-          this.max_length = (this.exhibits.length + this.exhibitions.length) *120 - screen.height
-          this.max_length = this.max_length.toString() + 'px';
         },response => {
         });
       };
@@ -217,9 +214,11 @@
         font-size: 20px
         color: black
     .collect_content
+      position: relative
       width:100%
       overflow: hidden
-      bottom: 0px
+      top: 0px
+      bottom: 40px
       .h
         height: 80px
         margin: 5px 0px 5px 5px

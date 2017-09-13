@@ -9,20 +9,9 @@
     </div>
     <button class="send btn btn-default" @click="upload()">发布</button>
     <div class="content" ref="content">
-      <ul :style="max_length">
-        <div v-show="type">
-          <img id="img" :src="rating_image" ref="rating_image">
-          <!--<div>-->
-            <!--<img @click="show_rating()" class="flag" src="/static/exhibit/rating.png"/>-->
-          <!--</div>-->
-        </div>
-        <div>
-          <textarea autofocus="autofocus" @click="ratings_input()" v-model="ratings" ref="ratings" class="ratings_input" placeholder="写评论..."/>
-        </div>
-        <!--<div class="commit">-->
-          <!--<div  @click="upload()"  class="btn btn-primary">提交</div>-->
-        <!--</div>-->
-      </ul>
+      <div>
+        <textarea autofocus="autofocus" v-model="ratings" ref="ratings" class="ratings_input" placeholder="写评论..."/>
+      </div>
     </div>
   </div>
   </transition>
@@ -49,32 +38,11 @@
         flag:false,
         rating_image:'',
         edit_rating_length:'',
-        max_length:'',
-        type: false,
         ratings:'',
         showFlag: false,
       }
     },
     created () {
-      this.$http.get('http://'+ host +'/exhibitions/'+ this.exhibition_id + '/').then(response => {
-        this.rating_image = response.body['image_path'];
-        var img = new Image();
-        let _this = this;
-        img.src = this.rating_image;
-        img.onload = function() {
-          _this.img_length = img.height/(img.width/screen.width);
-          _this.max_length = img.height/(img.width/screen.width) + 350 - screen.height
-          _this.max_length = 'height:'+ _this.max_length.toString() + 'px';
-          _this.$nextTick(() => {
-            _this.rating_initScroll();
-          });
-        }
-//        this.edit_rating_length = 500 + 200;
-//        this.edit_rating_length = this.edit_rating_length.toString().split('.')[0] + 'px';
-
-      },response => {
-      });
-
     },
     methods: {
       utf16ToUtf8(str){
@@ -107,100 +75,21 @@
         rating['rateTime'] = Date.parse(new Date())/1000;
         rating['text'] = this.utf16ToUtf8(this.ratings);
         rating['parent_id'] = this.parent_id;
-        if(this.type === true){
-          var croppedCanvas;
-          croppedCanvas = this.cropper.getCroppedCanvas({
-          });
-          this.result = croppedCanvas.toDataURL();
-          let _this = this;
-
-          var formData = new FormData();
-
-          formData.append('imageblob',this.convertBase64UrlToBlob(croppedCanvas.toDataURL()));
-          formData.append('text',rating['text']);
-          this.$http.post('http://'+ host +'/exhibition_ratings/'+ this.exhibition_id+'/?type=1',formData ).then(response => {
-            if(response.body === 'error'){
-              window.location = 'https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx522cca3d4b048aa9&redirect_uri=http%3A//'+ encodeURIComponent(host) +'/home_html/&response_type=code&scope=snsapi_userinfo&state=123#wechat_redirect'
-            }else{
-              document.body.style.height = '';
-              document.body.style.overflow = '';
-              window.location.reload();
-            }
-          },response => {
-            alert('request error');
-          });
-
-//          this.cropper.getCroppedCanvas().toBlob(function (blob) {
-//            alert('aaa');
-//            var formData = new FormData();
-//            formData.append('imageblob',blob);
-//            formData.append('text',rating['text']);
-//            alert('bbb');
-//
-//            _this.$http.post('http://'+ host +'/exhibit_ratings/'+ _this.exhibit_id+'/?type=1',formData ).then(response => {
-//              _this.showFlag = false;
-//              document.body.style.height = '';
-//              document.body.style.overflow = '';
-//              window.location.reload();
-//            },response => {
-//            });
-//          });
-        }else{
-          this.$http.post('http://'+ host +'/exhibition_ratings/'+ this.exhibition_id+'/?type=0',rating, {emulateJSON:true} ).then(response => {
-            if(response.body === 'error'){
-              window.location = 'https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx522cca3d4b048aa9&redirect_uri=http%3A//'+ encodeURIComponent(host) +'/artist_html/%3Fartist%3D0&response_type=code&scope=snsapi_userinfo&state=123#wechat_redirect'
-            }else{
-              this.showFlag = false;
-              document.body.style.height = '';
-              document.body.style.overflow = '';
-              window.location.reload();
-            }
-          },response => {
-          });
-        }
+        this.$http.post('http://'+ host +'/exhibition_ratings/'+ this.exhibition_id+'/?type=0',rating, {emulateJSON:true} ).then(response => {
+          if(response.body === 'error'){
+            window.location = 'https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx522cca3d4b048aa9&redirect_uri=http%3A//'+ encodeURIComponent(host) +'/artist_html/%3Fartist%3D0&response_type=code&scope=snsapi_userinfo&state=123#wechat_redirect'
+          }else{
+            this.showFlag = false;
+            document.body.style.height = '';
+            document.body.style.overflow = '';
+            window.location.reload();
+          }
+        },response => {
+        });
       },
-//      show_rating () {
-//        this.flag = !this.flag;
-//        if(this.flag === true){
-//          var image = document.getElementById('img');
-//          this.cropper = new Cropper(image, {
-//            aspectRatio: 1 / 1,
-//            autoCropArea:0.5,
-//            dragMode: 'none',
-//            zoomable:false,
-//            crop: function(e) {
-//
-//            },
-//            ready: function () {
-//            }
-//          });
-//        }else{
-//          this.cropper.destroy();
-//        }
-//
-//      },
-      show(type,content,parent_id) {
-        if(type === 1){
-          this.type = true;
-
-          var image = document.getElementById('img');
-          this.cropper = new Cropper(image, {
-            aspectRatio: 1 / 1,
-            autoCropArea:0.5,
-            dragMode: 'none',
-            zoomable:false,
-            crop: function(e) {
-
-            },
-            ready: function () {
-            }
-          });
-
-        }else if(type === 0){
-          this.type = false;
-          this.title = content;
-          this.parent_id = parent_id;
-        }
+      show(content,parent_id) {
+        this.title = content;
+        this.parent_id = parent_id;
         this.showFlag = true;
       },
       hide() {
@@ -208,14 +97,6 @@
         document.body.style.height = '';
         document.body.style.overflow = '';
       },
-      rating_initScroll() {
-        this.ratingScroll = new BScroll(this.$refs.content, {
-          click: true,
-        });
-      },
-      ratings_input() {
-        this.max_length = 'height:' + (this.img_length + screen.height).toString() + 'px';
-      }
     }
   }
 </script>

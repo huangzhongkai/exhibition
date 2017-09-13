@@ -66,10 +66,7 @@
     <div class="ratings">
       <span class="left">评论</span>
       <div class="right">
-        <!--<span  @click="add_rating(0)">写评论</span>-->
-        <!--<span  @click="image_rating(1)">可圈可点</span>-->
       </div>
-
     </div>
     <div class="rating-wrapper">
       <ul>
@@ -78,9 +75,9 @@
             <img @click="show_information(rating.wx_id)" width="28" height="28" :src="rating.avatar">
           </div>
           <div class="content">
-            <h1 @click="add_rating(0,'回复',rating.id)" class="name">{{rating.username}}</h1>
-            <p @click="add_rating(0,'回复',rating.id)" class="time">{{rating.rateTime}}</p>
-            <p @click="add_rating(0,'回复',rating.id)" class="text">{{rating.text}}</p>
+            <h1 @click="add_rating('回复',rating.id)" class="name">{{rating.username}}</h1>
+            <p @click="add_rating('回复',rating.id)" class="time">{{rating.rateTime}}</p>
+            <p @click="add_rating('回复',rating.id)" class="text">{{rating.text}}</p>
             <div v-show="image_ratings[index]" class="js-result">
               <img :src="exhibit.image_path" :style="{'margin-left':rating.x_coordinate, 'margin-top': rating.y_coordinate}"/>
               <!--<img @click="zoomout()" :width="w" :height="h" :src="rating.rate_image">-->
@@ -113,7 +110,7 @@
           <span>
             <i class="fa fa-commenting-o fa-1x" aria-hidden="true"></i>
             <!--<span><img src="/static/exhibit/rating.png" width="20px" height="20px"/></span>-->
-            <span @click="add_rating(0,'发评论',-1)" style="margin-left: 1px">评论</span>
+            <span @click="add_rating('发评论',-1)" style="margin-left: 1px">评论</span>
           </span>
         </div>
         <div class="tab-item">
@@ -395,41 +392,8 @@
           this.$refs.audio_reading.play();
         }
       },
-//      save () {
-//        var croppedCanvas;
-//        croppedCanvas = this.cropper.getCroppedCanvas({
-//        });
-//        this.result = croppedCanvas.toDataURL();
-//
-//
-//        let _this = this;
-//        this.cropper.getCroppedCanvas().toBlob(function (blob) {
-//          var formData = new FormData();
-//          formData.append('imageblob',blob)
-//          _this.$http.post('http://'+ host +'/exhibit_image_ratings/'+ _this.param.id+'/', formData ).then(response => {
-//          },response => {
-//          });
-//        });
-//
-//      },
       enlarge_image (bool) {
         this.isEnlarge = !bool;
-//        if(this.isEnlarge === true){
-//          var image = document.getElementById('image');
-//          this.cropper = new Cropper(image, {
-//            aspectRatio: 1 / 1,
-//            autoCropArea:0.5,
-//            dragMode: 'none',
-//            zoomable:false,
-//            crop: function(e) {
-//
-//            },
-//            ready: function () {
-//            }
-//          });
-//        }else{
-//          this.cropper.destroy();
-//        }
       },
       more_reading () {
         document.body.style.height = '100%';
@@ -442,15 +406,10 @@
 //      show_video_readings(key) {
 //        window.open("http://"+ host +"/video_readings_html/?id=" + key +'&type=exhibit');
 //      },
-      add_rating (type,content,parent_id) {
+      add_rating (content,parent_id) {
         document.body.style.height = '100%';
         document.body.style.overflow = 'hidden';
-        this.$refs.edit_ratings.show(type,content,parent_id);
-      },
-      image_rating (type) {
-        document.body.style.height = '100%';
-        document.body.style.overflow = 'hidden';
-        this.$refs.edit_ratings.show(type);
+        this.$refs.edit_ratings.show(content,parent_id);
       },
       show_audio (index) {
         !this.isPlaying ? this.$refs.my_audio[index].play() : this.$refs.my_audio[index].pause();

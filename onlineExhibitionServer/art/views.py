@@ -843,15 +843,6 @@ def exhibit_ratings(request, offset):
             rating['id'] = str(int(OeExhibitComment.objects.latest('create_time').id) + 1)
         except:
             rating['id'] = '1'
-        # if cookie == 'error':
-        #     return HttpResponse(json.dumps('error'), content_type='application/json')
-        # if request.GET.get('type','') == '1':
-        #     image = request.FILES.get('imageblob')
-        #     path = default_storage.save(STATICFILES_DIRS[0] + '/exhibit/image_rating/' + image.name + otherStyleTime +'.jpeg', ContentFile(image.read()))
-        # if request.GET.get('type','') == '1':
-        #     rating['type'] = 1
-        #     rating['rate_image'] = '/static/exhibit/image_rating/' + image.name + otherStyleTime + '.jpeg'
-        # else:
         rating['type'] = 0
         OeExhibitComment.objects.create(**rating)
 
@@ -941,8 +932,6 @@ def exhibit_remark(request, offset):
             rating['id'] = str(int(OeExhibitComment.objects.latest('create_time').id) + 1)
         except:
             rating['id'] = '1'
-        # if cookie == 'error':
-        #     return HttpResponse(json.dumps('error'), content_type='application/json')
 
         OeExhibitComment.objects.create(**rating)
 

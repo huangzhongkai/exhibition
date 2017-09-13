@@ -9,7 +9,6 @@
           <i class="icon-arrow_lift"></i>
         </div>
         <div class="more_content">
-          <!--<ul :style="{height: max_length}">-->
             <div class="more_reading_info" v-for="(reading, index) in exhibit.audio_readings">
               <div class="avatar">
                 <img class="avatar_image_background" src="/static/exhibition/head1.jpeg"/>
@@ -45,7 +44,6 @@
                 <div class="description">{{reading.reading_content}}</div>
               </div>
             </div>
-          <!--</ul>-->
         </div>
       </div>
     </div>
@@ -71,7 +69,6 @@
         isPlaying: [],
         exhibit:{},
         showFlag: false,
-        max_length:''
       };
     },
     methods: {
@@ -123,12 +120,10 @@
       if(this.exhibit_id != undefined){
         this.$http.get('http://'+ host +'/exhibit_readings/'+ this.exhibit_id + '/').then(response => {
           this.exhibit = response.body;
-          this.max_length = (this.exhibit.image_text_readings.length + this.exhibit.audio_readings.length+ this.exhibit.video_readings.length) *120 - screen.height
           for(let i=0; i<this.exhibit.audio_readings.length; i++){
             this.play_icon.push('/static/exhibition/play.svg');
             this.isPlaying.push(false);
           }
-          this.max_length = this.max_length.toString() + 'px';
         },response => {
         });
       }
