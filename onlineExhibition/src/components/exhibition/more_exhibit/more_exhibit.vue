@@ -1,39 +1,40 @@
 <template>
   <transition name="move">
-    <div v-show="showFlag" class="more_charactor">
-      <div class="top">
-         {{title}}
-      </div>
-      <div class="back" @click="hide">
-        <i class="icon-arrow_lift"></i>
-      </div>
-      <div class="more_charactor_content" ref="more_content">
-        <ul :style="{height: max_length}" style="display: flex">
-          <div class="left_product">
-            <div v-for="charactor in exhibits" class="exhibit_block">
-              <img @click="show_exhibit(charactor.id)" width="100%"  v-bind:src="charactor.image_path">
-              <div class="exhibit_name">
-                {{charactor.name}}
+    <div v-show="showFlag" class="more_charactor" ref="more_content">
+      <div class="production-content">
+        <div class="top">
+           {{title}}
+        </div>
+        <div class="back" @click="hide">
+          <i class="icon-arrow_lift"></i>
+        </div>
+        <div class="more_charactor_content" >
+            <div class="flex-show">
+              <div class="left_product">
+                <div v-for="charactor in exhibits" class="exhibit_block">
+                  <img @click="show_exhibit(charactor.id)" width="100%"  v-bind:src="charactor.image_path">
+                  <div class="exhibit_name">
+                    {{charactor.name}}
+                  </div>
+                  <div class="exhibit_author">
+                    {{charactor.author}}
+                  </div>
+                </div>
               </div>
-              <div class="exhibit_author">
-                {{charactor.author}}
+              <div class="right_product">
+                <div v-for="charactor in exhibits_right" class="exhibit_block">
+                  <img @click="show_exhibit(charactor.id)" width="100%" v-bind:src="charactor.image_path">
+                  <div class="exhibit_name">
+                    {{charactor.name}}
+                  </div>
+                  <div class="exhibit_author">
+                    {{charactor.author}}
+                  </div>
+                </div>
               </div>
             </div>
-          </div>
-          <div class="right_product">
-            <div v-for="charactor in exhibits_right" class="exhibit_block">
-              <img @click="show_exhibit(charactor.id)" width="100%" v-bind:src="charactor.image_path">
-              <div class="exhibit_name">
-                {{charactor.name}}
-              </div>
-              <div class="exhibit_author">
-                {{charactor.author}}
-              </div>
-            </div>
-          </div>
-        </ul>
+        </div>
       </div>
-
     </div>
   </transition>
 </template>
@@ -54,16 +55,21 @@
     data () {
       return {
         title:'',
-        exhibit:{},
         exhibits:[],
         exhibits_right:[],
         showFlag: false,
-        max_length:''
       };
     },
     methods: {
       show() {
         this.showFlag = true;
+        this.$nextTick(() => {
+          if (!this.scroll) {
+            this._initScroll();
+          } else {
+            this.scroll.refresh();
+          }
+        });
       },
       hide() {
         this.showFlag = false;
@@ -74,7 +80,7 @@
         window.open("http://"+ host +"/exhibit_html/?id=" + key);
       },
       _initScroll() {
-        this.exhibitionScroll = new BScroll(this.$refs.more_content, {
+        this.scroll = new BScroll(this.$refs.more_content, {
           click: true,
         });
       }
@@ -102,15 +108,8 @@
               this.exhibits[i]=response.body[i];
               this.exhibits_right[i]=response.body[i+l/2];
             }
-            this.exhibits_right[l/2] = response.body[response.body.length -1];
+            this.exhibits[l/2] = response.body[response.body.length -1];
           }
-
-          this.exhibit = response.body;
-          this.max_length = this.exhibit.length *200 - screen.height
-          this.max_length = this.max_length.toString() + 'px';
-          this.$nextTick(() => {
-            this._initScroll();
-          });
         },response => {
         });
       }
@@ -136,9 +135,10 @@
     &.move-enter, &.move-leave-active
       transform: translate3d(100%, 0, 0)
     .top
+      position: relative
       border-1px(rgba(7, 17, 27, 0.1))
-      margin-top:10px
-      height: 32px
+      height: 40px
+      line-height: 40px
       text-align: center
     .back
       position: absolute
@@ -146,41 +146,39 @@
       left: 0px
       .icon-arrow_lift
         display: block
-        padding: 10px
+        line-height: 40px
         font-size: 20px
         color: black
     .more_charactor_content
       width: 100%
       overflow: hidden
-      position: absolute
-      top: 50px
       bottom: 0px
-      height: 600px
-      display: flex
       margin-top: 5px
-      .left_product
-        margin-left: 5px
-        margin-right: 5px
-        flex: 1
-        width:50%
-        .exhibit_block
-          border-color: darkgrey
-          border-style: solid
-          border-radius: 5px
-          border-width:1px
-          background-color: white
-          margin-top:2px
-      .right_product
-        margin-left: 5px
-        margin-right: 5px
-        flex: 1
-        width:50%
-        .exhibit_block
-          margin-top:2px
-          border-color: darkgrey
-          border-style: solid
-          border-radius: 5px
-          border-width:1px
-          background-color: white
+      .flex-show
+        display: flex
+        .left_product
+          margin-left: 5px
+          margin-right: 5px
+          flex: 1
+          width:50%
+          .exhibit_block
+            border-color: darkgrey
+            border-style: solid
+            border-radius: 5px
+            border-width:1px
+            background-color: white
+            margin-top:2px
+        .right_product
+          margin-left: 5px
+          margin-right: 5px
+          flex: 1
+          width:50%
+          .exhibit_block
+            margin-top:2px
+            border-color: darkgrey
+            border-style: solid
+            border-radius: 5px
+            border-width:1px
+            background-color: white
 
 </style>

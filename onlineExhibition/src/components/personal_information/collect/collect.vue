@@ -1,86 +1,87 @@
 <template>
   <transition name="move">
-    <div v-show="showFlag" class="collect">
-      <div class="top">
-        收藏
-      </div>
-      <div class="back" @click="hide">
-        <i class="icon-arrow_lift"></i>
-      </div>
-      <div class="collect_content" ref="content">
-        <ul :style="{height: max_length}">
+    <div v-show="showFlag" class="collect" ref="content">
+      <div class="content">
+        <div class="top">
+          收藏
+        </div>
+        <div class="back" @click="hide">
+          <i class="icon-arrow_lift"></i>
+        </div>
+        <div class="collect_content" >
+          <!--<ul :style="{height: max_length}">-->
 
-          <div class='h' :ref="exhibit.flag" v-for="(exhibit,index) in exhibits" v-if="exhibit !==null">
-            <ul :style="{width: scroll_width}">
-              <div  class="collect_info" :style="{width: max_width}">
-                <div @click.once="show_exhibit(exhibit.id)" class="avatar">
-                  <img class="avatar_image_background" :src="exhibit.image_path"/>
+            <div class='h' :ref="exhibit.flag" v-for="(exhibit,index) in exhibits" v-if="exhibit !==null">
+              <ul :style="{width: scroll_width}">
+                <div  class="collect_info" :style="{width: max_width}">
+                  <div @click.once="show_exhibit(exhibit.id)" class="avatar">
+                    <img class="avatar_image_background" :src="exhibit.image_path"/>
+                  </div>
+                  <div @click.once="show_exhibit(exhibit.id)" class="content">
+                    <div class="title">作品:{{exhibit.name}}</div>
+                    <div class="description">作者:{{exhibit.author}}</div>
+                  </div>
+                  <div class="delete">
+                    <i @click.once="delete_collect(index,exhibit.id, 0)" class=" text fa fa-trash fa-2x" aria-hidden="true"></i>
+                    <!--<span @click.once="delete_collect(index,exhibit.id, 0)" class="text">删除</span>-->
+                  </div>
                 </div>
-                <div @click.once="show_exhibit(exhibit.id)" class="content">
-                  <div class="title">作品:{{exhibit.name}}</div>
-                  <div class="description">作者:{{exhibit.author}}</div>
-                </div>
-                <div class="delete">
-                  <i @click.once="delete_collect(index,exhibit.id, 0)" class=" text fa fa-trash fa-2x" aria-hidden="true"></i>
-                  <!--<span @click.once="delete_collect(index,exhibit.id, 0)" class="text">删除</span>-->
-                </div>
-              </div>
-            </ul>
-          </div>
+              </ul>
+            </div>
 
-          <div class='h' :ref="exhibition.flag" v-for="(exhibition,index) in exhibitions" v-if="exhibition !==null">
-            <ul class="a" :style="{width: scroll_width}">
-              <div  class="collect_info" :style="{width: max_width}">
-                <div @click.once="show_exhibit(exhibition.id)" class="avatar">
-                  <img class="avatar_image_background" :src="exhibition.image_path"/>
+            <div class='h' :ref="exhibition.flag" v-for="(exhibition,index) in exhibitions" v-if="exhibition !==null">
+              <ul class="a" :style="{width: scroll_width}">
+                <div  class="collect_info" :style="{width: max_width}">
+                  <div @click.once="show_exhibit(exhibition.id)" class="avatar">
+                    <img class="avatar_image_background" :src="exhibition.image_path"/>
+                  </div>
+                  <div @click.once="show_exhibit(exhibition.id)" class="content">
+                    <div class="title">展览:{{exhibition.name}}</div>
+                    <div class="description">展策人:{{exhibition.exhibition_curator}}</div>
+                    <!--<div class="description">展览时间:{{exhibition.exhibition_date}}</div>-->
+                    <!--<div class="description">展览地点:{{exhibition.exhibition_site}}</div>-->
+                  </div>
+                  <div class="delete">
+                    <i @click.once="delete_collect(index,exhibition.id, 1)" class=" text fa fa-trash fa-2x" aria-hidden="true"></i>
+                    <!--<span @click.once="delete_collect(index,exhibition.id, 1)" class="text">删除</span>-->
+                  </div>
                 </div>
-                <div @click.once="show_exhibit(exhibition.id)" class="content">
-                  <div class="title">展览:{{exhibition.name}}</div>
-                  <div class="description">展策人:{{exhibition.exhibition_curator}}</div>
-                  <!--<div class="description">展览时间:{{exhibition.exhibition_date}}</div>-->
-                  <!--<div class="description">展览地点:{{exhibition.exhibition_site}}</div>-->
-                </div>
-                <div class="delete">
-                  <i @click.once="delete_collect(index,exhibition.id, 1)" class=" text fa fa-trash fa-2x" aria-hidden="true"></i>
-                  <!--<span @click.once="delete_collect(index,exhibition.id, 1)" class="text">删除</span>-->
-                </div>
-              </div>
 
-            </ul>
-          </div>
+              </ul>
+            </div>
 
-          <!--<div class="exhibition" :ref="exhibition.flag" v-for="exhibition in exhibitions">-->
-            <!--&lt;!&ndash;<ul style="height: 1000px;">&ndash;&gt;-->
-            <!--<li @click="show_exhibition(exhibition.id)"  class="my_exhibition" :style="{width: max_width}">-->
-              <!--<div @click="show_exhibition(exhibition.id)" class="top_image">-->
-                <!--<img width="100%" height="200px" :src="exhibition.image_path">-->
-              <!--</div>-->
-              <!--<div @click="show_exhibition(exhibition.id)" class="exhibition_info">-->
-                <!--<div class="info_left">-->
-                  <!--<div>-->
-                    <!--{{exhibition.name}}-->
+            <!--<div class="exhibition" :ref="exhibition.flag" v-for="exhibition in exhibitions">-->
+              <!--&lt;!&ndash;<ul style="height: 1000px;">&ndash;&gt;-->
+              <!--<li @click="show_exhibition(exhibition.id)"  class="my_exhibition" :style="{width: max_width}">-->
+                <!--<div @click="show_exhibition(exhibition.id)" class="top_image">-->
+                  <!--<img width="100%" height="200px" :src="exhibition.image_path">-->
+                <!--</div>-->
+                <!--<div @click="show_exhibition(exhibition.id)" class="exhibition_info">-->
+                  <!--<div class="info_left">-->
+                    <!--<div>-->
+                      <!--{{exhibition.name}}-->
+                    <!--</div>-->
+                    <!--<div>-->
+                      <!--展览时间： {{exhibition.exhibition_date}}-->
+                    <!--</div>-->
+                    <!--<div>-->
+                      <!--展览地点： {{exhibition.exhibition_site}}-->
+                    <!--</div>-->
                   <!--</div>-->
-                  <!--<div>-->
-                    <!--展览时间： {{exhibition.exhibition_date}}-->
-                  <!--</div>-->
-                  <!--<div>-->
-                    <!--展览地点： {{exhibition.exhibition_site}}-->
+                  <!--<div class="info_right">-->
+                    <!--<div>-->
+                      <!--展策人: {{exhibition.exhibition_curator}}-->
+                    <!--</div>-->
                   <!--</div>-->
                 <!--</div>-->
-                <!--<div class="info_right">-->
-                  <!--<div>-->
-                    <!--展策人: {{exhibition.exhibition_curator}}-->
-                  <!--</div>-->
+                <!--<div class="delete">-->
+                  <!--<span @click.once="delete_collect()" class="text">删除</span>-->
                 <!--</div>-->
-              <!--</div>-->
-              <!--<div class="delete">-->
-                <!--<span @click.once="delete_collect()" class="text">删除</span>-->
-              <!--</div>-->
-            <!--</li>-->
-          <!--</div>-->
-        </ul>
+              <!--</li>-->
+            <!--</div>-->
+          <!--</ul>-->
+        </div>
       </div>
-
     </div>
   </transition>
 </template>
@@ -134,6 +135,13 @@
       },
       show() {
         this.showFlag = true;
+        this.$nextTick(() => {
+          if (!this.scroll) {
+            this._initScroll();
+          } else {
+            this.scroll.refresh();
+          }
+        });
       },
       hide() {
         this.showFlag = false;
@@ -141,7 +149,7 @@
         document.body.style.overflow = '';
       },
       _initScroll() {
-        this.exhibitionScroll = new BScroll(this.$refs.content, {
+        this.scroll = new BScroll(this.$refs.content, {
           click: true,
         });
         for(let i=0; i<this.exhibits.length; i++){
@@ -167,9 +175,6 @@
           this.exhibitions = response.body.exhibitions;
           this.max_length = (this.exhibits.length + this.exhibitions.length) *120 - screen.height
           this.max_length = this.max_length.toString() + 'px';
-          this.$nextTick(() => {
-            this._initScroll();
-          });
         },response => {
         });
       };
@@ -200,9 +205,10 @@
     &.move-enter, &.move-leave-active
       transform: translate3d(100%, 0, 0)
     .top
+      position: relative
       border-1px(rgba(7, 17, 27, 0.1))
-      margin-top:10px
-      height: 32px
+      height: 40px
+      line-height: 40px
       text-align: center
     .back
       position: absolute
@@ -210,15 +216,13 @@
       left: 0px
       .icon-arrow_lift
         display: block
-        padding: 10px
+        line-height: 40px
         font-size: 20px
         color: black
     .collect_content
       width:100%
-      position: absolute
-      top: 50px
+      overflow: hidden
       bottom: 0px
-      height: 600px
       .h
         height: 80px
         margin: 5px 0px 5px 5px

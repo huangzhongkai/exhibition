@@ -1,52 +1,51 @@
 <template>
   <transition name="move">
-    <div v-show="showFlag" class="more_reading">
-      <div class="top">
-        展览解读
+    <div v-show="showFlag" class="more_reading" ref="more_reading_content">
+      <div class="production-content">
+        <div class="top">
+          展览解读
+        </div>
+        <div class="back" @click="hide()">
+          <i class="icon-arrow_lift"></i>
+        </div>
+        <div class="more_content" >
+            <div class="more_reading_info" v-for="(reading, index) in exhibition.audio_readings">
+              <div class="avatar">
+                <img class="avatar_image_background" src="/static/exhibition/head1.jpeg"/>
+                <img class="avatar_image_play" @click="show_audio(index)" :src="play_icon[index]"/>
+              </div>
+              <div class="reading_video">
+                <audio :src="reading.audio_src" ref="my_audio" class="my_video"></audio>
+              </div>
+              <div class="more_reading_content">
+                <div class="title">{{reading.reading_title}}</div>
+                <div class="description">{{reading.reading_content}}</div>
+              </div>
+            </div>
+            <div class="more_reading_info" v-for="reading in exhibition.image_text_readings">
+              <div class="avatar">
+                <img class="avatar_image_background" :src="reading.image_path"/>
+              </div>
+              <div @click="show_image_text_readings(reading.id)" class="more_reading_content">
+                <div class="title">{{reading.reading_title}}</div>
+                <div class="description">{{reading.reading_content}}</div>
+              </div>
+            </div>
+            <div class="more_reading_info" v-for="(reading, index) in exhibition.video_readings">
+              <div class="avatar">
+                <img class="avatar_image_background" src="/static/exhibition/head1.jpeg"/>
+                <img class="avatar_image_play" @click="show_video(index)" src="/static/exhibition/play.svg"/>
+              </div>
+              <div class="reading_video">
+                <video :src="reading.video_src" ref="my_video" class="my_video"></video>
+              </div>
+              <div class="more_reading_content">
+                <div class="title">{{reading.reading_title}}</div>
+                <div class="description">{{reading.reading_content}}</div>
+              </div>
+            </div>
+        </div>
       </div>
-      <div class="back" @click="hide()">
-        <i class="icon-arrow_lift"></i>
-      </div>
-      <div class="more_content" ref="more_reading_content">
-        <ul :style="{height: max_length}">
-          <div class="more_reading_info" v-for="(reading, index) in exhibition.audio_readings">
-            <div class="avatar">
-              <img class="avatar_image_background" src="/static/exhibition/head1.jpeg"/>
-              <img class="avatar_image_play" @click="show_audio(index)" :src="play_icon[index]"/>
-            </div>
-            <div class="reading_video">
-              <audio :src="reading.audio_src" ref="my_audio" class="my_video"></audio>
-            </div>
-            <div class="more_reading_content">
-              <div class="title">{{reading.reading_title}}</div>
-              <div class="description">{{reading.reading_content}}</div>
-            </div>
-          </div>
-          <div class="more_reading_info" v-for="reading in exhibition.image_text_readings">
-            <div class="avatar">
-              <img class="avatar_image_background" :src="reading.image_path"/>
-            </div>
-            <div @click="show_image_text_readings(reading.id)" class="more_reading_content">
-              <div class="title">{{reading.reading_title}}</div>
-              <div class="description">{{reading.reading_content}}</div>
-            </div>
-          </div>
-          <div class="more_reading_info" v-for="(reading, index) in exhibition.video_readings">
-            <div class="avatar">
-              <img class="avatar_image_background" src="/static/exhibition/head1.jpeg"/>
-              <img class="avatar_image_play" @click="show_video(index)" src="/static/exhibition/play.svg"/>
-            </div>
-            <div class="reading_video">
-              <video :src="reading.video_src" ref="my_video" class="my_video"></video>
-            </div>
-            <div class="more_reading_content">
-              <div class="title">{{reading.reading_title}}</div>
-              <div class="description">{{reading.reading_content}}</div>
-            </div>
-          </div>
-        </ul>
-      </div>
-
     </div>
     </transition>
 </template>
@@ -77,6 +76,13 @@
     methods: {
       show() {
         this.showFlag = true;
+        this.$nextTick(() => {
+          if (!this.scroll) {
+            this._initScroll();
+          } else {
+            this.scroll.refresh();
+          }
+        });
       },
       hide() {
         this.showFlag = false;
@@ -101,7 +107,7 @@
         });
       },
       _initScroll() {
-        this.exhibitionScroll = new BScroll(this.$refs.more_reading_content, {
+        this.scroll = new BScroll(this.$refs.more_reading_content, {
           click: true,
         });
       },
@@ -122,9 +128,6 @@
             this.isPlaying.push(false);
           }
           this.max_length = this.max_length.toString() + 'px';
-          this.$nextTick(() => {
-            this._initScroll();
-          });
         },response => {
         });
       }
@@ -150,9 +153,10 @@
     &.move-enter, &.move-leave-active
       transform: translate3d(100%, 0, 0)
     .top
+      position: relative
       border-1px(rgba(7, 17, 27, 0.1))
-      margin-top:10px
-      height: 32px
+      height: 40px
+      line-height: 40px
       text-align: center
     .back
       position: absolute
@@ -160,23 +164,19 @@
       left: 0px
       .icon-arrow_lift
         display: block
-        padding: 10px
         font-size: 20px
+        line-height: 40px
         color: black
     .more_content
       width: 100%
       overflow: hidden
-      position: absolute
-      top: 50px
       bottom: 0px
-      height: 600px
       .more_reading_info
-        position: relative
-        margin: 5px 5px 5px 5px
+        margin: 2px 5px 0px 5px
         width: 97%
         height: 80px
         border-color: aliceblue
-        border: 2px
+        border: 1px
         border-style: solid
         border-radius: 5px
         background-color: white
