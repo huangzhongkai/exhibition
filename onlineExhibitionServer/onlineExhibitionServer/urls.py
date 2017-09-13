@@ -5,7 +5,7 @@ from django.contrib import admin
 from art.views import artist, artists, achievement, introduction, exhibit, exhibits
 from art.views import exhibition, exhibitions, exhibit_readings,exhibition_readings,\
     exhibit_image_text_readings, exhibit_vedio_readings, exhibition_image_text_readings,\
-    exhibition_vedio_readings, get_signature, motified_signature, exhibition_ratings
+    exhibition_vedio_readings, get_signature, exhibition_ratings
 from art.views import home_html, exhibition_html, exhibit_html, artist_html, exhibit_ratings, \
     image_text_readings_html, video_readings_html, attention, information, personal_information_html, collect, \
     bing_phone_commit, send_auth_code, exhibit_remark, check_phone_commit, login, artists_html, get_wx_share_info
@@ -42,7 +42,7 @@ urlpatterns = [
     url(r'^exhibition_ratings/(\d+)/$', exhibition_ratings),
 
     url(r'^get_signature/$', get_signature),
-    url(r'^motified_signature/$', motified_signature),
+    # url(r'^motified_signature/$', motified_signature),
 
     url(r'^attention/$', attention),
     url(r'^information/(\d+)/$', information),
