@@ -1,31 +1,31 @@
 <template>
   <transition name="move">
-    <div v-show="showFlag" class="remark">
-      <div :class="is_select">
-        <div class="top">
-          可圈可点
-        </div>
-        <div class="back" @click="hide">
-          <i class="icon-arrow_lift"></i>
-        </div>
-      </div>
-
-      <div :class="is_click" ref="content">
-        <ul :style="{height: scroll_length}">
-          <div class="top_image" :style="{height: max_length}">
-            <img class="image" @click="enlarge()" width="100%" height="100%" :src="reading.image_path">
-            <div id="moveid" class="div">
-              <img :src="reading.image_path" :style="{'margin-left':margin_left, 'margin-top': margin_top}"/>
-            </div>
-            <div id="search" class="search">
-              <i class="fa fa-search fa-3x" aria-hidden="true"></i>
-            </div>
-            <i id="rating" class="rating fa fa-commenting-o fa-3x" aria-hidden="true" data-toggle="modal" data-target="#myModal"></i>
+    <div v-show="showFlag" class="remark" ref="content">
+      <div>
+        <div :class="is_select">
+          <div class="top">
+            可圈可点
           </div>
-        </ul>
-      </div>
+          <div class="back" @click="hide">
+            <i class="icon-arrow_lift"></i>
+          </div>
+        </div>
 
-      <div class="alert"></div>
+        <div class="content_show" >
+            <div class="top_image">
+              <img class="image" width="100%" height="100%" :src="reading.image_path">
+              <div id="moveid" class="div">
+                <img :src="reading.image_path" :style="{'margin-left':margin_left, 'margin-top': margin_top}"/>
+              </div>
+              <div id="search" class="search">
+                <i class="fa fa-search fa-3x" aria-hidden="true"></i>
+              </div>
+              <i id="rating" class="rating fa fa-commenting-o fa-3x" aria-hidden="true" data-toggle="modal" data-target="#myModal"></i>
+            </div>
+        </div>
+
+        <div class="alert"></div>
+      </div>
     </div>
   </transition>
 </template>
@@ -49,8 +49,7 @@
         img_origin_height:'',
         margin_left:'',
         margin_top:'',
-        max_length:'',
-        scroll_length:'',
+        is_scroll:'',
         is_select:'show',
         is_click:'content_show',
         showFlag: false,
@@ -70,20 +69,27 @@
         let patt=/[\ud800-\udbff][\udc00-\udfff]/g; // 检测utf16字符正则
         return str.replace(patt,'');
       },
-      enlarge(){
-        if( this.is_select === 'show'){
-          this.is_select = 'hidden';
-          this.is_click  = 'content_hidden'
-          $("#rating").css("display", "block")
-        }else{
-          this.is_select = 'show'
-          this.is_click  = 'content_show'
-          $("#rating").css("display", "none")
-        }
-
-      },
+//      enlarge(){
+//        if( this.is_select === 'show'){
+////          this.is_select = 'hidden';
+//          this.is_click  = 'content_show'
+//          $("#rating").css("display", "block")
+//        }else{
+//          this.is_select = 'show'
+//          this.is_click  = 'content_hidden'
+//          $("#rating").css("display", "none")
+//        }
+//
+//      },
       show() {
         this.showFlag = true;
+        this.$nextTick(() => {
+          if (!this.scroll) {
+            this._initScroll();
+          } else {
+            this.scroll.refresh();
+          }
+        });
       },
       hide() {
         this.showFlag = false;
@@ -91,7 +97,7 @@
         document.body.style.overflow = '';
       },
       _initScroll() {
-        new BScroll(this.$refs.content, {
+        this.scroll = new BScroll(this.$refs.content, {
           click: true,
         });
       },
@@ -106,22 +112,14 @@
           _this.img_origin_width = img.width;
           _this.img_origin_height = img.height;
           _this.img_length = img.height/(img.width/screen.width);
-          if(img.height/(img.width/screen.width) > screen.height){
-            _this.scroll_length = 42*2 + img.height/(img.width/screen.width) - screen.height;
-          }else{
-            _this.scroll_length = 42*2;
-          }
-          _this.max_length = _this.img_length;
-          _this.scroll_length = _this.scroll_length.toString() + 'px';
-          _this.max_length = _this.max_length.toString() + 'px';
-          _this.$nextTick(() => {
-            _this._initScroll();
-          });
 
           _this.$nextTick(() =>{
             let _x_start,_y_start,_x_move,_y_move,_x_end,_y_end,left_start,top_start;
             document.getElementById("search").addEventListener("touchstart",function(e)
             {
+              $("body").on("touchmove",function(event){
+                event.preventDefault;
+              }, false)
               $("#rating").css("display", "none");
               _x_start=e.touches[0].pageX;
               _y_start=e.touches[0].pageY;
@@ -134,9 +132,9 @@
               _y_move=e.touches[0].pageY;
               // console.log("move",_x_move)
               if(parseFloat(_x_move)-parseFloat(_x_start)+parseFloat(left_start) >=0 &&
-                parseFloat(_y_move)-parseFloat(_y_start)+parseFloat(top_start) >=0 &&
-                parseFloat(_x_move)-parseFloat(_x_start)+parseFloat(left_start) <=(screen.width-40) &&
-                parseFloat(_y_move)-parseFloat(_y_start)+parseFloat(top_start) <=((screen.width/_this.img_origin_width * _this.img_origin_height)-40)){
+                parseFloat(_y_move)-parseFloat(_y_start)+parseFloat(top_start) >=42 &&
+                parseFloat(_x_move)-parseFloat(_x_start)+parseFloat(left_start) <=(screen.width) - 35 &&
+                parseFloat(_y_move)-parseFloat(_y_start)+parseFloat(top_start) <=((screen.width/_this.img_origin_width * _this.img_origin_height ))){
                 $("#search").css("left",parseFloat(_x_move)-parseFloat(_x_start)+parseFloat(left_start)+"px");
                 $("#search").css("top",parseFloat(_y_move)-parseFloat(_y_start)+parseFloat(top_start)+"px");
                 console.log('x=', parseFloat(_x_move)-parseFloat(_x_start)+parseFloat(left_start));
@@ -146,7 +144,7 @@
                   _this.margin_left = _this.img_origin_width -128;
                 }
                 _this.margin_left = '-' + _this.margin_left.toString() + 'px';
-                _this.margin_top = parseFloat(_y_move)-parseFloat(_y_start)+parseFloat(top_start)/(screen.width/_this.img_origin_width);
+                _this.margin_top = (parseFloat(_y_move)-parseFloat(_y_start)+parseFloat(top_start) -40 )/(screen.width/_this.img_origin_width);
                 if(_this.margin_top > _this.img_origin_height -128){
                   _this.margin_top = _this.img_origin_height -128;
                 }
@@ -160,6 +158,7 @@
               let _x_end=e.changedTouches[0].pageX;
               let _y_end=e.changedTouches[0].pageY;
               $("#rating").css("display", "block");
+              $("body").off("touchmove");
             })
           })
         }
@@ -169,7 +168,9 @@
         let _x_start,_y_start,_x_move,_y_move,_x_end,_y_end,left_start,top_start;
         document.getElementById("moveid").addEventListener("touchstart",function(e)
         {
-
+          $("body").on("touchmove",function(event){
+            event.preventDefault;
+          }, false)
           _x_start=e.touches[0].pageX;
           _y_start=e.touches[0].pageY;
           // console.log("start",_x_start)
@@ -183,15 +184,16 @@
           _y_move=e.touches[0].pageY;
           // console.log("move",_x_move)
           if(parseFloat(_x_move)-parseFloat(_x_start)+parseFloat(left_start) >=0 &&
-            parseFloat(_y_move)-parseFloat(_y_start)+parseFloat(top_start) >=0 &&
+            parseFloat(_y_move)-parseFloat(_y_start)+parseFloat(top_start) >=42 &&
             parseFloat(_x_move)-parseFloat(_x_start)+parseFloat(left_start) <=(screen.width-128) &&
-            parseFloat(_y_move)-parseFloat(_y_start)+parseFloat(top_start) <=(screen.height-128)){
+            parseFloat(_y_move)-parseFloat(_y_start)+parseFloat(top_start) <=((screen.width/_this.img_origin_width * _this.img_origin_height )-128 + 42)){
             $("#moveid").css("left",parseFloat(_x_move)-parseFloat(_x_start)+parseFloat(left_start)+"px");
             $("#moveid").css("top",parseFloat(_y_move)-parseFloat(_y_start)+parseFloat(top_start)+"px");
           }
         })
         document.getElementById("moveid").addEventListener("touchend",function(e)
         {
+          $("body").off("touchmove");
           let _x_end=e.changedTouches[0].pageX;
           let _y_end=e.changedTouches[0].pageY;
           // console.log("end",_x_end)
@@ -245,9 +247,10 @@
     .show
       display: block
       .top
+        position: relative
         border-1px(rgba(7, 17, 27, 0.1))
-        margin-top:10px
-        height: 32px
+        line-height: 42px
+        height: 42px
         text-align: center
       .back
         position: absolute
@@ -255,15 +258,16 @@
         left: 0px
         .icon-arrow_lift
           display: block
-          padding: 10px
+          line-height: 42px
           font-size: 20px
           color: black
     .hidden
       display: none
       .top
+        position: relative
         border-1px(rgba(7, 17, 27, 0.1))
-        margin-top:10px
-        height: 32px
+        line-height: 42px
+        height: 42px
         text-align: center
       .back
         position: absolute
@@ -271,14 +275,12 @@
         left: 0px
         .icon-arrow_lift
           display: block
-          padding: 10px
+          line-height: 40px
           font-size: 20px
           color: black
-    .content_show
+    .content_hidden
       width: 100%
       overflow: hidden
-      position: absolute
-      top: 42px
       bottom: 0
       .div
         display: none
@@ -286,11 +288,9 @@
         display: none
       .rating
         display: none
-    .content_hidden
+    .content_show
       width: 100%
       overflow: hidden
-      position: absolute
-      top: 0
       bottom: 0
       .div
         position: absolute
@@ -311,9 +311,10 @@
         z-index: 30
       .rating
         position: absolute
+        height: 40px
         z-index: 20
         top: 0px
-        left: 0px
+        right: 0px
     .alert
       display: none
       position: fixed
