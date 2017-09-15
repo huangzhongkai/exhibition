@@ -3,7 +3,7 @@ import json, random, uuid
 import time
 from django.shortcuts import render_to_response, HttpResponse, Http404
 from art.models import OeArtist, OeExhibit, OeExhibition, OeExhibitInterpretation,\
-    OeArtistExhibitionRelation, OeWxConfig, OeWxDeveloper, OeExhibitionInterpretation, OeWxUser, OeUserExhibitionCollection
+    OeArtistExhibitionRelation, OeWxDeveloper, OeExhibitionInterpretation, OeWxUser, OeUserExhibitionCollection
 from django.forms.models import model_to_dict
 from django.views.decorators.csrf import csrf_exempt
 from art.models import OeWxShareExhibitionInfo, OeWxShareExhibitInfo, OeWxShareHomeInfo, OeWxShareArtistInfo
@@ -516,7 +516,7 @@ def login(request):
                                         headimgurl=user_info['headimgurl'])
 
                 try:
-                    user_id = str(int(OeExhibitComment.objects.latest('create_time').id) + 1)
+                    user_id = str(int(OeUser.objects.latest('create_time').id) + 1)
                 except:
                     user_id = '1'
 
@@ -674,7 +674,7 @@ def exhibit(request, offset):
             'avatar': wx_user['headimgurl'],
             'wx_id':wx_user['id'],
             'type': comment['type'],
-            'rate_image': comment['rate_image'],
+            # 'rate_image': comment['rate_image'],
             'x_coordinate': comment['x_coordinate'],
             'y_coordinate': comment['y_coordinate']
         }
@@ -878,7 +878,7 @@ def exhibit_ratings(request, offset):
                 'avatar': wx_user['headimgurl'],
                 'wx_id': wx_user['id'],
                 'type': comment['type'],
-                'rate_image': comment['rate_image'],
+                # 'rate_image': comment['rate_image'],
                 'x_coordinate': comment['x_coordinate'],
                 'y_coordinate': comment['y_coordinate']
             }
@@ -1013,7 +1013,7 @@ def exhibition(request, offset):
                 'avatar': wx_user['headimgurl'],
                 'wx_id': wx_user['id'],
                 'type': comment['type'],
-                'rate_image': comment['rate_image']
+                # 'rate_image': comment['rate_image']
             }
             comment_list.append(show_dict)
         comment_dict = {'ratings': comment_list}
@@ -1322,7 +1322,7 @@ def exhibition_ratings(request, offset):
                 'avatar': wx_user['headimgurl'],
                 'wx_id': wx_user['id'],
                 'type': comment['type'],
-                'rate_image': comment['rate_image']
+                # 'rate_image': comment['rate_image']
             }
             comment_list.append(show_dict)
         comment_dict = {'ratings': comment_list}

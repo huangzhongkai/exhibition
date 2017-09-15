@@ -62,7 +62,6 @@ class OeExhibitComment(models.Model):
     parent = models.ForeignKey('self', db_column='PARENT_ID', blank=True, null=True) # Field name made lowercase.
     # user = models.ForeignKey('OeUser', db_column='USER_ID') # Field name made lowercase.
     wx_user = models.ForeignKey('OeWxUser', db_column='WX_USER_ID')  # Field name made lowercase.
-    rate_image = models.CharField(db_column='RATE_IMAGE', max_length=300)
     type = models.IntegerField(db_column='TYPE', choices=type_choice)
     x_coordinate = models.CharField(db_column='X_COORDINATE', max_length=30)
     y_coordinate = models.CharField(db_column='Y_COORDINATE', max_length=30)
@@ -94,7 +93,6 @@ class OeExhibitionComment(models.Model):
     wx_user = models.ForeignKey('OeWxUser', db_column='WX_USER_ID')  # Field name made lowercase.
     parent = models.ForeignKey('self', db_column='PARENT_ID', blank=True, null=True) # Field name made lowercase.
     user = models.ForeignKey('OeUser', db_column='USER_ID', null=True) # Field name made lowercase.
-    rate_image = models.CharField(db_column='RATE_IMAGE', max_length=300)
     type = models.IntegerField(db_column='TYPE', choices=type_choice)
     class Meta:
         db_table = 'oe_exhibition_comment'
@@ -325,16 +323,16 @@ class OeUserRelation(models.Model):
     class Meta:
         db_table = 'oe_user_relation'
 
-class OeWxConfig(models.Model):
-    id = models.AutoField(db_column='ID', primary_key=True)
-    appid = models.CharField(db_column='APPID', max_length=100)
-    appsecret = models.CharField(db_column='APPSECRET', max_length=100)
-    signature = models.CharField(db_column='SIGNATURE', max_length=100)
-    timestamp = models.IntegerField(db_column='TIMESTAMP', default=0)
-    noncestr = models.CharField(db_column='NONCESTR', max_length=30)
-    url = models.CharField(db_column='URL', max_length=1000)
-    class Meta:
-        db_table = 'oe_wx_config'
+# class OeWxConfig(models.Model):
+#     id = models.AutoField(db_column='ID', primary_key=True)
+#     appid = models.CharField(db_column='APPID', max_length=100)
+#     appsecret = models.CharField(db_column='APPSECRET', max_length=100)
+#     signature = models.CharField(db_column='SIGNATURE', max_length=100)
+#     timestamp = models.IntegerField(db_column='TIMESTAMP', default=0)
+#     noncestr = models.CharField(db_column='NONCESTR', max_length=30)
+#     url = models.CharField(db_column='URL', max_length=1000)
+#     class Meta:
+#         db_table = 'oe_wx_config'
 
 class OeWxDeveloper(models.Model):
     id = models.AutoField(db_column='ID', primary_key=True)
