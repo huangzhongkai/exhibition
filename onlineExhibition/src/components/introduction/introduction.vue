@@ -38,7 +38,6 @@
   .introduction
     position: relative
     margin: 5px 5px 5px 5px
-    height: 800px
     /*border-color: antiquewhite*/
     /*border: 2px*/
     /*border-style: solid*/
