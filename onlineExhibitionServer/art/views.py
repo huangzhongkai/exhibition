@@ -1013,7 +1013,7 @@ def exhibition(request, offset):
                 'text': text,
                 'avatar': wx_user['headimgurl'],
                 'wx_id': wx_user['id'],
-                'type': comment['type'],
+                # 'type': comment['type'],
                 # 'rate_image': comment['rate_image']
             }
             comment_list.append(show_dict)
@@ -1226,18 +1226,6 @@ def exhibition_ratings(request, offset):
         print request.COOKIES
         print request.session.get('openid', default=None)
 
-        # cookie = request.COOKIES.get('sessionid','error')
-        # if cookie != 'error':
-        #     try:
-        #         openid = Session.objects.get(session_key=cookie).get_decoded()['openid']
-        #     except:
-        #         openid = ''
-        #     # openid = request.session.get('openid', default=None)
-        #     nickname = OeWxUser.objects.filter(appid=openid).first().nickname
-        # else:
-        #     print '未知'
-        #     nickname = '未知'
-
         if request.session.get('openid', 'error') == 'error':
             return HttpResponse(json.dumps('error'), content_type='application/json')
         else:
@@ -1278,17 +1266,7 @@ def exhibition_ratings(request, offset):
             rating['id'] = str(int(OeExhibitionComment.objects.latest('create_time').id) + 1)
         except:
             rating['id'] = '1'
-        # if cookie == 'error':
-        #     return HttpResponse(json.dumps('error'), content_type='application/json')
-        # if request.GET.get('type','') == '1':
-        #     image = request.FILES.get('imageblob')
-        #     path = default_storage.save(STATICFILES_DIRS[0] + '/exhibit/image_rating/' + image.name + otherStyleTime +'.jpeg', ContentFile(image.read()))
-        # if request.GET.get('type','') == '1':
-        #     rating['type'] = 1
-        #     rating['rate_image'] = '/static/exhibit/image_rating/' + image.name + otherStyleTime + '.jpeg'
-        # else:
-        rating['type'] = 0
-        print rating
+
         OeExhibitionComment.objects.create(**rating)
 
         return HttpResponse(json.dumps(''), content_type='application/json')
@@ -1323,7 +1301,6 @@ def exhibition_ratings(request, offset):
                 'avatar': wx_user['headimgurl'],
                 'wx_id': wx_user['id'],
                 'type': comment['type'],
-                # 'rate_image': comment['rate_image']
             }
             comment_list.append(show_dict)
         comment_dict = {'ratings': comment_list}

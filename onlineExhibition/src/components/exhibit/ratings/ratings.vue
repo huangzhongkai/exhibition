@@ -81,7 +81,7 @@
         rating['rateTime'] = Date.parse(new Date())/1000;
         rating['text'] = this.utf16ToUtf8(this.ratings);
         rating['parent_id'] = this.parent_id;
-          this.$http.post('http://'+ host +'/exhibit_ratings/'+ this.exhibit_id+'/?type=0',rating, {emulateJSON:true} ).then(response => {
+          this.$http.post('http://'+ host +'/exhibit_ratings/'+ this.exhibit_id+'/',rating, {emulateJSON:true} ).then(response => {
             if(response.body === 'error'){
               window.location = 'https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx522cca3d4b048aa9&redirect_uri=http%3A//'+ encodeURIComponent(host) +'/home_html/&response_type=code&scope=snsapi_userinfo&state=123#wechat_redirect'
             }else{

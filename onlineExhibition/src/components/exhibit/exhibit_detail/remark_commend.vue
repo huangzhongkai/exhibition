@@ -24,7 +24,7 @@
             </div>
         </div>
 
-        <div class="alert"></div>
+        <div class="alert_"></div>
       </div>
     </div>
   </transition>
@@ -214,7 +214,7 @@
               window.location = 'https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx522cca3d4b048aa9&redirect_uri=http%3A//'+ encodeURIComponent(host) +'/home_html/&response_type=code&scope=snsapi_userinfo&state=123#wechat_redirect'
             }else{
               $("#myModal").modal('hide');
-              $('.alert').html('评论成功').addClass('alert-warning').show().delay(2000).fadeOut(function () {
+              $('.alert_').html('评论成功').addClass('alert-warning').show().delay(2000).fadeOut(function () {
                 window.location.reload();
               });
             }
@@ -315,7 +315,7 @@
         z-index: 20
         top: 0px
         right: 0px
-    .alert
+    .alert_
       display: none
       position: fixed
       top: 50%
