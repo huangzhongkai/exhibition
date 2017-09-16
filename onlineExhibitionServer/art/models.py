@@ -14,7 +14,6 @@ class OeArtist(models.Model):
     head_path = models.CharField(db_column='HEAD_PATH', max_length=200, blank=True) # Field name made lowercase.
     create_time = models.DateTimeField(db_column='CREATE_TIME') # Field name made lowercase.
     modify_time = models.DateTimeField(db_column='MODIFY_TIME', blank=True, null=True) # Field name made lowercase.
-    production_number= models.IntegerField(db_column='')
     class Meta:
         db_table = 'oe_artist'
 

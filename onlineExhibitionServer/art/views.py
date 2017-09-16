@@ -594,6 +594,7 @@ def artists(request):
         artist_dict = model_to_dict(artist)
         artist_dict['modify_time'] = artist_dict['modify_time'].strftime('%Y-%m-%d')
         artist_dict['create_time'] = artist_dict['create_time'].strftime('%Y-%m-%d')
+        artist_dict['production_number'] = OeExhibit.objects.filter(author=artist_dict['name']).count()
         artist_list.append(artist_dict)
     return HttpResponse(json.dumps(artist_list), content_type='application/json')
 
