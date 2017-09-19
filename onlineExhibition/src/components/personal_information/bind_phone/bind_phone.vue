@@ -80,6 +80,7 @@
         }
       },
       show() {
+        $("title").html("绑定手机号");
         this.showFlag = true;
       },
       hide() {

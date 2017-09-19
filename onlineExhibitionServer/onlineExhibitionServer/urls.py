@@ -45,8 +45,8 @@ urlpatterns = [
     # url(r'^motified_signature/$', motified_signature),
 
     url(r'^attention/$', attention),
-    url(r'^information/(\d+)/$', information),
-    url(r'^collect/(\d+)/$', collect),
+    url(r'^information/$', information),
+    url(r'^collect/$', collect),
     url(r'^send_auth_code/$', send_auth_code),
     url(r'^bing_phone_commit/$', bing_phone_commit),
     url(r'^check_phone_commit/$', check_phone_commit),

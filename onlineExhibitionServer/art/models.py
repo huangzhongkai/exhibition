@@ -59,8 +59,8 @@ class OeExhibitComment(models.Model):
     create_time = models.DateTimeField(db_column='CREATE_TIME') # Field name made lowercase.
     exhibit = models.ForeignKey(OeExhibit, db_column='EXHIBIT_ID', blank=True, null=True) # Field name made lowercase.
     parent = models.ForeignKey('self', db_column='PARENT_ID', blank=True, null=True) # Field name made lowercase.
-    # user = models.ForeignKey('OeUser', db_column='USER_ID') # Field name made lowercase.
-    wx_user = models.ForeignKey('OeWxUser', db_column='WX_USER_ID')  # Field name made lowercase.
+    user = models.ForeignKey('OeUser', db_column='USER_ID') # Field name made lowercase.
+    # wx_user = models.ForeignKey('OeWxUser', db_column='WX_USER_ID')  # Field name made lowercase.
     type = models.IntegerField(db_column='TYPE', choices=type_choice)
     x_coordinate = models.CharField(db_column='X_COORDINATE', max_length=30)
     y_coordinate = models.CharField(db_column='Y_COORDINATE', max_length=30)
@@ -85,9 +85,9 @@ class OeExhibitionComment(models.Model):
     content = models.TextField(db_column='CONTENT') # Field name made lowercase.
     create_time = models.DateTimeField(db_column='CREATE_TIME') # Field name made lowercase.
     exhibition = models.ForeignKey(OeExhibition, db_column='EXHIBITION_ID', blank=True, null=True) # Field name made lowercase.
-    wx_user = models.ForeignKey('OeWxUser', db_column='WX_USER_ID')  # Field name made lowercase.
+    # wx_user = models.ForeignKey('OeWxUser', db_column='WX_USER_ID')  # Field name made lowercase.
     parent = models.ForeignKey('self', db_column='PARENT_ID', blank=True, null=True) # Field name made lowercase.
-    user = models.ForeignKey('OeUser', db_column='USER_ID', null=True) # Field name made lowercase.
+    user = models.ForeignKey('OeUser', db_column='USER_ID') # Field name made lowercase.
     class Meta:
         db_table = 'oe_exhibition_comment'
 
@@ -329,7 +329,7 @@ class OeUserRelation(models.Model):
 #         db_table = 'oe_wx_config'
 
 class OeWxDeveloper(models.Model):
-    id = models.AutoField(db_column='ID', primary_key=True)
+    id = models.CharField(db_column='ID', primary_key=True, max_length=32)
     appid = models.CharField(db_column='APPID', max_length=100)
     appsecret = models.CharField(db_column='APPSECRET', max_length=100)
     access_token = models.CharField(db_column='ACCESS_TOKEN', max_length=200)
@@ -344,7 +344,7 @@ class OeWxUser(models.Model):
         ('2', '女'),
         ('0', '未知')
     )
-    id = models.AutoField(db_column='ID', primary_key=True)
+    id = models.CharField(db_column='ID', primary_key=True, max_length=32)
     appid = models.CharField(db_column='APPID', max_length=100)
     nickname = models.CharField(db_column='NICKNAME', max_length=100)
     sex = models.CharField(db_column='SEX', max_length=20, default='0', choices=sex_choice)
@@ -354,18 +354,19 @@ class OeWxUser(models.Model):
     headimgurl = models.CharField(db_column='HEADIMGURL', max_length=1000)
     bind_phone = models.CharField(db_column='BIND_PHONE', max_length=20)
     auth_code = models.CharField(db_column='AUTH_CODE', max_length=20)
+    user = models.ForeignKey(OeUser, db_column='USER_ID')
     class Meta:
         db_table = 'oe_wx_user'
 
-class OeWxUserAttentionArtist(models.Model):
-    id = models.AutoField(db_column='ID', primary_key=True)
-    wx_user = models.ForeignKey(OeWxUser, db_column='WX_USER_ID')
+class OeUserAttentionArtist(models.Model):
+    id = models.CharField(db_column='ID', primary_key=True, max_length=32)
+    user = models.ForeignKey(OeUser, db_column='USER_ID')
     artist = models.ForeignKey(OeArtist, db_column='ARTIST_ID')
     class Meta:
-        db_table = 'oe_wx_user_attention_artist'
+        db_table = 'oe_user_attention_artist'
 
 class OeWxShareExhibitInfo(models.Model):
-    id = models.AutoField(db_column='ID', primary_key=True)
+    id = models.CharField(db_column='ID', primary_key=True, max_length=32)
     exhibit = models.ForeignKey(OeExhibit,db_column='EXHIBIT')
     title = models.CharField(db_column='TITLE', max_length=200)
     description = models.CharField(db_column='DESCRIPTION', max_length=200)
@@ -374,7 +375,7 @@ class OeWxShareExhibitInfo(models.Model):
         db_table = 'oe_wx_share_exhibit_info'
 
 class OeWxShareExhibitionInfo(models.Model):
-    id = models.AutoField(db_column='ID', primary_key=True)
+    id = models.CharField(db_column='ID', primary_key=True, max_length=32)
     exhibition = models.ForeignKey(OeExhibition,db_column='EXHIBITION')
     title = models.CharField(db_column='TITLE', max_length=200)
     description = models.CharField(db_column='DESCRIPTION', max_length=200)
@@ -383,7 +384,7 @@ class OeWxShareExhibitionInfo(models.Model):
         db_table = 'oe_wx_share_exhibition_info'
 
 class OeWxShareArtistInfo(models.Model):
-    id = models.AutoField(db_column='ID', primary_key=True)
+    id = models.CharField(db_column='ID', primary_key=True, max_length=32)
     artist = models.ForeignKey(OeArtist,db_column='ARTIST')
     title = models.CharField(db_column='TITLE', max_length=200)
     description = models.CharField(db_column='DESCRIPTION', max_length=200)
@@ -392,7 +393,7 @@ class OeWxShareArtistInfo(models.Model):
         db_table = 'oe_wx_share_artist_info'
 
 class OeWxShareHomeInfo(models.Model):
-    id = models.AutoField(db_column='ID', primary_key=True)
+    id = models.CharField(db_column='ID', primary_key=True, max_length=32)
     title = models.CharField(db_column='TITLE', max_length=200)
     description = models.CharField(db_column='DESCRIPTION', max_length=200)
     url = models.CharField(db_column='URL', max_length=200)

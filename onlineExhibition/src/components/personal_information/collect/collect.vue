@@ -116,7 +116,7 @@
         }else{
           this.exhibitions.splice(index,1,null);
         }
-        this.$http.delete('http://' + host + '/collect/' + id + '/'+ "?type=" + type).then(response => {
+        this.$http.delete('http://' + host + '/collect/?id=' + id + "&type=" + type).then(response => {
           if(response.body === 'error'){
             window.location = 'https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx522cca3d4b048aa9&redirect_uri=http%3A//'+ encodeURIComponent(host) +'/artist_html/%3Fartist%3D0&response_type=code&scope=snsapi_userinfo&state=123#wechat_redirect'
           }
@@ -130,6 +130,7 @@
         window.open("http://"+ host +"/exhibit_html/?id=" + key);
       },
       show() {
+        $("title").html("收藏");
         this.showFlag = true;
         this.$nextTick(() => {
           if (!this.scroll) {
@@ -166,7 +167,7 @@
     },
     created() {
       if(this.param.id != undefined){
-        this.$http.get('http://'+ host +'/collect/'+ this.param.id + '/').then(response => {
+        this.$http.get('http://'+ host +'/collect/?id='+ this.param.id).then(response => {
           this.exhibits = response.body.exhibits;
           this.exhibitions = response.body.exhibitions;
         },response => {

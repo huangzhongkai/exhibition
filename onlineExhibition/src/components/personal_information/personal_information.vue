@@ -70,7 +70,7 @@
       }
     },
     created() {
-      this.$http.get('http://' + host + '/information/' + this.param.id + '/').then(response => {
+      this.$http.get('http://' + host + '/information/?id=' + this.param.id).then(response => {
         this.person = response.body;
       }, response => {
       });

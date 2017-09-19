@@ -342,7 +342,7 @@
       collect(type){
         if(this.collect_flag === '收藏'){
           $('.alert').html('收藏成功').addClass('alert-success').show().delay(1500).fadeOut();
-          this.$http.post('http://' + host + '/collect/' + this.param.id + '/'+ "?type=" + type).then(response => {
+          this.$http.post('http://' + host + '/collect/?id=' + this.param.id + "&type=" + type).then(response => {
             if(response.body === 'error'){
               window.location = 'https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx522cca3d4b048aa9&redirect_uri=http%3A//'+ encodeURIComponent(host) +'/artist_html/%3Fartist%3D0&response_type=code&scope=snsapi_userinfo&state=123#wechat_redirect'
             }else{
@@ -352,7 +352,16 @@
           }, response => {
           });
         }else if(this.collect_flag === '已收藏'){
-          $('.alert').html('已收藏').addClass('alert-warning').show().delay(1500).fadeOut();
+          this.$http.delete('http://' + host + '/collect/?id=' + this.param.id + "&type=" + type).then(response => {
+            if(response.body === 'error'){
+              window.location = 'https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx522cca3d4b048aa9&redirect_uri=http%3A//'+ encodeURIComponent(host) +'/artist_html/%3Fartist%3D0&response_type=code&scope=snsapi_userinfo&state=123#wechat_redirect'
+            }else{
+              this.collect_flag = '收藏';
+              this.collect_icon = 'fa fa-star-o';
+            }
+          }, response => {
+          });
+          $('.alert').html('已取消收藏').addClass('alert-warning').show().delay(1500).fadeOut();
         }
       },
       show_information(id){
