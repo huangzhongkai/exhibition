@@ -2,16 +2,16 @@
   <div>
     <v-header :header="artist" ref="header"></v-header>
     <div class="tab">
-      <div class="tab-item">
+      <div class="tab-item" @click="count()">
         <router-link to="/exhibit" >作品</router-link>
       </div>
-      <div class="tab-item">
+      <div class="tab-item" @click="count()">
         <router-link to="/exhibition">展览</router-link>
       </div>
-      <div class="tab-item">
+      <div class="tab-item" @click="count()">
         <router-link to="/introduction">简介</router-link>
       </div>
-      <div class="tab-item">
+      <div class="tab-item" @click="count()">
         <router-link to="/achievement">成就</router-link>
       </div>
     </div>
@@ -51,6 +51,7 @@
   export default {
     data (){
       return {
+        counter:-1,
         config:{},
         artist:{},
         header: {
@@ -152,8 +153,11 @@
 
     },
     methods: {
+      count(){
+        this.counter -= 1;
+      },
       back(){
-        window.open("http://"+ host +"/artists_html/");
+        window.history.go(this.counter);
       },
       home(){
         window.open('http://'+ host +'/home_html/');

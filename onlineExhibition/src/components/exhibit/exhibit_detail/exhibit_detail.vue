@@ -489,10 +489,12 @@
       margin-bottom: 5px
       display:flex
       .left
+        margin-left: 0px
         margin-right: auto
       .right
-        margin-left: auto
         color: #7e8c8d
+        margin-left: auto
+        margin-right: 0px
     .reading_info
       position: relative
       margin: 5px 0px 5px 0px

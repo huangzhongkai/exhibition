@@ -505,6 +505,23 @@ def login(request):
                 print user_info
                 request.session['openid'] = user_info['openid']
                 print 'set cookie'
+                if OeWxUser.objects.filter(appid=request.session.get('openid', 'error')):
+
+                    OeWxUser.objects.filter(appid=request.session.get('openid', 'error')).update(
+                                            nickname=user_info['nickname'].encode("ISO-8859-1").decode('utf-8'),
+                                            sex=str(user_info['sex']),
+                                            province=user_info['province'].encode("ISO-8859-1").decode('utf-8'),
+                                            city=user_info['city'].encode("ISO-8859-1").decode('utf-8'),
+                                            country=user_info['country'].encode("ISO-8859-1").decode('utf-8'),
+                                            headimgurl=user_info['headimgurl'])
+                    user_id = OeWxUser.objects.filter(appid=request.session.get('openid', 'error')).first().user_id
+                    timeArray = time.localtime()
+                    otherStyleTime = time.strftime("%Y-%m-%d %H:%M:%S", timeArray)
+                    user = OeUser.objects.filter(id=user_id).update(
+                                                 nickname=user_info['nickname'].encode("ISO-8859-1").decode('utf-8'),
+                                                 sex=str(user_info['sex']),
+                                                 head_path=user_info['headimgurl'],
+                                                 update_time=otherStyleTime)
 
             if not OeWxUser.objects.filter(appid=request.session.get('openid', 'error')):
                 user_id= uuid.uuid1().hex
