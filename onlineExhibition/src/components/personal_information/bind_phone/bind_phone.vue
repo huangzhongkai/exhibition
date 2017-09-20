@@ -1,30 +1,43 @@
 <template>
   <transition name="move">
-    <div v-show="showFlag" class="bind">
-      <div class="top">
-        {{title}}
-      </div>
-      <div class="back" @click="hide">
-        <i class="icon-arrow_lift"></i>
-      </div>
-      <div class="content">
-        <div class="my_phone input-group input-group-lg">
-          <span class="input-group-addon" id="sizing-addon1">手机号</span>
-          <input v-model="phone_number" type="text" class="form-control" placeholder="" aria-describedby="sizing-addon1">
+    <div v-show="showFlag">
+      <div class="bottom-box">
+        <div class="tab">
+          <div class="tab-item">
+              <span @click="hide()">
+                <i class="fa fa-reply fa-1x" aria-hidden="true"></i>
+                <!--<span><img src="/static/exhibit/rating.png" width="20px" height="20px"/></span>-->
+                <span style="margin-left: 1px">返回</span>
+              </span>
+          </div>
         </div>
-        <br>
-        <div class="my_code input-group input-group-lg">
-          <input v-model="auth_code" type="text" class="form-control" placeholder="输入验证码" aria-describedby="basic-addon2">
-          <span class="input-group-btn">
+      </div>
+      <div class="bind">
+        <!--<div class="top">-->
+        <!--{{title}}-->
+        <!--</div>-->
+        <!--<div class="back" @click="hide">-->
+        <!--<i class="icon-arrow_lift"></i>-->
+        <!--</div>-->
+        <div class="content">
+          <div class="my_phone input-group input-group-lg">
+            <span class="input-group-addon" id="sizing-addon1">手机号</span>
+            <input v-model="phone_number" type="text" class="form-control" placeholder="" aria-describedby="sizing-addon1">
+          </div>
+          <br>
+          <div class="my_code input-group input-group-lg">
+            <input v-model="auth_code" type="text" class="form-control" placeholder="输入验证码" aria-describedby="basic-addon2">
+            <span class="input-group-btn">
             <button id="send_code" @click="sendMsg()" class="btn btn-primary" type="button">{{operation}}</button>
           </span>
+          </div>
+          <div class="my_commit">
+            <button @click="commit()" type="button" class="btn btn-primary btn-block btn-lg" >提交</button>
+          </div>
         </div>
-        <div class="my_commit">
-          <button @click="commit()" type="button" class="btn btn-default" >提交</button>
-        </div>
-      </div>
 
-      <div class="alert"></div>
+        <div class="alert"></div>
+      </div>
     </div>
   </transition>
 </template>
@@ -36,11 +49,9 @@
   let host = global_.host;
   let count = 60;
   export default {
-    props: {
-      title:'',
-    },
     data () {
       return {
+        title:'',
         phone_number:'',
         auth_code:'',
         showFlag: false,
@@ -79,11 +90,13 @@
           $('#send_code').removeClass('btn-default').addClass('btn-primary');
         }
       },
-      show() {
-        $("title").html("绑定手机号");
+      show(title) {
+        this.title = $('title').html();
+        $('title').html(title);
         this.showFlag = true;
       },
       hide() {
+        $('title').html(this.title);
         this.showFlag = false;
       },
       sendMsg() {
@@ -160,7 +173,9 @@
         margin-left: 20px
         margin-right: 20px
       .my_commit
-        margin-top: 30px
+        margin-left: 40px
+        margin-right: 40px
+        margin-top: 60px
         text-align: center
     .alert
       display: none
@@ -182,4 +197,25 @@
       color: #f01414
       background-color: #fcf8e3
       border-color: #faebcc
+  .bottom-box
+    position: fixed
+    left: 0
+    bottom: 0
+    z-index: 50
+    width: 100%
+    height: 48px
+    background-color: white
+    border-top:1px solid gainsboro
+    .tab
+      display: flex
+      width: 100%
+      height: 48px
+      line-height: 40px
+      border-color: white
+      border-1px(rgba(7, 17, 27, 0.1))
+      .tab-item
+        flex: 1
+        margin-top: 2px
+        margin-bottom: 2px
+        text-align: center
 </style>

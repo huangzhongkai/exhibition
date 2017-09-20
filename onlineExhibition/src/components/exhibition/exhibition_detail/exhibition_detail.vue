@@ -442,34 +442,35 @@
 <style lang="stylus" rel="stylesheet/stylus">
   @import "../../../common/stylus/mixin.styl"
   .exhibition_detail
-    width: 100%
     background: #fff
+    margin-top: 5px
+    margin-left: 5px
+    margin-right 5px
     .exhibition_info
       border-color: #000
       display:flex
       .info_left
-        margin-left:2px
+        margin-left:0px
         margin-right:auto
         color: #7e8c8d
       .info_right
         margin-left:auto
-        margin-right:2px
+        margin-right:0px
         color: #7e8c8d
     .reading_top
       margin-top: 5px
       margin-bottom: 5px
       display:flex
       .left
-        margin-left: 2px
+        margin-left: 0px
         margin-right: auto
       .right
         color: #7e8c8d
         margin-left: auto
-        margin-right: 2px
+        margin-right: 0px
     .reading_info
       position: relative
-      margin: 5px 5px 5px 5px
-      width: 97%
+      margin: 5px 0px 5px 0px
       height: 80px
       border-color: aliceblue
       border: 2px
@@ -555,7 +556,6 @@
         border-radius: 5px
         border-width:1px
         background-color: white
-        margin-left: 5px
         margin-right: 5px
         width:140px
     .enjoyable
@@ -569,7 +569,6 @@
         border-radius: 5px
         border-width:1px
         background-color: white
-        margin-left: 5px
         margin-right: 5px
         width:140px
   .ratings
@@ -578,12 +577,12 @@
     margin-left: 5px
     display:flex
     .left
-      margin-left: 2px
+      margin-left: 0px
       margin-right: auto
     .right
       color: #7e8c8d
       margin-left: auto
-      margin-right: 2px
+      margin-right: 0px
   .rating-wrapper
     padding: 0 18px
     .rating-item

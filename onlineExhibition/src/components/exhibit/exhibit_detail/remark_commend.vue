@@ -1,31 +1,54 @@
 <template>
   <transition name="move">
-    <div v-show="showFlag" class="remark" ref="content">
-      <div>
-        <div :class="is_select">
-          <div class="top">
-            可圈可点
+    <div v-show="showFlag">
+      <div class="bottom-box">
+        <div class="tab">
+          <div class="tab-item">
+              <span @click="hide()">
+                <i class="fa fa-reply fa-1x" aria-hidden="true"></i>
+                <!--<span><img src="/static/exhibit/rating.png" width="20px" height="20px"/></span>-->
+                <span style="margin-left: 1px">返回</span>
+              </span>
           </div>
-          <div class="back" @click="hide">
-            <i class="icon-arrow_lift"></i>
+          <div class="tab-item">
+          <span>
+            <i class="fa fa-commenting-o fa-1x" aria-hidden="true"></i>
+            <!--<span><img src="/static/exhibit/rating.png" width="20px" height="20px"/></span>-->
+            <span @click="add_rating()" style="margin-left: 1px">评论</span>
+          </span>
           </div>
         </div>
-
-        <div class="content_show" >
-            <div class="top_image">
-              <img class="image" width="100%" height="100%" :src="reading.image_path">
-              <div id="moveid" class="div">
-                <img :src="reading.image_path" :style="{'margin-left':margin_left, 'margin-top': margin_top}"/>
-              </div>
-              <div id="search" class="search">
-                <i class="fa fa-search fa-3x" aria-hidden="true"></i>
-              </div>
-              <i id="rating" class="rating fa fa-commenting-o fa-3x" aria-hidden="true" data-toggle="modal" data-target="#myModal"></i>
-            </div>
-        </div>
-
-        <div class="alert_"></div>
       </div>
+      <div class="remark" ref="content">
+        <div>
+          <div :class="is_select">
+            <!--<div class="top">-->
+              <!--可圈可点-->
+            <!--</div>-->
+            <!--<div class="back" @click="hide">-->
+              <!--<i class="icon-arrow_lift"></i>-->
+            <!--</div>-->
+          </div>
+
+          <div class="content_show" >
+              <div class="top_image">
+                <img class="image" width="100%" height="100%" :src="reading.image_path">
+                <div id="moveid" class="div">
+                  <img :src="reading.image_path" :style="{'margin-left':margin_left, 'margin-top': margin_top}"/>
+                </div>
+                <div id="search" class="search">
+                  <i class="fa fa-search fa-3x" aria-hidden="true"></i>
+                </div>
+                <!--<i id="rating" class="rating fa fa-commenting-o fa-3x" aria-hidden="true" data-toggle="modal" data-target="#myModal"></i>-->
+              </div>
+          </div>
+          <div style="height: 53px"></div>
+          <div class="alert_"></div>
+        </div>
+      </div>
+
+      <ratings :exhibit_id="params.id" ref="edit_ratings">
+      </ratings>
     </div>
   </transition>
 </template>
@@ -36,15 +59,20 @@
   import BScroll from 'better-scroll';
   import global_ from '../../Global.vue'
   import 'font-awesome-webpack'
+  import ratings from '../ratings/ratings.vue'
 
   let host = global_.host;
 
   export default {
+    components: {
+      ratings,
+    },
     props: {
       exhibit_id:0
     },
     data () {
       return {
+        title:'',
         img_origin_width:'',
         img_origin_height:'',
         margin_left:'',
@@ -65,6 +93,14 @@
       }
     },
     methods: {
+      add_rating () {
+        document.body.style.height = '100%';
+        document.body.style.overflow = 'hidden';
+        let left = this.margin_left;
+        let top = this.margin_top;
+        let remark = {'left': left, 'top': top};
+        this.$refs.edit_ratings.show_remark(remark);
+      },
       utf16ToUtf8(str){
         let patt=/[\ud800-\udbff][\udc00-\udfff]/g; // 检测utf16字符正则
         return str.replace(patt,'');
@@ -82,6 +118,8 @@
 //
 //      },
       show() {
+        this.title = $('title').html();
+        $('title').html('可圈可点');
         this.showFlag = true;
         this.$nextTick(() => {
           if (!this.scroll) {
@@ -92,6 +130,7 @@
         });
       },
       hide() {
+        $('title').html(this.title);
         this.showFlag = false;
         document.body.style.height = '';
         document.body.style.overflow = '';
@@ -132,9 +171,9 @@
               _y_move=e.touches[0].pageY;
               // console.log("move",_x_move)
               if(parseFloat(_x_move)-parseFloat(_x_start)+parseFloat(left_start) >=0 &&
-                parseFloat(_y_move)-parseFloat(_y_start)+parseFloat(top_start) >=42 &&
+                parseFloat(_y_move)-parseFloat(_y_start)+parseFloat(top_start) >=0 &&
                 parseFloat(_x_move)-parseFloat(_x_start)+parseFloat(left_start) <=(screen.width) - 35 &&
-                parseFloat(_y_move)-parseFloat(_y_start)+parseFloat(top_start) <=((screen.width/_this.img_origin_width * _this.img_origin_height ))){
+                parseFloat(_y_move)-parseFloat(_y_start)+parseFloat(top_start) <=((screen.width/_this.img_origin_width * _this.img_origin_height )-35)){
                 $("#search").css("left",parseFloat(_x_move)-parseFloat(_x_start)+parseFloat(left_start)+"px");
                 $("#search").css("top",parseFloat(_y_move)-parseFloat(_y_start)+parseFloat(top_start)+"px");
                 console.log('x=', parseFloat(_x_move)-parseFloat(_x_start)+parseFloat(left_start));
@@ -144,7 +183,7 @@
                   _this.margin_left = _this.img_origin_width -128;
                 }
                 _this.margin_left = '-' + _this.margin_left.toString() + 'px';
-                _this.margin_top = (parseFloat(_y_move)-parseFloat(_y_start)+parseFloat(top_start) -40 )/(screen.width/_this.img_origin_width);
+                _this.margin_top = (parseFloat(_y_move)-parseFloat(_y_start)+parseFloat(top_start))/(screen.width/_this.img_origin_width);
                 if(_this.margin_top > _this.img_origin_height -128){
                   _this.margin_top = _this.img_origin_height -128;
                 }
@@ -164,6 +203,8 @@
         }
       },response => {
       });
+
+      let _this = this;
       this.$nextTick(() =>{
         let _x_start,_y_start,_x_move,_y_move,_x_end,_y_end,left_start,top_start;
         document.getElementById("moveid").addEventListener("touchstart",function(e)
@@ -184,9 +225,9 @@
           _y_move=e.touches[0].pageY;
           // console.log("move",_x_move)
           if(parseFloat(_x_move)-parseFloat(_x_start)+parseFloat(left_start) >=0 &&
-            parseFloat(_y_move)-parseFloat(_y_start)+parseFloat(top_start) >=42 &&
+            parseFloat(_y_move)-parseFloat(_y_start)+parseFloat(top_start) >=0 &&
             parseFloat(_x_move)-parseFloat(_x_start)+parseFloat(left_start) <=(screen.width-128) &&
-            parseFloat(_y_move)-parseFloat(_y_start)+parseFloat(top_start) <=((screen.width/_this.img_origin_width * _this.img_origin_height )-128 + 42)){
+            parseFloat(_y_move)-parseFloat(_y_start)+parseFloat(top_start) <=((screen.width/_this.img_origin_width * _this.img_origin_height )-128)){
             $("#moveid").css("left",parseFloat(_x_move)-parseFloat(_x_start)+parseFloat(left_start)+"px");
             $("#moveid").css("top",parseFloat(_y_move)-parseFloat(_y_start)+parseFloat(top_start)+"px");
           }
@@ -200,29 +241,29 @@
         })
       })
 
-     let _this = this;
-      $("#send").click(function(){
-        let content = _this.utf16ToUtf8($("#content")[0].value);
-        let left = _this.margin_left;
-        let top = _this.margin_top;
-        if(left == '' || top == ''){
-          $('.alert').html('请拖动放大图标选择放大区域').addClass('alert-warning').show().delay(2000).fadeOut();
-        }else{
-          let remark = {'content':content,'left': left, 'top': top};
-          _this.$http.post('http://'+ host +'/exhibit_remark/'+ _this.exhibit_id+'/',remark, {emulateJSON:true} ).then(response => {
-            if(response.body === 'error'){
-              window.location = 'https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx522cca3d4b048aa9&redirect_uri=http%3A//'+ encodeURIComponent(host) +'/home_html/&response_type=code&scope=snsapi_userinfo&state=123#wechat_redirect'
-            }else{
-              $("#myModal").modal('hide');
-              $('.alert_').html('评论成功').addClass('alert-warning').show().delay(2000).fadeOut(function () {
-                window.location.reload();
-              });
-            }
-          },response => {
-            $("#myModal").modal('hide');
-          });
-        }
-      });
+//     let _this = this;
+//      $("#send").click(function(){
+//        let content = _this.utf16ToUtf8($("#content")[0].value);
+//        let left = _this.margin_left;
+//        let top = _this.margin_top;
+//        if(left == '' || top == ''){
+//          $('.alert').html('请拖动放大图标选择放大区域').addClass('alert-warning').show().delay(2000).fadeOut();
+//        }else{
+//          let remark = {'content':content,'left': left, 'top': top};
+//          _this.$http.post('http://'+ host +'/exhibit_remark/'+ _this.exhibit_id+'/',remark, {emulateJSON:true} ).then(response => {
+//            if(response.body === 'error'){
+//              window.location = 'https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx522cca3d4b048aa9&redirect_uri=http%3A//'+ encodeURIComponent(host) +'/home_html/&response_type=code&scope=snsapi_userinfo&state=123#wechat_redirect'
+//            }else{
+//              $("#myModal").modal('hide');
+//              $('.alert_').html('评论成功').addClass('alert-warning').show().delay(2000).fadeOut(function () {
+//                window.location.reload();
+//              });
+//            }
+//          },response => {
+//            $("#myModal").modal('hide');
+//          });
+//        }
+//      });
 
     }
   };
@@ -285,6 +326,8 @@
       .div
         display: none
       .search
+        margin-left: -10px
+        margin-top: -10px
         display: none
       .rating
         display: none
@@ -335,6 +378,27 @@
       color: #8a6d3b
       background-color: #fcf8e3
       border-color: #faebcc
+  .bottom-box
+    position: fixed
+    left: 0
+    bottom: 0
+    z-index: 50
+    width: 100%
+    height: 48px
+    background-color: white
+    border-top:1px solid gainsboro
+    .tab
+      display: flex
+      width: 100%
+      height: 48px
+      line-height: 40px
+      border-color: white
+      border-1px(rgba(7, 17, 27, 0.1))
+      .tab-item
+        flex: 1
+        margin-top: 2px
+        margin-bottom: 2px
+        text-align: center
 
 </style>
 

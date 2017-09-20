@@ -1,19 +1,35 @@
 <template>
   <transition name="move">
-  <div v-show="showFlag" class="edit_ratings" >
-    <div class="top">
-      <span>{{title}}</span>
-    </div>
-    <div class="back" @click="hide">
-      <i class="icon-arrow_lift"></i>
-    </div>
-    <button class="send btn btn-default" @click="upload()">发布</button>
-    <div class="content" ref="content">
-      <div>
-        <textarea autofocus="autofocus" v-model="ratings" ref="ratings" class="ratings_input" placeholder="写评论..."/>
+    <div v-show="showFlag">
+      <div class="bottom-box">
+        <div class="tab">
+          <div class="tab-item">
+              <span @click="hide()">
+                <i class="fa fa-reply fa-1x" aria-hidden="true"></i>
+                <!--<span><img src="/static/exhibit/rating.png" width="20px" height="20px"/></span>-->
+                <span style="margin-left: 1px">返回</span>
+              </span>
+          </div>
+        </div>
+      </div>
+      <div class="edit_ratings" >
+        <!--<div class="top">-->
+        <!--<span>{{title}}</span>-->
+        <!--</div>-->
+        <!--<div class="back" @click="hide">-->
+        <!--<i class="icon-arrow_lift"></i>-->
+        <!--</div>-->
+        <!--<button class="send btn btn-default" @click="upload()">发布</button>-->
+        <div class="content" ref="content">
+          <div>
+            <textarea autofocus="autofocus" v-model="ratings" ref="ratings" class="ratings_input" placeholder="写评论..."/>
+          </div>
+          <div class="my_commit">
+            <button @click="upload()" type="button" class="btn btn-primary btn-block btn-lg" >提交</button>
+          </div>
+        </div>
       </div>
     </div>
-  </div>
   </transition>
 </template>
 
@@ -140,32 +156,19 @@
       top: 50px
       bottom: 0px
       height :100%
-      img
-        max-width: 100%
-      .flag
-        position: absolute
-        top: 0
-        right: 0
-        width: 32px
-        height: 32px
-        line-height: 12px
-        font-size: 10px
-        color: rgb(147, 153, 159)
+      .my_commit
+        margin-left: 40px
+        margin-right: 40px
+        margin-top: 60px
+        text-align: center
       .ratings_input
         overflow-y:hidden
         overflow-x:hidden
         width: 100%
         height: 150px
+        font-size: 18px
         border-color: transparent
-        /*border-top: 2px*/
-        /*border-bottom: 2px*/
-        /*border-style: solid*/
-        /*background-color: antiquewhite*/
         padding-top: 10px
         line-height: 20px
         overflow: auto
-      .commit
-        text-align: center
-        vertical-align: middle
-        margin-top: 10px
 </style>

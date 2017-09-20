@@ -1,38 +1,52 @@
 <template>
   <transition name="move">
-    <div v-show="showFlag" class="more_charactor" ref="more_content">
-      <div class="production-content">
-        <div class="top">
-           {{title}}
+    <div v-show="showFlag">
+      <div class="bottom-box">
+        <div class="tab">
+          <div class="tab-item">
+              <span @click="hide()">
+                <i class="fa fa-reply fa-1x" aria-hidden="true"></i>
+                <!--<span><img src="/static/exhibit/rating.png" width="20px" height="20px"/></span>-->
+                <span style="margin-left: 1px">返回</span>
+              </span>
+          </div>
         </div>
-        <div class="back" @click="hide">
-          <i class="icon-arrow_lift"></i>
-        </div>
-        <div class="more_charactor_content" >
-            <div class="flex-show">
-              <div class="left_product">
-                <div v-for="charactor in exhibits" class="exhibit_block">
-                  <img @click="show_exhibit(charactor.id)" width="100%"  v-bind:src="charactor.image_path">
-                  <div class="exhibit_name">
-                    {{charactor.name}}
+      </div>
+      <div  class="more_charactor" ref="more_content">
+        <div class="production-content">
+          <!--<div class="top">-->
+             <!--{{title}}-->
+          <!--</div>-->
+          <!--<div class="back" @click="hide">-->
+            <!--<i class="icon-arrow_lift"></i>-->
+          <!--</div>-->
+          <div class="more_charactor_content" >
+              <div class="flex-show">
+                <div class="left_product">
+                  <div v-for="charactor in exhibits" class="exhibit_block">
+                    <img @click="show_exhibit(charactor.id)" width="100%"  v-bind:src="charactor.image_path">
+                    <div class="exhibit_name">
+                      {{charactor.name}}
+                    </div>
+                    <div class="exhibit_author">
+                      {{charactor.author}}
+                    </div>
                   </div>
-                  <div class="exhibit_author">
-                    {{charactor.author}}
+                </div>
+                <div class="right_product">
+                  <div v-for="charactor in exhibits_right" class="exhibit_block">
+                    <img @click="show_exhibit(charactor.id)" width="100%" v-bind:src="charactor.image_path">
+                    <div class="exhibit_name">
+                      {{charactor.name}}
+                    </div>
+                    <div class="exhibit_author">
+                      {{charactor.author}}
+                    </div>
                   </div>
                 </div>
               </div>
-              <div class="right_product">
-                <div v-for="charactor in exhibits_right" class="exhibit_block">
-                  <img @click="show_exhibit(charactor.id)" width="100%" v-bind:src="charactor.image_path">
-                  <div class="exhibit_name">
-                    {{charactor.name}}
-                  </div>
-                  <div class="exhibit_author">
-                    {{charactor.author}}
-                  </div>
-                </div>
-              </div>
-            </div>
+          </div>
+          <div style="height: 53px"></div>
         </div>
       </div>
     </div>
@@ -54,6 +68,7 @@
     },
     data () {
       return {
+        title_bak:'',
         title:'',
         exhibits:[],
         exhibits_right:[],
@@ -62,6 +77,8 @@
     },
     methods: {
       show() {
+        this.title_bak = $('title').html();
+        $('title').html(this.title);
         this.showFlag = true;
         this.$nextTick(() => {
           if (!this.scroll) {
@@ -72,6 +89,7 @@
         });
       },
       hide() {
+        $('title').html(this.title_bak);
         this.showFlag = false;
         document.body.style.height = '';
         document.body.style.overflow = '';
@@ -149,36 +167,58 @@
         line-height: 40px
         font-size: 20px
         color: black
-    .more_charactor_content
-      width: 100%
+    .production-content
       overflow: hidden
-      bottom: 0px
-      margin-top: 5px
-      .flex-show
-        display: flex
-        .left_product
-          margin-left: 5px
-          margin-right: 5px
-          flex: 1
-          width:50%
-          .exhibit_block
-            border-color: darkgrey
-            border-style: solid
-            border-radius: 5px
-            border-width:1px
-            background-color: white
-            margin-top:2px
-        .right_product
-          margin-left: 5px
-          margin-right: 5px
-          flex: 1
-          width:50%
-          .exhibit_block
-            margin-top:2px
-            border-color: darkgrey
-            border-style: solid
-            border-radius: 5px
-            border-width:1px
-            background-color: white
+      .more_charactor_content
+        width: 100%
+        overflow: hidden
+        margin-top: 5px
+        .flex-show
+          display: flex
+          .left_product
+            margin-left: 5px
+            margin-right: 5px
+            flex: 1
+            width:50%
+            .exhibit_block
+              border-color: darkgrey
+              border-style: solid
+              border-radius: 5px
+              border-width:1px
+              background-color: white
+              margin-top:2px
+          .right_product
+            margin-left: 5px
+            margin-right: 5px
+            flex: 1
+            width:50%
+            .exhibit_block
+              margin-top:2px
+              border-color: darkgrey
+              border-style: solid
+              border-radius: 5px
+              border-width:1px
+              background-color: white
+  .bottom-box
+    position: fixed
+    left: 0
+    bottom: 0
+    z-index: 50
+    width: 100%
+    height: 48px
+    background-color: white
+    border-top:1px solid gainsboro
+    .tab
+      display: flex
+      width: 100%
+      height: 48px
+      line-height: 40px
+      border-color: white
+      border-1px(rgba(7, 17, 27, 0.1))
+      .tab-item
+        flex: 1
+        margin-top: 2px
+        margin-bottom: 2px
+        text-align: center
 
 </style>

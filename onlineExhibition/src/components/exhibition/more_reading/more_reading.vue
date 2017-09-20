@@ -1,14 +1,26 @@
 <template>
   <transition name="move">
-    <div v-show="showFlag" class="more_reading" ref="more_reading_content">
-      <div class="production-content">
-        <div class="top">
-          展览解读
+    <div v-show="showFlag">
+      <div class="bottom-box">
+        <div class="tab">
+          <div class="tab-item">
+              <span @click="hide()">
+                <i class="fa fa-reply fa-1x" aria-hidden="true"></i>
+                <!--<span><img src="/static/exhibit/rating.png" width="20px" height="20px"/></span>-->
+                <span style="margin-left: 1px">返回</span>
+              </span>
+          </div>
         </div>
-        <div class="back" @click="hide()">
-          <i class="icon-arrow_lift"></i>
-        </div>
-        <div class="more_content" >
+      </div>
+      <div class="more_reading" ref="more_reading_content">
+        <div class="production-content">
+          <!--<div class="top">-->
+            <!--展览解读-->
+          <!--</div>-->
+          <!--<div class="back" @click="hide()">-->
+            <!--<i class="icon-arrow_lift"></i>-->
+          <!--</div>-->
+          <div class="more_content" >
             <div class="more_reading_info" v-for="(reading, index) in exhibition.audio_readings">
               <div class="avatar">
                 <img class="avatar_image_background" src="/static/exhibition/head1.jpeg"/>
@@ -44,6 +56,8 @@
                 <div class="description">{{reading.reading_content}}</div>
               </div>
             </div>
+          </div>
+          <div style="height: 53px"></div>
         </div>
       </div>
     </div>
@@ -65,6 +79,7 @@
     },
     data () {
       return {
+        title:'',
         play_icon:[],
         isPlaying: [],
         exhibitions:[],
@@ -74,6 +89,8 @@
     },
     methods: {
       show() {
+        this.title = $('title').html();
+        $('title').html('作品解读');
         this.showFlag = true;
         this.$nextTick(() => {
           if (!this.scroll) {
@@ -84,6 +101,7 @@
         });
       },
       hide() {
+        $('title').html(this.title);
         this.showFlag = false;
         document.body.style.height = '';
         document.body.style.overflow = '';
@@ -227,4 +245,25 @@
           line-height: 20px
           overflow: hidden
           text-overflow: ellipsis
+  .bottom-box
+    position: fixed
+    left: 0
+    bottom: 0
+    z-index: 50
+    width: 100%
+    height: 48px
+    background-color: white
+    border-top:1px solid gainsboro
+    .tab
+      display: flex
+      width: 100%
+      height: 48px
+      line-height: 40px
+      border-color: white
+      border-1px(rgba(7, 17, 27, 0.1))
+      .tab-item
+        flex: 1
+        margin-top: 2px
+        margin-bottom: 2px
+        text-align: center
 </style>

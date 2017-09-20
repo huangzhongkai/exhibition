@@ -1,19 +1,36 @@
 <template>
   <transition name="move">
-  <div v-show="showFlag" class="edit_ratings" >
-    <div class="top">
-      <span>{{title}}</span>
-    </div>
-    <div class="back" @click="hide">
-      <i class="icon-arrow_lift"></i>
-    </div>
-    <button class="send btn btn-default" @click="upload()">发布</button>
-    <div class="content" ref="content">
-      <div>
-        <textarea autofocus="autofocus" v-model="ratings" ref="ratings" class="ratings_input" placeholder="写评论..."/>
+    <div v-show="showFlag">
+      <div class="bottom-box">
+        <div class="tab">
+          <div class="tab-item">
+              <span @click="hide()">
+                <i class="fa fa-reply fa-1x" aria-hidden="true"></i>
+                <!--<span><img src="/static/exhibit/rating.png" width="20px" height="20px"/></span>-->
+                <span style="margin-left: 1px">返回</span>
+              </span>
+          </div>
+        </div>
+      </div>
+      <div class="edit_ratings" >
+        <!--<div class="top">-->
+          <!--<span>{{title}}</span>-->
+        <!--</div>-->
+        <!--<div class="back" @click="hide">-->
+          <!--<i class="icon-arrow_lift"></i>-->
+        <!--</div>-->
+        <!--<button class="send btn btn-default" @click="upload()">发布</button>-->
+        <div class="content" ref="content">
+          <div>
+            <textarea autofocus="autofocus" v-model="ratings" ref="ratings" class="ratings_input" placeholder="写评论..."/>
+          </div>
+          <div class="my_commit">
+            <button @click="upload()" type="button" class="btn btn-primary btn-block btn-lg" >提交</button>
+          </div>
+        </div>
+        <div style="height: 53px"></div>
       </div>
     </div>
-  </div>
   </transition>
 </template>
 
@@ -31,8 +48,10 @@
     },
     data () {
       return {
+        remark: {},
         parent_id:-1,
         title:'发评论',
+        title_bak:'',
         img_length:'',
         cropper: {},
         flag:false,
@@ -77,10 +96,11 @@
           return ;
         }
         this.showFlag = false;
-        let rating = {};
-        rating['rateTime'] = Date.parse(new Date())/1000;
-        rating['text'] = this.utf16ToUtf8(this.ratings);
-        rating['parent_id'] = this.parent_id;
+        if(this.type === false){
+          let rating = {};
+          rating['rateTime'] = Date.parse(new Date())/1000;
+          rating['text'] = this.utf16ToUtf8(this.ratings);
+          rating['parent_id'] = this.parent_id;
           this.$http.post('http://'+ host +'/exhibit_ratings/'+ this.exhibit_id+'/',rating, {emulateJSON:true} ).then(response => {
             if(response.body === 'error'){
               window.location = 'https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx522cca3d4b048aa9&redirect_uri=http%3A//'+ encodeURIComponent(host) +'/home_html/&response_type=code&scope=snsapi_userinfo&state=123#wechat_redirect'
@@ -92,13 +112,38 @@
             }
           },response => {
           });
+        }else{
+          this.remark['content'] = this.utf16ToUtf8(this.ratings);
+          this.$http.post('http://'+ host +'/exhibit_remark/'+ this.exhibit_id+'/',this.remark, {emulateJSON:true} ).then(response => {
+            if(response.body === 'error'){
+              window.location = 'https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx522cca3d4b048aa9&redirect_uri=http%3A//'+ encodeURIComponent(host) +'/home_html/&response_type=code&scope=snsapi_userinfo&state=123#wechat_redirect'
+            }else{
+              this.showFlag = false;
+              document.body.style.height = '';
+              document.body.style.overflow = '';
+              window.location.reload();
+            }
+          },response => {
+          });
+        }
+
       },
       show(content,parent_id) {
+        this.title_bak = $('title').html();
+        $('title').html(this.title);
         this.title = content;
         this.parent_id = parent_id;
         this.showFlag = true;
       },
+      show_remark(remark) {
+        this.title_bak = $('title').html();
+        $('title').html(this.title);
+        this.showFlag = true;
+        this.type = true;
+        this.remark = remark;
+      },
       hide() {
+        $('title').html(this.title_bak);
         this.showFlag = false;
         document.body.style.height = '';
         document.body.style.overflow = '';
@@ -108,6 +153,7 @@
 </script>
 
 <style lang="stylus" rel="stylesheet/stylus">
+  @import "../../../common/stylus/mixin.styl";
   .edit_ratings
     position: fixed
     left: 0
@@ -146,32 +192,40 @@
       top: 50px
       bottom: 0px
       height :100%
-      img
-        max-width: 100%
-      .flag
-        position: absolute
-        top: 0
-        right: 0
-        width: 32px
-        height: 32px
-        line-height: 12px
-        font-size: 10px
-        color: rgb(147, 153, 159)
+      .my_commit
+        margin-left: 40px
+        margin-right: 40px
+        margin-top: 60px
+        text-align: center
       .ratings_input
         overflow-y:hidden
         overflow-x:hidden
         width: 100%
         height: 150px
+        font-size: 18px
         border-color: transparent
-        /*border-top: 2px*/
-        /*border-bottom: 2px*/
-        /*border-style: solid*/
-        /*background-color: antiquewhite*/
         padding-top: 10px
         line-height: 20px
         overflow: auto
-      .commit
+  .bottom-box
+    position: fixed
+    left: 0
+    bottom: 0
+    z-index: 50
+    width: 100%
+    height: 48px
+    background-color: white
+    border-top:1px solid gainsboro
+    .tab
+      display: flex
+      width: 100%
+      height: 48px
+      line-height: 40px
+      border-color: white
+      border-1px(rgba(7, 17, 27, 0.1))
+      .tab-item
+        flex: 1
+        margin-top: 2px
+        margin-bottom: 2px
         text-align: center
-        vertical-align: middle
-        margin-top: 10px
 </style>

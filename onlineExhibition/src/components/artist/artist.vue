@@ -153,7 +153,7 @@
     },
     methods: {
       back(){
-        window.history.back();
+        window.open("http://"+ host +"/artists_html/");
       },
       home(){
         window.open('http://'+ host +'/home_html/');

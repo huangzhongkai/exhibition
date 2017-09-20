@@ -1,33 +1,46 @@
 <template>
   <transition name="move">
-    <div v-show="showFlag" class="bind">
-      <div class="top">
-        绑定手机号
-      </div>
-      <div class="back" @click="hide">
-        <i class="icon-arrow_lift"></i>
-      </div>
-      <div class="content">
-        <span>为了保证账号安全，请验证身份，验证成功后进行下一步操作</span>
-        <div class="my_phone">
-          <span class="number">{{person.phone_number}}</span>
+    <div v-show="showFlag">
+      <div class="bottom-box">
+        <div class="tab">
+          <div class="tab-item">
+              <span @click="hide()">
+                <i class="fa fa-reply fa-1x" aria-hidden="true"></i>
+                <!--<span><img src="/static/exhibit/rating.png" width="20px" height="20px"/></span>-->
+                <span style="margin-left: 1px">返回</span>
+              </span>
+          </div>
         </div>
-        <br>
-        <div class="my_code input-group input-group-lg">
-          <input v-model="auth_code" type="text" class="form-control" placeholder="输入验证码" aria-describedby="basic-addon2">
-          <span class="input-group-btn">
+      </div>
+      <div class="bind">
+        <!--<div class="top">-->
+        <!--绑定手机号-->
+        <!--</div>-->
+        <!--<div class="back" @click="hide">-->
+        <!--<i class="icon-arrow_lift"></i>-->
+        <!--</div>-->
+        <div class="content">
+          <span>为了保证账号安全，请验证身份，验证成功后进行下一步操作</span>
+          <div class="my_phone">
+            <span class="number">{{person.phone_number}}</span>
+          </div>
+          <br>
+          <div class="my_code input-group input-group-lg">
+            <input v-model="auth_code" type="text" class="form-control" placeholder="输入验证码" aria-describedby="basic-addon2">
+            <span class="input-group-btn">
             <button id="send_check_code" @click="sendMsg()" class="btn btn-primary" type="button">{{operation}}</button>
           </span>
+          </div>
+          <div class="my_commit">
+            <button @click="commit()" type="button" class="btn btn-primary btn-block btn-lg" >验证身份</button>
+          </div>
         </div>
-        <div class="my_commit">
-          <button @click="commit()" type="button" class="btn btn-default" >验证身份</button>
-        </div>
+
+        <div class="alert"></div>
+
+        <bind_phone ref="bind_phone">
+        </bind_phone>
       </div>
-
-      <div class="alert"></div>
-
-      <bind_phone title="绑定新手机号" ref="bind_phone">
-      </bind_phone>
     </div>
   </transition>
 </template>
@@ -46,6 +59,7 @@
     },
     data () {
       return {
+        title:'',
         person:{},
         phone_number:'',
         auth_code:'',
@@ -66,7 +80,7 @@
         this.$http.post('http://'+ host +'/check_phone_commit/', params, {emulateJSON:true}).then(response => {
           if(response.body.code === 200){
             $('.alert').html('验证成功，请绑定新手机号').addClass('alert-success').show().delay(1500).fadeOut();
-            this.$refs.bind_phone.show();
+            this.$refs.bind_phone.show('绑定新手机号');
           }else if(response.body.code === -1){
             $('.alert').html('验证码错误').addClass('alert-warning').show().delay(1500).fadeOut();
           }
@@ -87,10 +101,12 @@
         }
       },
       show() {
-        $("title").html("验证手机号");
+        this.title = $('title').html();
+        $('title').html('已绑定手机号');
         this.showFlag = true;
       },
       hide() {
+        $('title').html(this.title);
         this.showFlag = false;
       },
       sendMsg() {
@@ -174,7 +190,9 @@
         margin-left: 20px
         margin-right: 20px
       .my_commit
-        margin-top: 30px
+        margin-left: 40px
+        margin-right: 40px
+        margin-top: 60px
         text-align: center
     .alert
       display: none
@@ -196,4 +214,25 @@
       color: #f01414
       background-color: #fcf8e3
       border-color: #faebcc
+  .bottom-box
+    position: fixed
+    left: 0
+    bottom: 0
+    z-index: 50
+    width: 100%
+    height: 48px
+    background-color: white
+    border-top:1px solid gainsboro
+    .tab
+      display: flex
+      width: 100%
+      height: 48px
+      line-height: 40px
+      border-color: white
+      border-1px(rgba(7, 17, 27, 0.1))
+      .tab-item
+        flex: 1
+        margin-top: 2px
+        margin-bottom: 2px
+        text-align: center
 </style>

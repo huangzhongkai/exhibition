@@ -33,7 +33,7 @@
     <collect ref="collect">
     </collect>
 
-    <bind_phone title="绑定手机号" ref="bind_phone">
+    <bind_phone ref="bind_phone">
     </bind_phone>
 
     <show_phone ref="show_phone">
@@ -85,7 +85,7 @@
         if(this.person.phone_number != ''){
           this.$refs.show_phone.show();
         }else{
-          this.$refs.bind_phone.show();
+          this.$refs.bind_phone.show('绑定手机号');
         }
       },
       back(){

@@ -1,14 +1,26 @@
 <template>
   <transition name="move">
-    <div v-show="showFlag" class="collect" ref="content">
-      <div>
-        <div class="top">
-          收藏
+    <div v-show="showFlag">
+      <div class="bottom-box">
+        <div class="tab">
+          <div class="tab-item">
+              <span @click="hide()">
+                <i class="fa fa-reply fa-1x" aria-hidden="true"></i>
+                <!--<span><img src="/static/exhibit/rating.png" width="20px" height="20px"/></span>-->
+                <span style="margin-left: 1px">返回</span>
+              </span>
+          </div>
         </div>
-        <div class="back" @click="hide">
-          <i class="icon-arrow_lift"></i>
-        </div>
-        <div class="collect_content" >
+      </div>
+      <div class="collect" ref="content">
+        <div>
+          <!--<div class="top">-->
+            <!--收藏-->
+          <!--</div>-->
+          <!--<div class="back" @click="hide">-->
+            <!--<i class="icon-arrow_lift"></i>-->
+          <!--</div>-->
+          <div class="collect_content" >
             <div class='h' :ref="exhibit.flag" v-for="(exhibit,index) in exhibits" v-if="exhibit !==null">
               <ul :style="{width: max_width}">
                 <div  class="collect_info">
@@ -49,34 +61,36 @@
             </div>
 
             <!--<div class="exhibition" :ref="exhibition.flag" v-for="exhibition in exhibitions">-->
-              <!--&lt;!&ndash;<ul style="height: 1000px;">&ndash;&gt;-->
-              <!--<li @click="show_exhibition(exhibition.id)"  class="my_exhibition" :style="{width: max_width}">-->
-                <!--<div @click="show_exhibition(exhibition.id)" class="top_image">-->
-                  <!--<img width="100%" height="200px" :src="exhibition.image_path">-->
-                <!--</div>-->
-                <!--<div @click="show_exhibition(exhibition.id)" class="exhibition_info">-->
-                  <!--<div class="info_left">-->
-                    <!--<div>-->
-                      <!--{{exhibition.name}}-->
-                    <!--</div>-->
-                    <!--<div>-->
-                      <!--展览时间： {{exhibition.exhibition_date}}-->
-                    <!--</div>-->
-                    <!--<div>-->
-                      <!--展览地点： {{exhibition.exhibition_site}}-->
-                    <!--</div>-->
-                  <!--</div>-->
-                  <!--<div class="info_right">-->
-                    <!--<div>-->
-                      <!--展策人: {{exhibition.exhibition_curator}}-->
-                    <!--</div>-->
-                  <!--</div>-->
-                <!--</div>-->
-                <!--<div class="delete">-->
-                  <!--<span @click.once="delete_collect()" class="text">删除</span>-->
-                <!--</div>-->
-              <!--</li>-->
+            <!--&lt;!&ndash;<ul style="height: 1000px;">&ndash;&gt;-->
+            <!--<li @click="show_exhibition(exhibition.id)"  class="my_exhibition" :style="{width: max_width}">-->
+            <!--<div @click="show_exhibition(exhibition.id)" class="top_image">-->
+            <!--<img width="100%" height="200px" :src="exhibition.image_path">-->
             <!--</div>-->
+            <!--<div @click="show_exhibition(exhibition.id)" class="exhibition_info">-->
+            <!--<div class="info_left">-->
+            <!--<div>-->
+            <!--{{exhibition.name}}-->
+            <!--</div>-->
+            <!--<div>-->
+            <!--展览时间： {{exhibition.exhibition_date}}-->
+            <!--</div>-->
+            <!--<div>-->
+            <!--展览地点： {{exhibition.exhibition_site}}-->
+            <!--</div>-->
+            <!--</div>-->
+            <!--<div class="info_right">-->
+            <!--<div>-->
+            <!--展策人: {{exhibition.exhibition_curator}}-->
+            <!--</div>-->
+            <!--</div>-->
+            <!--</div>-->
+            <!--<div class="delete">-->
+            <!--<span @click.once="delete_collect()" class="text">删除</span>-->
+            <!--</div>-->
+            <!--</li>-->
+            <!--</div>-->
+          </div>
+          <div style="height: 53px"></div>
         </div>
       </div>
     </div>
@@ -95,6 +109,7 @@
   export default {
     data () {
       return {
+        title:'',
         user_id:'',
         showFlag: false,
         max_width:'',
@@ -130,7 +145,8 @@
         window.open("http://"+ host +"/exhibit_html/?id=" + key);
       },
       show() {
-        $("title").html("收藏");
+        this.title = $('title').html();
+        $('title').html('收藏');
         this.showFlag = true;
         this.$nextTick(() => {
           if (!this.scroll) {
@@ -141,6 +157,7 @@
         });
       },
       hide() {
+        $('title').html(this.title);
         this.showFlag = false;
         document.body.style.height = '';
         document.body.style.overflow = '';
@@ -277,6 +294,27 @@
             .text
               font-size: 24px
               line-height: 80px
+  .bottom-box
+    position: fixed
+    left: 0
+    bottom: 0
+    z-index: 50
+    width: 100%
+    height: 48px
+    background-color: white
+    border-top:1px solid gainsboro
+    .tab
+      display: flex
+      width: 100%
+      height: 48px
+      line-height: 40px
+      border-color: white
+      border-1px(rgba(7, 17, 27, 0.1))
+      .tab-item
+        flex: 1
+        margin-top: 2px
+        margin-bottom: 2px
+        text-align: center
 
 
 </style>
