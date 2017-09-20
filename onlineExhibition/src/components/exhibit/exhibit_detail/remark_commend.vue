@@ -33,11 +33,12 @@
           <div class="content_show" >
               <div class="top_image">
                 <img class="image" width="100%" height="100%" :src="reading.image_path">
-                <div id="moveid" class="div">
-                  <img :src="reading.image_path" :style="{'margin-left':margin_left, 'margin-top': margin_top}"/>
-                </div>
+
                 <div id="search" class="search">
                   <i class="fa fa-search fa-3x" aria-hidden="true"></i>
+                  <div id="moveid" class="div" :style="{'left':show_left, 'top': show_top}">
+                    <img :src="reading.image_path" :style="{'margin-left':margin_left, 'margin-top': margin_top}"/>
+                  </div>
                 </div>
                 <!--<i id="rating" class="rating fa fa-commenting-o fa-3x" aria-hidden="true" data-toggle="modal" data-target="#myModal"></i>-->
               </div>
@@ -72,6 +73,8 @@
     },
     data () {
       return {
+        show_left:'38px',
+        show_top:'5px',
         title:'',
         img_origin_width:'',
         img_origin_height:'',
@@ -159,87 +162,62 @@
               $("body").on("touchmove",function(event){
                 event.preventDefault;
               }, false)
-              $("#rating").css("display", "none");
+//              $("#rating").css("display", "none");
               _x_start=e.touches[0].pageX;
               _y_start=e.touches[0].pageY;
               left_start=$("#search").css("left");
               top_start=$("#search").css("top");
+              console.log( _x_start, left_start);
             })
             document.getElementById("search").addEventListener("touchmove",function(e)
             {
               _x_move=e.touches[0].pageX;
               _y_move=e.touches[0].pageY;
               // console.log("move",_x_move)
-              if(parseFloat(_x_move)-parseFloat(_x_start)+parseFloat(left_start) >=0 &&
-                parseFloat(_y_move)-parseFloat(_y_start)+parseFloat(top_start) >=0 &&
-                parseFloat(_x_move)-parseFloat(_x_start)+parseFloat(left_start) <=(screen.width) - 35 &&
-                parseFloat(_y_move)-parseFloat(_y_start)+parseFloat(top_start) <=((screen.width/_this.img_origin_width * _this.img_origin_height )-35)){
-                $("#search").css("left",parseFloat(_x_move)-parseFloat(_x_start)+parseFloat(left_start)+"px");
+              if((parseFloat(_y_move)-parseFloat(_y_start)+parseFloat(top_start) >=-1 &&
+                parseFloat(_y_move)-parseFloat(_y_start)+parseFloat(top_start) <=((screen.width/_this.img_origin_width * _this.img_origin_height )-35))){
                 $("#search").css("top",parseFloat(_y_move)-parseFloat(_y_start)+parseFloat(top_start)+"px");
-                console.log('x=', parseFloat(_x_move)-parseFloat(_x_start)+parseFloat(left_start));
-                console.log('y=',parseFloat(_y_move)-parseFloat(_y_start)+parseFloat(top_start));
-                _this.margin_left = parseFloat(_x_move)-parseFloat(_x_start)+parseFloat(left_start)/screen.width * _this.img_origin_width;
-                if(_this.margin_left > _this.img_origin_width -128){
-                  _this.margin_left = _this.img_origin_width -128;
-                }
-                _this.margin_left = '-' + _this.margin_left.toString() + 'px';
                 _this.margin_top = (parseFloat(_y_move)-parseFloat(_y_start)+parseFloat(top_start))/(screen.width/_this.img_origin_width);
                 if(_this.margin_top > _this.img_origin_height -128){
                   _this.margin_top = _this.img_origin_height -128;
                 }
                 _this.margin_top = '-' + _this.margin_top.toString() + 'px';
 
-                console.log(_this.margin_left,_this.margin_top);
+              }
+              if((parseFloat(_x_move)-parseFloat(_x_start)+parseFloat(left_start) >=-5 &&
+                parseFloat(_x_move)-parseFloat(_x_start)+parseFloat(left_start) <=(screen.width) - 35)){
+                $("#search").css("left",parseFloat(_x_move)-parseFloat(_x_start)+parseFloat(left_start)+"px");
+                _this.margin_left = (parseFloat(_x_move)-parseFloat(_x_start)+parseFloat(left_start))/screen.width * _this.img_origin_width;
+                if(_this.margin_left > _this.img_origin_width -128){
+                  _this.margin_left = _this.img_origin_width -128;
+                }
+                _this.margin_left = '-' + _this.margin_left.toString() + 'px';
+              }
+
+              if(parseFloat(_x_move)-parseFloat(_x_start)+parseFloat(left_start) <= screen.width - 148){
+                _this.show_left = '38px';
+              }
+              if(parseFloat(_x_move)-parseFloat(_x_start)+parseFloat(left_start) >= screen.width - 148){
+                _this.show_left = '-128px';
+              }
+              if(parseFloat(_y_move)-parseFloat(_y_start)+parseFloat(top_start) >= screen.height - 208){
+                _this.show_top = '-128px'
+              }
+              if(parseFloat(_y_move)-parseFloat(_y_start)+parseFloat(top_start) <= screen.height - 208){
+                _this.show_top = '5px'
               }
             })
             document.getElementById("search").addEventListener("touchend",function(e)
             {
               let _x_end=e.changedTouches[0].pageX;
               let _y_end=e.changedTouches[0].pageY;
-              $("#rating").css("display", "block");
+//              $("#rating").css("display", "block");
               $("body").off("touchmove");
             })
           })
         }
       },response => {
       });
-
-      let _this = this;
-      this.$nextTick(() =>{
-        let _x_start,_y_start,_x_move,_y_move,_x_end,_y_end,left_start,top_start;
-        document.getElementById("moveid").addEventListener("touchstart",function(e)
-        {
-          $("body").on("touchmove",function(event){
-            event.preventDefault;
-          }, false)
-          _x_start=e.touches[0].pageX;
-          _y_start=e.touches[0].pageY;
-          // console.log("start",_x_start)
-          left_start=$("#moveid").css("left");
-          top_start=$("#moveid").css("top");
-
-        })
-        document.getElementById("moveid").addEventListener("touchmove",function(e)
-        {
-          _x_move=e.touches[0].pageX;
-          _y_move=e.touches[0].pageY;
-          // console.log("move",_x_move)
-          if(parseFloat(_x_move)-parseFloat(_x_start)+parseFloat(left_start) >=0 &&
-            parseFloat(_y_move)-parseFloat(_y_start)+parseFloat(top_start) >=0 &&
-            parseFloat(_x_move)-parseFloat(_x_start)+parseFloat(left_start) <=(screen.width-128) &&
-            parseFloat(_y_move)-parseFloat(_y_start)+parseFloat(top_start) <=((screen.width/_this.img_origin_width * _this.img_origin_height )-128)){
-            $("#moveid").css("left",parseFloat(_x_move)-parseFloat(_x_start)+parseFloat(left_start)+"px");
-            $("#moveid").css("top",parseFloat(_y_move)-parseFloat(_y_start)+parseFloat(top_start)+"px");
-          }
-        })
-        document.getElementById("moveid").addEventListener("touchend",function(e)
-        {
-          $("body").off("touchmove");
-          let _x_end=e.changedTouches[0].pageX;
-          let _y_end=e.changedTouches[0].pageY;
-          // console.log("end",_x_end)
-        })
-      })
 
 //     let _this = this;
 //      $("#send").click(function(){
@@ -335,23 +313,21 @@
       width: 100%
       overflow: hidden
       bottom: 0
-      .div
-        position: absolute
-        top: 64px
-        left: 64px
-        width: 128px
-        height: 128px
-        z-index: 30
-        border-color: aliceblue
-        border: 1px
-        border-style: solid
-        border-radius: 5px
-        overflow: hidden
       .search
         position: absolute
-        top: 64px
-        left: 64px
+        top: 20px
+        left: 20px
         z-index: 30
+        .div
+          position: absolute
+          width: 128px
+          height: 128px
+          z-index: 30
+          border-color: aliceblue
+          border: 1px
+          border-style: solid
+          border-radius: 5px
+          overflow: hidden
       .rating
         position: absolute
         height: 40px
