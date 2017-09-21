@@ -1,14 +1,10 @@
 <template>
   <div>
     <div class="production_detail">
-      <div class="top_image" :style="{height: isEnlarge? 'auto' : '150px'}">
+      <div class="top_image">
         <img id="image" width="100%" :src="exhibit.image_path">
       </div>
-      <!--<span @click="save()" class="save">保存</span>-->
-      <div class="enlarge_icon" @click="enlarge_image(isEnlarge)">
-        <i :class="{'icon-zoom-in':!isEnlarge, 'icon-zoom-out':isEnlarge}"></i>
-      </div>
-      <div class="production_info">
+      <div class="exhibit_info">
         <div class="info_left">
           <div>
             {{exhibit.name}}
@@ -21,7 +17,7 @@
       <!--<audio_reading class='audio_reading' :name="exhibit.audio_name" ref="audio_reading"></audio_reading>-->
       <!--<audio :src="exhibit.audio_src" ref="audio"></audio>-->
 
-      <div title="作品解读" class="reading_top">
+      <div class="reading_top">
         <span class="left">作品解读</span>
         <span class="right" @click="more_reading()">查看更多</span>
       </div>
@@ -65,8 +61,6 @@
 
     <div class="ratings">
       <span class="left">评论</span>
-      <div class="right">
-      </div>
     </div>
     <div class="rating-wrapper">
       <ul>
@@ -75,9 +69,9 @@
             <img @click="show_information(rating.wx_id)" width="28" height="28" :src="rating.avatar">
           </div>
           <div class="content">
-            <h1 @click="add_rating('回复',rating.id)" class="name">{{rating.username}}</h1>
-            <p @click="add_rating('回复',rating.id)" class="time">{{rating.rateTime}}</p>
-            <p @click="add_rating('回复',rating.id)" class="text">{{rating.text}}</p>
+            <h1 @click="add_rating('回复'+ rating.username,rating.id)" class="name">{{rating.username}}</h1>
+            <p @click="add_rating('回复'+ rating.username,rating.id)" class="time">{{rating.rateTime}}</p>
+            <p @click="add_rating('回复'+ rating.username,rating.id)" class="text">{{rating.text}}</p>
             <div v-show="image_ratings[index]" class="js-result">
               <img :src="exhibit.image_path" :style="{'margin-left':rating.x_coordinate, 'margin-top': rating.y_coordinate}"/>
               <!--<img @click="zoomout()" :width="w" :height="h" :src="rating.rate_image">-->
@@ -177,7 +171,6 @@
         isPlaying: false,
         config:{},
         exhibit:{},
-        isEnlarge: true,
         param: {
           id: (() => {
             let queryParam = urlParse();
@@ -321,7 +314,9 @@
           }
         }
       })
-
+//      this.$nextTick(() =>{
+//        $(".right_info").css('margin-right','-12px');
+//      })
     },
 //    mounted() {
 //      this.$store.commit('findDOM', {name: 'audio', dom: this.$refs.audio});
@@ -401,9 +396,6 @@
           this.$refs.audio_reading.play();
         }
       },
-      enlarge_image (bool) {
-        this.isEnlarge = !bool;
-      },
       more_reading () {
         document.body.style.height = '100%';
         document.body.style.overflow = 'hidden';
@@ -454,39 +446,24 @@
   @import "../../../common/stylus/mixin.styl"
 
   .production_detail
-    /*width: 100%*/
     background: #fff
     margin-top: 5px
     margin-left: 5px
     margin-right 5px
     .top_image
-      height: 256px
-      overflow: hidden
       img
         max-width: 100%
-    .save
-      position: absolute
-      top: 0px
-      right: 0px
-    .enlarge_icon
-      position: relative
-      top: -18px
-      float: right
-    .production_info
+    .exhibit_info
       border-color: #000
       display:flex
-      margin-top: 5px
       .info_left
-        margin-left:2px
+        margin-left:0px
         margin-right:auto
-        color: #7e8c8d
-      .info_right
-        margin-left:auto
-        margin-right:2px
         color: #7e8c8d
     .reading_top
       margin-top: 5px
       margin-bottom: 5px
+      margin-right: 0px
       display:flex
       .left
         margin-left: 0px
@@ -562,14 +539,9 @@
     margin-top: 20px
     margin-bottom: 5px
     margin-left: 5px
-    display:flex
     .left
       margin-left: 0px
       margin-right: auto
-    .right
-      color: #7e8c8d
-      margin-left: auto
-      margin-right: 0px
   .rating-wrapper
     padding: 0 18px
     .rating-item

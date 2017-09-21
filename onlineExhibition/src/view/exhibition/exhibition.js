@@ -21,7 +21,7 @@ const store = new Vuex.Store({
     DOM: {},
     audio: {
       name: '',
-      src: 'http://picturebank.oss-cn-qingdao.aliyuncs.com/onlineExhibition/%E6%9D%8E%E7%8E%89%E5%88%9A-%E5%88%9A%E5%A5%BD%E9%81%87%E8%A7%81%E4%BD%A0.mp3',
+      src: '/static/exhibition/lyg.mp3',
       musicImgSrc: '',
     }
   },

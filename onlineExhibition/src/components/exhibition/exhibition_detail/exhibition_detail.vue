@@ -98,7 +98,7 @@
           <div class="avatar">
             <img @click="show_information(rating.wx_id)" width="28" height="28" :src="rating.avatar">
           </div>
-          <div class="content" @click="add_rating('回复',rating.id)">
+          <div class="content" @click="add_rating('回复'+ rating.username,rating.id)">
             <h1 class="name">{{rating.username}}</h1>
             <p class="time">{{rating.rateTime}}</p>
             <p class="text">{{rating.text}}</p>

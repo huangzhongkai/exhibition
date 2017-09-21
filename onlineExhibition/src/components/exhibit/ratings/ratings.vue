@@ -50,7 +50,7 @@
       return {
         remark: {},
         parent_id:-1,
-        title:'发评论',
+        title:'',
         title_bak:'',
         img_length:'',
         cropper: {},
@@ -129,15 +129,15 @@
 
       },
       show(content,parent_id) {
+        this.title = content;
         this.title_bak = $('title').html();
         $('title').html(this.title);
-        this.title = content;
         this.parent_id = parent_id;
         this.showFlag = true;
       },
       show_remark(remark) {
         this.title_bak = $('title').html();
-        $('title').html(this.title);
+        $('title').html('圈点点评');
         this.showFlag = true;
         this.type = true;
         this.remark = remark;

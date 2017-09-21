@@ -187,7 +187,6 @@
       bottom: 0px
       .more_reading_info
         margin: 2px 5px 0px 5px
-        width: 97%
         height: 80px
         border-color: aliceblue
         border: 1px

@@ -48,7 +48,8 @@
     data () {
       return {
         parent_id:-1,
-        title:'发评论',
+        title:'',
+        title_bak:'',
         img_length:'',
         cropper: {},
         flag:false,
@@ -107,8 +108,11 @@
         this.title = content;
         this.parent_id = parent_id;
         this.showFlag = true;
+        this.title_bak = $('title').html();
+        $('title').html(this.title);
       },
       hide() {
+        $('title').html(this.title_bak);
         this.showFlag = false;
         document.body.style.height = '';
         document.body.style.overflow = '';
