@@ -1197,12 +1197,7 @@ def exhibit_image_text_readings(request):
         'id': exhibit_reading['id'],
         'title':exhibit['name'],
         'image_path': exhibit_reading['origin'],
-        'reading_content': '张大千（Chang Dai-Chien），男,四川内江人，祖籍广东省番禺，1899年5月10日出生于四川省内江市中区城郊安良里的\
-          一个书香门第的家庭，中国泼墨画家，书法家。20 世纪50年代，张大千游历世界，获得巨大的国际声誉，被西方艺坛赞为“东方之笔”。[1]\
-          他与二哥张善子昆仲创立“大风堂派”，是二十世纪中国画坛最具传奇色彩的泼墨画工。特别在山水画方面卓有成就。后旅居海外，画风工写结合，\
-          重彩、水墨融为一体，尤其是泼墨与泼彩，开创了新的艺术风格，因其诗、书、画与齐白石、溥心畲齐名，故又并称为“南张北齐”和“南张北溥”，\
-          名号多如牛毛。与黄君璧、溥心畲以“渡海三家”齐名。二十多岁便蓄著一把大胡子，成为张大千日后的特有标志。他曾与齐白石、徐悲鸿、黄君璧、\
-          黄宾虹、溥儒、郎静山等及西班牙抽象派画家毕加索交游切磋。'.split('。')
+        'reading_content': exhibit_reading['content'].split('。')
     }
 
     return HttpResponse(json.dumps(image_text_readings), content_type='application/json')
@@ -1323,12 +1318,7 @@ def exhibition_image_text_readings(request):
         'id': exhibition_reading['id'],
         'title': exhibition['name'],
         'image_path': exhibition_reading['origin'],
-        'reading_content': '张大千（Chang Dai-Chien），男,四川内江人，祖籍广东省番禺，1899年5月10日出生于四川省内江市中区城郊安良里的\
-          一个书香门第的家庭，中国泼墨画家，书法家。20 世纪50年代，张大千游历世界，获得巨大的国际声誉，被西方艺坛赞为“东方之笔”。[1]\
-          他与二哥张善子昆仲创立“大风堂派”，是二十世纪中国画坛最具传奇色彩的泼墨画工。特别在山水画方面卓有成就。后旅居海外，画风工写结合，\
-          重彩、水墨融为一体，尤其是泼墨与泼彩，开创了新的艺术风格，因其诗、书、画与齐白石、溥心畲齐名，故又并称为“南张北齐”和“南张北溥”，\
-          名号多如牛毛。与黄君璧、溥心畲以“渡海三家”齐名。二十多岁便蓄著一把大胡子，成为张大千日后的特有标志。他曾与齐白石、徐悲鸿、黄君璧、\
-          黄宾虹、溥儒、郎静山等及西班牙抽象派画家毕加索交游切磋。'.split('。')
+        'reading_content': exhibition_reading['content'].split('。')
     }
 
     return HttpResponse(json.dumps(image_text_readings), content_type='application/json')
