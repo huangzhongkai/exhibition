@@ -20,26 +20,26 @@ urlpatterns = [
     url(r'^admin/', include(admin.site.urls)),
 
     url(r'^login/$', login),
-    url(r'^artists/(\d+)/$', artist),
+    url(r'^artist/$', artist),
     url(r'^artists/$', artists),
 
-    url(r'^exhibits/(\d+)/$', exhibit),
+    url(r'^exhibit/$', exhibit),
     url(r'^exhibits/$', exhibits),
-    url(r'^exhibit_readings/(\d+)/$', exhibit_readings),
-    url(r'^exhibit_ratings/(\d+)/$', exhibit_ratings),
+    url(r'^exhibit_readings/$', exhibit_readings),
+    url(r'^exhibit_ratings/$', exhibit_ratings),
     # url(r'^exhibit_image_ratings/(\d+)/$', exhibit_image_ratings),
-    url(r'^exhibit_image_text_readings/(\d+)/$', exhibit_image_text_readings),
-    url(r'^exhibit_vedio_readings/(\d+)/$', exhibit_vedio_readings),
+    url(r'^exhibit_image_text_readings/$', exhibit_image_text_readings),
+    url(r'^exhibit_vedio_readings/$', exhibit_vedio_readings),
 
     url(r'^achievement/$', achievement),
     url(r'^introduction/$', introduction),
 
-    url(r'^exhibitions/(\d+)/$', exhibition),
+    url(r'^exhibition/$', exhibition),
     url(r'^exhibitions/$', exhibitions),
-    url(r'^exhibition_readings/(\d+)/$', exhibition_readings),
-    url(r'^exhibition_image_text_readings/(\d+)/$', exhibition_image_text_readings),
-    url(r'^exhibition_vedio_readings/(\d+)/$', exhibition_vedio_readings),
-    url(r'^exhibition_ratings/(\d+)/$', exhibition_ratings),
+    url(r'^exhibition_readings/$', exhibition_readings),
+    url(r'^exhibition_image_text_readings/$', exhibition_image_text_readings),
+    url(r'^exhibition_vedio_readings/$', exhibition_vedio_readings),
+    url(r'^exhibition_ratings/$', exhibition_ratings),
 
     url(r'^get_signature/$', get_signature),
     # url(r'^motified_signature/$', motified_signature),
@@ -51,8 +51,8 @@ urlpatterns = [
     url(r'^bing_phone_commit/$', bing_phone_commit),
     url(r'^check_phone_commit/$', check_phone_commit),
 
-    url(r'^exhibit_remark/(\d+)/$', exhibit_remark),
-    url(r'^get_wx_share_info/(\d+)/$', get_wx_share_info),
+    url(r'^exhibit_remark/$', exhibit_remark),
+    # url(r'^get_wx_share_info/$', get_wx_share_info),
 
     url(r'^home_html/$', home_html),
     url(r'^exhibition_html/$', exhibition_html),

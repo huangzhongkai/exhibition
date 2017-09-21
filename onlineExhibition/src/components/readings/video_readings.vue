@@ -52,12 +52,12 @@
     },
     created() {
       if(this.params.type === 'exhibit'){
-        this.$http.get('http://'+ host +'/exhibit_vedio_readings/'+ this.params.id + '/').then(response => {
+        this.$http.get('http://'+ host +'/exhibit_vedio_readings/?id='+ this.params.id).then(response => {
           this.reading = response.body;
         },response => {
         });
       }else if(this.params.type === 'exhibition'){
-        this.$http.get('http://'+ host +'/exhibition_vedio_readings/'+ this.params.id + '/').then(response => {
+        this.$http.get('http://'+ host +'/exhibition_vedio_readings/?id='+ this.params.id).then(response => {
           this.reading = response.body;
         },response => {
         });

@@ -559,11 +559,12 @@ def login(request):
             return response
 
 
-def artist(request, offset):
+def artist(request):
     code = request.GET.get('code', 'error')
     print request.COOKIES
+    id = request.GET.get('id', 'error')
 
-    artist = OeArtist.objects.filter(id=offset).first()
+    artist = OeArtist.objects.filter(id=id).first()
     artist = model_to_dict(artist)
     attention_count = OeUserAttentionArtist.objects.filter(artist=artist['id']).count()
 
@@ -578,7 +579,7 @@ def artist(request, offset):
         isattention = 'false'
         return HttpResponse(json.dumps('error'), content_type='application/json')
 
-    wx_share_info = OeWxShareArtistInfo.objects.filter(artist__id=offset).first()
+    wx_share_info = OeWxShareArtistInfo.objects.filter(artist__id=id).first()
     wx_share_dict = {
         'share': {'title': wx_share_info.title, 'description': wx_share_info.description, 'url': wx_share_info.url}
     }
@@ -615,21 +616,18 @@ def artists(request):
         artist_list.append(artist_dict)
     return HttpResponse(json.dumps(artist_list), content_type='application/json')
 
-def exhibit(request, offset):
+def exhibit(request):
     print request.COOKIES
     print request.session.get('openid', default=None)
-    # try:
-    #     offset = int(offset)
-    # except ValueError:
-    #     raise Http404()
+    id = request.GET.get('id','error')
 
     #get exhibit base infomation
-    exhibit = OeExhibit.objects.filter(id=offset).first()
+    exhibit = OeExhibit.objects.filter(id=id).first()
     exhibit = model_to_dict(exhibit)
 
     #get exhibit image_text readings info
     image_text_reading_list = []
-    image_text_readings = OeExhibitInterpretation.objects.filter(exhibit__id=offset, type=0)
+    image_text_readings = OeExhibitInterpretation.objects.filter(exhibit__id=id, type=0)
     for image_text_reading in image_text_readings:
         image_text_reading = model_to_dict(image_text_reading)
         show_dict = {
@@ -643,7 +641,7 @@ def exhibit(request, offset):
 
     # get exhibit audio reading info
     audio_reading_list = []
-    audio_readings = OeExhibitInterpretation.objects.filter(exhibit__id=offset, type=2)
+    audio_readings = OeExhibitInterpretation.objects.filter(exhibit__id=id, type=2)
     for audio_reading in audio_readings:
         audio_reading = model_to_dict(audio_reading)
         show_dict = {
@@ -657,7 +655,7 @@ def exhibit(request, offset):
 
     #get exhibit video reading info
     video_reading_list = []
-    video_readings = OeExhibitInterpretation.objects.filter(exhibit__id=offset, type=1)
+    video_readings = OeExhibitInterpretation.objects.filter(exhibit__id=id, type=1)
     for video_reading in video_readings:
         video_reading = model_to_dict(video_reading)
         show_dict = {
@@ -671,7 +669,7 @@ def exhibit(request, offset):
 
     #get exhibit rating info
     comment_list = []
-    comments = OeExhibitComment.objects.filter(exhibit__id=offset).order_by("create_time")[:5]
+    comments = OeExhibitComment.objects.filter(exhibit__id=id).order_by("create_time")[:5]
     for comment in comments:
         comment = model_to_dict(comment)
         user = OeUser.objects.filter(id=comment['user']).first()
@@ -706,18 +704,18 @@ def exhibit(request, offset):
         user_id = OeWxUser.objects.filter(appid=openid).first().user_id
 
     user = OeUser.objects.filter(id=user_id).first()
-    if OeUserExhibitCollection.objects.filter(user=user.id, exhibit=offset).first():
+    if OeUserExhibitCollection.objects.filter(user=user.id, exhibit=id).first():
         collect_flag = True
     else:
         collect_flag = False
 
-    wx_share_info = OeWxShareExhibitInfo.objects.filter(exhibit__id=offset).first()
+    wx_share_info = OeWxShareExhibitInfo.objects.filter(exhibit__id=id).first()
     wx_share_dict = {
         'share':{'title': wx_share_info.title,'description': wx_share_info.description,'url': wx_share_info.url}
     }
 
     exhibit_dict = {
-        'id': offset,
+        'id': id,
         'image_path': exhibit['image_path'],
         'name': exhibit['name'],
         'author': exhibit['author'],
@@ -768,11 +766,12 @@ def exhibits(request):
             exhibit_l.append(show_dict)
     return HttpResponse(json.dumps(exhibit_l), content_type='application/json')
 
-def exhibit_readings(request, offset):
+def exhibit_readings(request):
+    id = request.GET.get('id', 'error')
     print request.COOKIES
     # get exhibit image_text readings info
     image_text_reading_list = []
-    image_text_readings = OeExhibitInterpretation.objects.filter(exhibit__id=offset, type=0)
+    image_text_readings = OeExhibitInterpretation.objects.filter(exhibit__id=id, type=0)
     for image_text_reading in image_text_readings:
         image_text_reading = model_to_dict(image_text_reading)
         show_dict = {
@@ -786,7 +785,7 @@ def exhibit_readings(request, offset):
 
     # get exhibit audio reading info
     audio_reading_list = []
-    audio_readings = OeExhibitInterpretation.objects.filter(exhibit__id=offset, type=2)
+    audio_readings = OeExhibitInterpretation.objects.filter(exhibit__id=id, type=2)
     for audio_reading in audio_readings:
         audio_reading = model_to_dict(audio_reading)
         show_dict = {
@@ -800,7 +799,7 @@ def exhibit_readings(request, offset):
 
     # get exhibit video reading info
     video_reading_list = []
-    video_readings = OeExhibitInterpretation.objects.filter(exhibit__id=offset, type=1)
+    video_readings = OeExhibitInterpretation.objects.filter(exhibit__id=id, type=1)
     for video_reading in video_readings:
         video_reading = model_to_dict(video_reading)
         show_dict = {
@@ -821,7 +820,8 @@ def exhibit_readings(request, offset):
     return HttpResponse(json.dumps(reading_dict), content_type='application/json')
 
 @csrf_exempt
-def exhibit_ratings(request, offset):
+def exhibit_ratings(request):
+    id = request.GET.get('id', 'error')
     if request.method == 'POST':
         print request.COOKIES
         print request.session.get('openid', default=None)
@@ -848,7 +848,7 @@ def exhibit_ratings(request, offset):
 
         rating = {}
         rating['user'] = OeUser.objects.filter(id=user_id).first()
-        rating['exhibit'] = OeExhibit.objects.filter(id=offset).first()
+        rating['exhibit'] = OeExhibit.objects.filter(id=id).first()
         rating['create_time'] = otherStyleTime
         rating['id'] = uuid.uuid1().hex
 
@@ -867,12 +867,12 @@ def exhibit_ratings(request, offset):
         get_count = int(request.GET.get('get_count','0'))
         get_offset = int(request.GET.get('get_offset','0'))
         comment_list = []
-        total = OeExhibitComment.objects.filter(exhibit__id=offset).count()
+        total = OeExhibitComment.objects.filter(exhibit__id=id).count()
         print total
         get_offset = int(get_offset)
         if total - get_offset < get_count:
             get_count = total - get_offset
-        comments = OeExhibitComment.objects.filter(exhibit__id=offset).order_by("create_time")[get_offset:get_offset+get_count]
+        comments = OeExhibitComment.objects.filter(exhibit__id=id).order_by("create_time")[get_offset:get_offset+get_count]
         for comment in comments:
             comment = model_to_dict(comment)
             user = OeUser.objects.filter(id=comment['user']).first()
@@ -903,9 +903,9 @@ def exhibit_ratings(request, offset):
         return HttpResponse(json.dumps(comment_dict), content_type='application/json')
 
 @csrf_exempt
-def exhibit_remark(request, offset):
+def exhibit_remark(request):
+    id = request.GET.get('id', 'error')
     if request.method == 'POST':
-        print offset
         print request.POST.get('content','')
         print request.POST.get('left', '')
         print request.POST.get('top', '')
@@ -936,7 +936,7 @@ def exhibit_remark(request, offset):
 
         rating = {}
         rating['user'] = OeUser.objects.filter(id=user_id).first()
-        rating['exhibit'] = OeExhibit.objects.filter(id=offset).first()
+        rating['exhibit'] = OeExhibit.objects.filter(id=id).first()
         rating['create_time'] = otherStyleTime
         rating['content'] = request.POST.get('content','')
         rating['x_coordinate'] = request.POST.get('left', '')
@@ -950,16 +950,17 @@ def exhibit_remark(request, offset):
         return response
 
 @csrf_exempt
-def exhibition(request, offset):
+def exhibition(request):
+    id = request.GET.get('id', 'error')
     if request.method == 'GET':
         print request.COOKIES
         # get exhibition base infomation
-        exhibition = OeExhibition.objects.filter(id=offset).first()
+        exhibition = OeExhibition.objects.filter(id=id).first()
         exhibition = model_to_dict(exhibition)
 
         # get exhibition image_text readings info
         image_text_reading_list = []
-        image_text_readings = OeExhibitionInterpretation.objects.filter(exhibition__id=offset, type=0)
+        image_text_readings = OeExhibitionInterpretation.objects.filter(exhibition__id=id, type=0)
         for image_text_reading in image_text_readings:
             image_text_reading = model_to_dict(image_text_reading)
             show_dict = {
@@ -973,7 +974,7 @@ def exhibition(request, offset):
 
         #get exhibition audio reading info
         audio_reading_list = []
-        audio_readings = OeExhibitionInterpretation.objects.filter(exhibition__id=offset, type=2)
+        audio_readings = OeExhibitionInterpretation.objects.filter(exhibition__id=id, type=2)
         for audio_reading in audio_readings:
             audio_reading = model_to_dict(audio_reading)
             show_dict = {
@@ -988,7 +989,7 @@ def exhibition(request, offset):
 
         # get exhibition video reading info
         video_reading_list = []
-        video_readings = OeExhibitionInterpretation.objects.filter(exhibition__id=offset, type=1)
+        video_readings = OeExhibitionInterpretation.objects.filter(exhibition__id=id, type=1)
         for video_reading in video_readings:
             video_reading = model_to_dict(video_reading)
             show_dict = {
@@ -1003,7 +1004,7 @@ def exhibition(request, offset):
 
         # get exhibit rating info
         comment_list = []
-        comments = OeExhibitionComment.objects.filter(exhibition__id=offset).order_by("create_time")[:5]
+        comments = OeExhibitionComment.objects.filter(exhibition__id=id).order_by("create_time")[:5]
         for comment in comments:
             comment = model_to_dict(comment)
             user = OeUser.objects.filter(id=comment['user']).first()
@@ -1031,7 +1032,7 @@ def exhibition(request, offset):
 
         #get charactor exhibit
         charactor_list = []
-        charactors = OeExhibit.objects.filter(category__id=0, exhibition_id=offset)
+        charactors = OeExhibit.objects.filter(category__id=0, exhibition_id=id)
         for charactor in charactors:
             charactor = model_to_dict(charactor)
             show_dict = {
@@ -1043,7 +1044,7 @@ def exhibition(request, offset):
 
         #get enjoyable exhibit
         enjoyable_list = []
-        enjoyables = OeExhibit.objects.filter(category__id=1, exhibition_id=offset)
+        enjoyables = OeExhibit.objects.filter(category__id=1, exhibition_id=id)
         for enjoyable in enjoyables:
             enjoyable = model_to_dict(enjoyable)
             show_dict = {
@@ -1070,18 +1071,18 @@ def exhibition(request, offset):
             user_id = OeWxUser.objects.filter(appid=openid).first().user_id
 
         user = OeUser.objects.filter(id=user_id).first()
-        if OeUserExhibitionCollection.objects.filter(user=user.id, exhibition=offset).first():
+        if OeUserExhibitionCollection.objects.filter(user=user.id, exhibition=id).first():
             collect_flag = True
         else:
             collect_flag = False
 
-        wx_share_info = OeWxShareExhibitionInfo.objects.filter(exhibition__id=offset).first()
+        wx_share_info = OeWxShareExhibitionInfo.objects.filter(exhibition__id=id).first()
         wx_share_dict = {
             'share': {'title': wx_share_info.title, 'description': wx_share_info.description, 'url': wx_share_info.url}
         }
 
         exhibition_dict = {
-            'id': offset,
+            'id': id,
             'image_path': exhibition['image_path'],
             'name': exhibition['name'],
             'audio_name': '作品解读',
@@ -1132,10 +1133,11 @@ def exhibitions(request):
     return HttpResponse(json.dumps(exhibition_l), content_type='application/json')
 
 
-def exhibition_readings(request, offset):
+def exhibition_readings(request):
+    id = request.GET.get('id', 'error')
     # get exhibit image_text readings info
     image_text_reading_list = []
-    image_text_readings = OeExhibitionInterpretation.objects.filter(exhibition__id=offset, type=0)
+    image_text_readings = OeExhibitionInterpretation.objects.filter(exhibition__id=id, type=0)
     for image_text_reading in image_text_readings:
         image_text_reading = model_to_dict(image_text_reading)
         show_dict = {
@@ -1149,7 +1151,7 @@ def exhibition_readings(request, offset):
 
     # get exhibition audio reading info
     audio_reading_list = []
-    audio_readings = OeExhibitionInterpretation.objects.filter(exhibition__id=offset, type=2)
+    audio_readings = OeExhibitionInterpretation.objects.filter(exhibition__id=id, type=2)
     for audio_reading in audio_readings:
         audio_reading = model_to_dict(audio_reading)
         show_dict = {
@@ -1163,7 +1165,7 @@ def exhibition_readings(request, offset):
 
     # get exhibit video reading info
     video_reading_list = []
-    video_readings = OeExhibitionInterpretation.objects.filter(exhibition__id=offset, type=1)
+    video_readings = OeExhibitionInterpretation.objects.filter(exhibition__id=id, type=1)
     for video_reading in video_readings:
         video_reading = model_to_dict(video_reading)
         show_dict = {
@@ -1183,8 +1185,9 @@ def exhibition_readings(request, offset):
 
     return HttpResponse(json.dumps(reading_dict), content_type='application/json')
 
-def exhibit_image_text_readings(request, offset):
-    exhibit_reading = OeExhibitInterpretation.objects.filter(id=offset).first()
+def exhibit_image_text_readings(request):
+    id = request.GET.get('id', 'error')
+    exhibit_reading = OeExhibitInterpretation.objects.filter(id=id).first()
     exhibit_reading = model_to_dict(exhibit_reading)
 
     exhibit = OeExhibit.objects.filter(id=exhibit_reading['exhibit']).first()
@@ -1205,8 +1208,9 @@ def exhibit_image_text_readings(request, offset):
     return HttpResponse(json.dumps(image_text_readings), content_type='application/json')
 
 
-def exhibit_vedio_readings(request, offset):
-    exhibit_reading = OeExhibitInterpretation.objects.filter(id=offset).first()
+def exhibit_vedio_readings(request):
+    id = request.GET.get('id','error')
+    exhibit_reading = OeExhibitInterpretation.objects.filter(id=id).first()
     exhibit_reading = model_to_dict(exhibit_reading)
 
     video_readings = {
@@ -1223,7 +1227,8 @@ def exhibit_vedio_readings(request, offset):
     return HttpResponse(json.dumps(video_readings), content_type='application/json')
 
 @csrf_exempt
-def exhibition_ratings(request, offset):
+def exhibition_ratings(request):
+    id = request.GET.get('id', 'error')
     if request.method == 'POST':
         print request.COOKIES
         print request.session.get('openid', default=None)
@@ -1255,7 +1260,7 @@ def exhibition_ratings(request, offset):
         # rating['user'] = OeUser.objects.filter().first()
 
         rating['user'] = OeUser.objects.filter(id=user_id).first()
-        rating['exhibition'] = OeExhibition.objects.filter(id=offset).first()
+        rating['exhibition'] = OeExhibition.objects.filter(id=id).first()
         rating['create_time'] = otherStyleTime
         rating['id'] = uuid.uuid1().hex
 
@@ -1273,13 +1278,13 @@ def exhibition_ratings(request, offset):
         get_count = int(request.GET.get('get_count','0'))
         get_offset = int(request.GET.get('get_offset','0'))
         comment_list = []
-        total = OeExhibitionComment.objects.filter(exhibition__id=offset).count()
+        total = OeExhibitionComment.objects.filter(exhibition__id=id).count()
         print total
         get_offset = int(get_offset)
         if total - get_offset < get_count:
             get_count = total - get_offset
         comment_list = []
-        comments = OeExhibitionComment.objects.filter(exhibition__id=offset).order_by("create_time")[get_offset:get_offset + get_count]
+        comments = OeExhibitionComment.objects.filter(exhibition__id=id).order_by("create_time")[get_offset:get_offset + get_count]
         for comment in comments:
             comment = model_to_dict(comment)
             user = OeUser.objects.filter(id=comment['user']).first()
@@ -1306,8 +1311,9 @@ def exhibition_ratings(request, offset):
         return HttpResponse(json.dumps(comment_dict), content_type='application/json')
 
 
-def exhibition_image_text_readings(request, offset):
-    exhibition_reading = OeExhibitionInterpretation.objects.filter(id=offset).first()
+def exhibition_image_text_readings(request):
+    id = request.GET.get('id', 'error')
+    exhibition_reading = OeExhibitionInterpretation.objects.filter(id=id).first()
     exhibition_reading = model_to_dict(exhibition_reading)
 
     exhibition = OeExhibition.objects.filter(id=exhibition_reading['exhibition']).first()
@@ -1328,8 +1334,9 @@ def exhibition_image_text_readings(request, offset):
     return HttpResponse(json.dumps(image_text_readings), content_type='application/json')
 
 
-def exhibition_vedio_readings(request, offset):
-    exhibition_reading = OeExhibitionInterpretation.objects.filter(id=offset).first()
+def exhibition_vedio_readings(request):
+    id = request.GET.get('id', 'error')
+    exhibition_reading = OeExhibitionInterpretation.objects.filter(id=id).first()
     exhibition_reading = model_to_dict(exhibition_reading)
 
     video_readings = {

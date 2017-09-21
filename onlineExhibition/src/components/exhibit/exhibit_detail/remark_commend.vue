@@ -145,7 +145,7 @@
       },
     },
     created() {
-      this.$http.get('http://'+ host +'/exhibits/'+ this.exhibit_id +'/').then(response => {
+      this.$http.get('http://'+ host +'/exhibit/?id='+ this.exhibit_id).then(response => {
         this.reading = response.body;
         let img = new Image();
         let _this = this;

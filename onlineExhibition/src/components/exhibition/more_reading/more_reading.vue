@@ -137,7 +137,7 @@
     },
     created() {
       if(this.exhibition_id != undefined){
-        this.$http.get('http://'+ host +'/exhibition_readings/'+ this.exhibition_id + '/').then(response => {
+        this.$http.get('http://'+ host +'/exhibition_readings/?id='+ this.exhibition_id).then(response => {
           this.exhibition = response.body;
           for(let i=0; i<this.exhibition.audio_readings.length; i++){
             this.play_icon.push('/static/exhibition/play.svg');

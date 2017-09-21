@@ -86,7 +86,6 @@
 
       let _this = this;
       $(window).scroll(function () {
-        console.log('aaaaa');
         let scrpllTop = $(this).scrollTop();
         let scroolHeight = $(document).height();
         let windowHeight = $(this).height();

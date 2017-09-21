@@ -180,7 +180,7 @@
       };
     },
     created() {
-      this.$http.get('http://'+ host +'/exhibits/'+ this.param.id +'/').then(response => {
+      this.$http.get('http://'+ host +'/exhibit/?id='+ this.param.id).then(response => {
         if(response.body === 'error'){
           window.location = 'https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx522cca3d4b048aa9&redirect_uri=http%3A//'+ encodeURIComponent(host) +'/home_html/&response_type=code&scope=snsapi_userinfo&state=123#wechat_redirect'
         }
@@ -289,7 +289,7 @@
           if(scrpllTop + windowHeight === scroolHeight){
             _this.is_more_rating = false;
             $("#loading").css('display','block');
-            _this.$http.get('http://'+ host +'/exhibit_ratings/'+ _this.param.id+'/?get_count=' + _this.get_count
+            _this.$http.get('http://'+ host +'/exhibit_ratings/?id='+ _this.param.id+'&get_count=' + _this.get_count
               + '&get_offset=' + _this.get_offset ).then(response => {
               for(let i=0; i<response.body.ratings.length; i++){
                 _this.exhibit.ratings.push(response.body.ratings[i]);
