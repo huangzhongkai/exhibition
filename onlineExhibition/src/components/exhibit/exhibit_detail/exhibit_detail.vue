@@ -314,9 +314,6 @@
           }
         }
       })
-//      this.$nextTick(() =>{
-//        $(".right_info").css('margin-right','-12px');
-//      })
     },
 //    mounted() {
 //      this.$store.commit('findDOM', {name: 'audio', dom: this.$refs.audio});
