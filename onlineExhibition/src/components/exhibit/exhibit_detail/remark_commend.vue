@@ -37,7 +37,7 @@
                 <div id="search" class="search">
                   <i class="fa fa-search fa-3x" aria-hidden="true"></i>
                   <div id="moveid" class="div" :style="{'left':show_left, 'top': show_top}">
-                    <img :src="reading.image_path" :style="{'margin-left':margin_left, 'margin-top': margin_top}"/>
+                    <img :src="reading.image_path" :style="{'width': e_width, 'margin-left':margin_left, 'margin-top': margin_top}"/>
                   </div>
                 </div>
                 <!--<i id="rating" class="rating fa fa-commenting-o fa-3x" aria-hidden="true" data-toggle="modal" data-target="#myModal"></i>-->
@@ -73,13 +73,15 @@
     },
     data () {
       return {
+        e_width:'',
+        e_height:'',
         show_left:'38px',
         show_top:'5px',
         title:'',
         img_origin_width:'',
         img_origin_height:'',
-        margin_left:'',
-        margin_top:'',
+        margin_left:'-64px',
+        margin_top:'-64px',
         is_scroll:'',
         is_select:'show',
         is_click:'content_show',
@@ -145,14 +147,15 @@
       },
     },
     created() {
+      this.e_width = screen.width * 128 / 40 + 'px';
       this.$http.get('http://'+ host +'/exhibit/?id='+ this.exhibit_id).then(response => {
         this.reading = response.body;
         let img = new Image();
         let _this = this;
         img.src = this.reading.image_path;
         img.onload = function() {
-          _this.img_origin_width = img.width;
-          _this.img_origin_height = img.height;
+          _this.img_origin_width = img.width/screen.width *screen.width * 128 / 40;
+          _this.img_origin_height = img.height * (img.width/screen.width) * 128 / 40;
           _this.img_length = img.height/(img.width/screen.width);
 
           _this.$nextTick(() =>{
@@ -168,6 +171,7 @@
               left_start=$("#search").css("left");
               top_start=$("#search").css("top");
               console.log( _x_start, left_start);
+              console.log( _y_start, top_start);
             })
             document.getElementById("search").addEventListener("touchmove",function(e)
             {
@@ -175,21 +179,21 @@
               _y_move=e.touches[0].pageY;
               // console.log("move",_x_move)
               if((parseFloat(_y_move)-parseFloat(_y_start)+parseFloat(top_start) >=-1 &&
-                parseFloat(_y_move)-parseFloat(_y_start)+parseFloat(top_start) <=((screen.width/_this.img_origin_width * _this.img_origin_height )-35))){
+                parseFloat(_y_move)-parseFloat(_y_start)+parseFloat(top_start) <=((screen.width/img.width * img.height )-40))){
                 $("#search").css("top",parseFloat(_y_move)-parseFloat(_y_start)+parseFloat(top_start)+"px");
-                _this.margin_top = (parseFloat(_y_move)-parseFloat(_y_start)+parseFloat(top_start))/(screen.width/_this.img_origin_width);
-                if(_this.margin_top > _this.img_origin_height -128){
-                  _this.margin_top = _this.img_origin_height -128;
+                _this.margin_top = (parseFloat(_y_move)-parseFloat(_y_start)+parseFloat(top_start))/(40/128);
+                if(_this.margin_top > _this.img_origin_height){
+                  _this.margin_top = _this.img_origin_height;
                 }
                 _this.margin_top = '-' + _this.margin_top.toString() + 'px';
 
               }
               if((parseFloat(_x_move)-parseFloat(_x_start)+parseFloat(left_start) >=-5 &&
-                parseFloat(_x_move)-parseFloat(_x_start)+parseFloat(left_start) <=(screen.width) - 35)){
+                parseFloat(_x_move)-parseFloat(_x_start)+parseFloat(left_start) <=(screen.width) - 40)){
                 $("#search").css("left",parseFloat(_x_move)-parseFloat(_x_start)+parseFloat(left_start)+"px");
-                _this.margin_left = (parseFloat(_x_move)-parseFloat(_x_start)+parseFloat(left_start))/screen.width * _this.img_origin_width;
-                if(_this.margin_left > _this.img_origin_width -128){
-                  _this.margin_left = _this.img_origin_width -128;
+                _this.margin_left = (parseFloat(_x_move)-parseFloat(_x_start)+parseFloat(left_start))/40 * 128;
+                if(_this.margin_left > _this.img_origin_width){
+                  _this.margin_left = _this.img_origin_width;
                 }
                 _this.margin_left = '-' + _this.margin_left.toString() + 'px';
               }

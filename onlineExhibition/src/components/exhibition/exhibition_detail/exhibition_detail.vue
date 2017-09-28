@@ -425,9 +425,9 @@
       show_image_text_readings(key) {
         window.open("http://"+ host +"/image_text_readings_html/?id=" + key +'&type=exhibition');
       },
-      show_video_readings(key) {
-        window.open("http://"+ host +"/video_readings_html/?id=" + key +'&type=exhibition');
-      },
+//      show_video_readings(key) {
+//        window.open("http://"+ host +"/video_readings_html/?id=" + key +'&type=exhibition');
+//      },
       isShow (index) {
         if(index < 1){
           return true;

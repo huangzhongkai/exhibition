@@ -50,7 +50,9 @@
           <img class="avatar_image_play" @click="show_video(index)" src="/static/exhibit/play.svg"/>
         </div>
         <div class="reading_video">
-          <video :src="reading.video_src" ref="my_video" class="my_video"></video>
+          <video ref="my_video" class="my_video">
+            <source :src="reading.video_src" type="video/mp4">
+          </video>
         </div>
         <div @click="show_video_readings(reading.id)" class="reading_content">
           <div class="title">{{reading.reading_title}}</div>
@@ -388,10 +390,11 @@
         }
       },
       show_video (index) {
+        alert('aaaa');
         this.$refs.my_video[index].play();
-        if(this.$store.state.isPlaying === true){
-          this.$refs.audio_reading.play();
-        }
+//        if(this.$store.state.isPlaying === true){
+//          this.$refs.audio_reading.play();
+//        }
       },
       more_reading () {
         document.body.style.height = '100%';
