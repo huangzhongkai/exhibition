@@ -16,13 +16,13 @@ class Wx(object):
 
     def get_access_token(self):
         r = requests.get(url='https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=' + self.appid +
-                             '&secret=' + self.appsecret)
+                             '&secret=' + self.appsecret, verify=False)
         access_token = r.json()['access_token']
         return access_token
 
     def get_jsapi_ticket(self, access_token):
         r = requests.get(url='https://api.weixin.qq.com/cgi-bin/ticket/getticket?access_token=' + access_token +
-                             '&type=jsapi')
+                             '&type=jsapi',verify=False)
         if r.json()['errcode'] == 0:
             jsapi_ticket = r.json()['ticket']
             return jsapi_ticket
@@ -43,10 +43,10 @@ class Wx(object):
     def get_web_access_token(self, code):
         r = requests.get(
             url='https://api.weixin.qq.com/sns/oauth2/access_token?appid='+ self.appid +'&secret='+ self.appsecret +
-                '&code='+ code +'&grant_type=authorization_code')
+                '&code='+ code +'&grant_type=authorization_code', verify=False)
         return r.json()
 
     def get_user_info(self, access_token, openid):
         r = requests.get(
-            url='https://api.weixin.qq.com/sns/userinfo?access_token='+ access_token +'&openid='+ openid +'&lang=zh_CN')
+            url='https://api.weixin.qq.com/sns/userinfo?access_token='+ access_token +'&openid='+ openid +'&lang=zh_CN', verify=False)
         return r.json()
