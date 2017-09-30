@@ -10,6 +10,9 @@ import introduction from "../../components/introduction/introduction.vue"
 import exhibit from "../../components/exhibit/exhibit.vue"
 import Vuex from 'vuex'
 import "../../common/stylus/index.styl"
+import "bootstrap/dist/css/bootstrap.css"
+import "bootstrap/dist/js/bootstrap.min"
+
 
 Vue.config.productionTip = false
 

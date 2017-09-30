@@ -81,10 +81,7 @@
 <style lang="stylus" rel="stylesheet/stylus">
   .exhibition
     width: 100%
-    /*overflow: hidden*/
-    /*position: absolute*/
-    /*top: 173px*/
-    /*bottom: 0px*/
+    background-color: #f5f5f9
     .my_exhibition
       border-color: darkgrey
       border-style: solid

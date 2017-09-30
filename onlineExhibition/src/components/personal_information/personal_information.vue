@@ -2,20 +2,23 @@
   <div>
     <div class="header">
       <img class="avatar" :src="person.avatar"/>
-      <br/>
+      <div><br/></div>
       <span class="nickname">{{person.name}}</span>
     </div>
     <!--<div class="info">-->
       <!--<span class="swaper">个人资料</span>-->
       <!--<i class="fa fa-angle-right fa-2x fa-pull-right " aria-hidden="true"></i>-->
     <!--</div>-->
+    <div class="interval"></div>
     <div @click="show_collect()" class="info">
+      <i class="star fa fa-star-o fa-1x" aria-hidden="true"></i>
       <span class="swaper">收藏</span>
-      <i class="fa fa-angle-right fa-2x fa-pull-right" aria-hidden="true"></i>
+      <i class="angle fa fa-angle-right fa-2x fa-pull-right" aria-hidden="true"></i>
     </div>
     <div @click="bind_phone()" class="info">
+      <i class="star fa fa-mobile fa-1x" aria-hidden="true"></i>
       <span class="swaper">绑定手机号</span>
-      <i class="fa fa-angle-right fa-2x fa-pull-right" aria-hidden="true"></i>
+      <i class="angle fa fa-angle-right fa-2x fa-pull-right" aria-hidden="true"></i>
       <span class="phone_number">{{person.phone_number}}</span>
     </div>
     <div class="bottom-box">
@@ -99,30 +102,38 @@
   @import "../../common/stylus/mixin.styl";
   .header
     width: 100%
-    height: 160px
+    height: 163pt
     background-image: url("background.jpeg")
     text-align: center
     .avatar
-      margin-top:30px
-      width: 80px
-      height: 80px
+      margin-top:23pt
+      width: 75pt
+      height: 75pt
       border-radius: 50%
     .nickname
-      margin-top:10px
+      margin-top:16pt
       color: white
+      font-size: 18pt
+  .interval
+    height: 5pt
+    background-color: #f5f5f9
   .info
     width: 100%
-    height: 40px
-    line-height:40px
+    height: 40pt
+    line-height:40pt
     border-bottom: 1px
     border-style: solid
     border-color: darkgrey
-    .swaper
-      margin-left: 8px
     .phone_number
       float:right
     i
       color: #8c8c8c
+    .star
+      margin-left: 19pt
+      margin-right: 21pt
+    .angle
+      margin-top: 10pt
+      margin-right: 14pt
   .bottom-box
     position: fixed
     left: 0

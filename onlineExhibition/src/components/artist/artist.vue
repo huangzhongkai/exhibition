@@ -176,7 +176,7 @@
     width: 100%
     height: 40px
     line-height: 40px
-    border-1px(rgba(7, 17, 27, 0.1))
+
   .tab-item
     flex: 1
     text-align: center
@@ -185,11 +185,10 @@
       font-size: 14px
       color: rgb(77, 85, 93)
       &.active
-        /*border-bottom:2px solid red*/
-        background-color: darkgrey;
-        border-radius:5px;
+        border-bottom:2px solid black
         text-decoration: underline
-        color: rgb(240, 20, 20)
+        color: black
+
   .bottom-box
     position: fixed
     left: 0

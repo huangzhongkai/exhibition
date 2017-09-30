@@ -81,6 +81,7 @@
   .production
     display: flex
     width: 100%
+    background-color: #f5f5f9
     .left_product
       margin-left: 5px
       margin-right: 5px

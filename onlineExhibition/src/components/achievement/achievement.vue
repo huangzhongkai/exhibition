@@ -1,8 +1,8 @@
 <template>
   <div class="achievement">
-    <div v-for="item in achievement" class="my_section">
+    <p v-for="item in achievement" class="my_section">
       {{item}}
-    </div>
+    </p>
   </div>
 </template>
 
@@ -35,18 +35,13 @@
 </script>
 
 <style lang="stylus" rel="stylesheet/stylus">
-
   .achievement
     position: relative
-    margin: 5px 5px 5px 5px
-    /*border-color: antiquewhite*/
-    /*border: 2px*/
-    /*border-style: solid*/
-    /*border-radius: 5px*/
-    /*background-color: antiquewhite*/
-    padding-top: 10px
+    padding-top: 5px
     line-height: 20px
-    /*overflow: auto*/
     .my_section
-      margin: 10px
+      text-indent: 2em
+      width: 100%
+      background-color: #f5f5f9
+      margin-top: 5px
 </style>

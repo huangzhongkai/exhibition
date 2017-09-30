@@ -1,8 +1,8 @@
 <template>
   <div class="introduction">
-   <div v-for="item in introduction" class="my_section">
-     {{item}}
-   </div>
+    <p v-for="item in introduction" class="my_section">
+      {{item}}
+    </p>
   </div>
 </template>
 
@@ -37,14 +37,11 @@
 <style lang="stylus" rel="stylesheet/stylus">
   .introduction
     position: relative
-    margin: 5px 5px 5px 5px
-    /*border-color: antiquewhite*/
-    /*border: 2px*/
-    /*border-style: solid*/
-    /*border-radius: 5px*/
-    /*background-color: antiquewhite*/
-    padding-top: 10px
-    /*overflow: auto*/
+    line-height: 20px
+    padding-top: 5px
     .my_section
-      margin: 10px
+      text-indent: 2em
+      width: 100%
+      background-color: #f5f5f9
+      margin-top: 10px
 </style>
