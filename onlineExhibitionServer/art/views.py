@@ -1764,3 +1764,233 @@ def get_wx_share_info(request, offset):
                 'url': wx_share_info.url
             }
             return HttpResponse(json.dumps(return_dict), content_type='application/json')
+
+
+def xcx_exhibit(request):
+    id = request.GET.get('id','error')
+
+    #get exhibit base infomation
+    exhibit = OeExhibit.objects.filter(id=id).first()
+    exhibit = model_to_dict(exhibit)
+
+    #get exhibit image_text readings info
+    image_text_reading_list = []
+    image_text_readings = OeExhibitInterpretation.objects.filter(exhibit__id=id, type=0)
+    for image_text_reading in image_text_readings:
+        image_text_reading = model_to_dict(image_text_reading)
+        show_dict = {
+            'id':image_text_reading['id'],
+            'image_path': image_text_reading['origin'],
+            'reading_title': image_text_reading['title'],
+            'reading_content': image_text_reading['content'],
+        }
+        image_text_reading_list.append(show_dict)
+    image_text_reading_dict = {'image_text_readings': image_text_reading_list}
+
+    # get exhibit audio reading info
+    audio_reading_list = []
+    audio_readings = OeExhibitInterpretation.objects.filter(exhibit__id=id, type=2)
+    for audio_reading in audio_readings:
+        audio_reading = model_to_dict(audio_reading)
+        show_dict = {
+            'id': audio_reading['id'],
+            'reading_title': audio_reading['title'],
+            'audio_src': audio_reading['origin'],
+            'reading_content': audio_reading['content'],
+        }
+        audio_reading_list.append(show_dict)
+    audio_reading_dict = {'audio_readings': audio_reading_list}
+
+    #get exhibit video reading info
+    video_reading_list = []
+    video_readings = OeExhibitInterpretation.objects.filter(exhibit__id=id, type=1)
+    for video_reading in video_readings:
+        video_reading = model_to_dict(video_reading)
+        show_dict = {
+            'id': video_reading['id'],
+            'reading_title': video_reading['title'],
+            'reading_content': video_reading['content'],
+            'video_src': video_reading['origin'],
+        }
+        video_reading_list.append(show_dict)
+    video_reading_dict = {'video_readings': video_reading_list}
+
+    #get exhibit rating info
+    comment_list = []
+    comments = OeExhibitComment.objects.filter(exhibit__id=id).order_by("create_time")[:5]
+    for comment in comments:
+        comment = model_to_dict(comment)
+        user = OeUser.objects.filter(id=comment['user']).first()
+        user = model_to_dict(user)
+
+        if comment['parent'] != '' and comment['parent'] != None:
+            parent_user_id = OeExhibitComment.objects.filter(id=comment['parent']).first().user_id
+            parent_user = OeWxUser.objects.filter(id=parent_user_id).first()
+            parent_user = model_to_dict(parent_user)
+            text = smart_unicode('回复 ') + parent_user['nickname'] + smart_unicode(' 的评论:') + comment['content']
+        else:
+            text = comment['content']
+        show_dict = {
+            'id': comment['id'],
+            'username': user['nickname'],
+            'rateTime':  comment['create_time'].strftime('%Y-%m-%d %H:%M:%S'),
+            'text': text,
+            'avatar': user['head_path'],
+            'wx_id':user['id'],
+            'type': comment['type'],
+            # 'rate_image': comment['rate_image'],
+            'x_coordinate': comment['x_coordinate'],
+            'y_coordinate': comment['y_coordinate']
+        }
+        comment_list.append(show_dict)
+    comment_dict = {'ratings': comment_list}
+
+    exhibit_dict = {
+        'id': id,
+        'image_path': exhibit['image_path'],
+        'name': exhibit['name'],
+        'author': exhibit['author'],
+    }
+
+    exhibit_dict = dict(exhibit_dict, **image_text_reading_dict)
+    exhibit_dict = dict(exhibit_dict, **audio_reading_dict)
+    exhibit_dict = dict(exhibit_dict, **video_reading_dict)
+    exhibit_dict = dict(exhibit_dict, **comment_dict)
+    return HttpResponse(json.dumps(exhibit_dict), content_type='application/json')
+
+def xcx_exhibit_ratings(request):
+    id = request.GET.get('id', 'error')
+    if request.method == 'GET':
+        get_count = int(request.GET.get('get_count','0'))
+        get_offset = int(request.GET.get('get_offset','0'))
+        comment_list = []
+        total = OeExhibitComment.objects.filter(exhibit__id=id).count()
+        print total
+        get_offset = int(get_offset)
+        if total - get_offset < get_count:
+            get_count = total - get_offset
+        comments = OeExhibitComment.objects.filter(exhibit__id=id).order_by("create_time")[get_offset:get_offset+get_count]
+        for comment in comments:
+            comment = model_to_dict(comment)
+            user = OeUser.objects.filter(id=comment['user']).first()
+            user = model_to_dict(user)
+
+            if comment['parent'] != '' and comment['parent'] != None:
+                parent_user_id = OeExhibitComment.objects.filter(id=comment['parent']).first().user_id
+                parent_user = OeUser.objects.filter(id=parent_user_id).first()
+                parent_user = model_to_dict(parent_user)
+                text = smart_unicode('回复 ') + parent_user['nickname'] + smart_unicode(' 的评论:') + comment['content']
+            else:
+                text = comment['content']
+            show_dict = {
+                'id': comment['id'],
+                'username': user['nickname'],
+                'rateTime': comment['create_time'].strftime('%Y-%m-%d %H:%M:%S'),
+                'text': text,
+                'avatar': user['head_path'],
+                'wx_id': user['id'],
+                'type': comment['type'],
+                # 'rate_image': comment['rate_image'],
+                'x_coordinate': comment['x_coordinate'],
+                'y_coordinate': comment['y_coordinate']
+            }
+            comment_list.append(show_dict)
+        comment_dict = {'ratings': comment_list}
+        print comment_dict
+        return HttpResponse(json.dumps(comment_dict), content_type='application/json')
+
+def xcx_exhibition(request):
+    id = request.GET.get('id', 'error')
+    if request.method == 'GET':
+        # get exhibition base infomation
+        exhibition = OeExhibition.objects.filter(id=id).first()
+        exhibition = model_to_dict(exhibition)
+
+        # get exhibition image_text readings info
+        image_text_reading_list = []
+        image_text_readings = OeExhibitionInterpretation.objects.filter(exhibition__id=id, type=0)
+        for image_text_reading in image_text_readings:
+            image_text_reading = model_to_dict(image_text_reading)
+            show_dict = {
+                'id': image_text_reading['id'],
+                'image_path': image_text_reading['origin'],
+                'reading_title': image_text_reading['title'],
+                'reading_content': image_text_reading['content'],
+            }
+            image_text_reading_list.append(show_dict)
+        image_text_reading_dict = {'image_text_readings': image_text_reading_list}
+
+        #get exhibition audio reading info
+        audio_reading_list = []
+        audio_readings = OeExhibitionInterpretation.objects.filter(exhibition__id=id, type=2)
+        for audio_reading in audio_readings:
+            audio_reading = model_to_dict(audio_reading)
+            show_dict = {
+                'id': audio_reading['id'],
+                'reading_title': audio_reading['title'],
+                'audio_src': audio_reading['origin'],
+                'reading_content': audio_reading['content'],
+            }
+            audio_reading_list.append(show_dict)
+        audio_reading_dict = {'audio_readings': audio_reading_list}
+
+
+        # get exhibition video reading info
+        video_reading_list = []
+        video_readings = OeExhibitionInterpretation.objects.filter(exhibition__id=id, type=1)
+        for video_reading in video_readings:
+            video_reading = model_to_dict(video_reading)
+            show_dict = {
+                'id': video_reading['id'],
+                'reading_title': video_reading['title'],
+                'reading_content': video_reading['content'],
+                'video_src': video_reading['origin'],
+                # 'play_icon': video_reading['play_icon']
+            }
+            video_reading_list.append(show_dict)
+        video_reading_dict = {'video_readings': video_reading_list}
+
+        # get exhibit rating info
+        comment_list = []
+        comments = OeExhibitionComment.objects.filter(exhibition__id=id).order_by("create_time")[:5]
+        for comment in comments:
+            comment = model_to_dict(comment)
+            user = OeUser.objects.filter(id=comment['user']).first()
+            user = model_to_dict(user)
+
+            if comment['parent'] != '' and comment['parent'] != None:
+                parent_user_id = OeExhibitionComment.objects.filter(id=comment['parent']).first().user_id
+                parent_user = OeUser.objects.filter(id=parent_user_id).first()
+                parent_user = model_to_dict(parent_user)
+                text = smart_unicode('回复 ') + parent_user['nickname'] + smart_unicode(' 的评论:') + comment['content']
+            else:
+                text = comment['content']
+            show_dict = {
+                'id': comment['id'],
+                'username': user['nickname'],
+                'rateTime': comment['create_time'].strftime('%Y-%m-%d %H:%M:%S'),
+                'text': text,
+                'avatar': user['head_path'],
+                'wx_id': user['id'],
+                # 'type': comment['type'],
+                # 'rate_image': comment['rate_image']
+            }
+            comment_list.append(show_dict)
+        comment_dict = {'ratings': comment_list}
+
+        exhibition_dict = {
+            'id': id,
+            'image_path': exhibition['image_path'],
+            'name': exhibition['name'],
+            'audio_name': '作品解读',
+            'audio_src': '/static/exhibit/lyg.mp3',
+            'exhibition_date': '2017-7-4',
+            'exhibition_site': '中国艺术馆',
+            'exhibition_curator': '大佬',
+        }
+
+        exhibition_dict = dict(exhibition_dict, **image_text_reading_dict)
+        exhibition_dict = dict(exhibition_dict, **audio_reading_dict)
+        exhibition_dict = dict(exhibition_dict, **video_reading_dict)
+        exhibition_dict = dict(exhibition_dict, **comment_dict)
+        return HttpResponse(json.dumps(exhibition_dict), content_type='application/json')
