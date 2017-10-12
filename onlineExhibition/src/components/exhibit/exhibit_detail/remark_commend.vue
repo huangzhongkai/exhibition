@@ -103,7 +103,7 @@
         document.body.style.overflow = 'hidden';
         let left = this.margin_left;
         let top = this.margin_top;
-        let remark = {'left': left, 'top': top};
+        let remark = {'left': left, 'top': top, 'width': this.e_width};
         this.$refs.edit_ratings.show_remark(remark);
       },
       utf16ToUtf8(str){

@@ -64,6 +64,7 @@ class OeExhibitComment(models.Model):
     type = models.IntegerField(db_column='TYPE', choices=type_choice)
     x_coordinate = models.CharField(db_column='X_COORDINATE', max_length=30)
     y_coordinate = models.CharField(db_column='Y_COORDINATE', max_length=30)
+    img_width = models.CharField(db_column='IMG_WIDTH', max_length=30)
     class Meta:
         db_table = 'oe_exhibit_comment'
 

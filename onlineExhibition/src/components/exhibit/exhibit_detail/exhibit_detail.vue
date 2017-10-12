@@ -75,7 +75,7 @@
             <p @click="add_rating('回复'+ rating.username,rating.id)" class="time">{{rating.rateTime}}</p>
             <p @click="add_rating('回复'+ rating.username,rating.id)" class="text">{{rating.text}}</p>
             <div v-show="image_ratings[index]" class="js-result">
-              <img :src="exhibit.image_path" :style="{'width': e_width, 'margin-left':rating.x_coordinate, 'margin-top': rating.y_coordinate}"/>
+              <img :src="exhibit.image_path" :style="{'width': rating.img_width, 'margin-left':rating.x_coordinate, 'margin-top': rating.y_coordinate}"/>
               <!--<img @click="zoomout()" :width="w" :height="h" :src="rating.rate_image">-->
             </div>
           </div>
@@ -157,7 +157,6 @@
     },
     data () {
       return {
-        e_width:'',
         is_more_rating:true,
         get_count:5,
         get_offset:5,
@@ -183,7 +182,6 @@
       };
     },
     created() {
-      this.e_width = screen.width * 128 / 40 + 'px';
       this.$http.get('http://'+ host +'/exhibit/?id='+ this.param.id).then(response => {
         if(response.body === 'error'){
           window.location = 'https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx522cca3d4b048aa9&redirect_uri=http%3A//'+ encodeURIComponent(host) +'/home_html/&response_type=code&scope=snsapi_userinfo&state=123#wechat_redirect'

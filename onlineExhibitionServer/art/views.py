@@ -690,7 +690,7 @@ def exhibit(request):
             'avatar': user['head_path'],
             'wx_id':user['id'],
             'type': comment['type'],
-            # 'rate_image': comment['rate_image'],
+            'img_width': comment['img_width'],
             'x_coordinate': comment['x_coordinate'],
             'y_coordinate': comment['y_coordinate']
         }
@@ -893,7 +893,7 @@ def exhibit_ratings(request):
                 'avatar': user['head_path'],
                 'wx_id': user['id'],
                 'type': comment['type'],
-                # 'rate_image': comment['rate_image'],
+                'img_width': comment['img_width'],
                 'x_coordinate': comment['x_coordinate'],
                 'y_coordinate': comment['y_coordinate']
             }
@@ -941,6 +941,7 @@ def exhibit_remark(request):
         rating['content'] = request.POST.get('content','')
         rating['x_coordinate'] = request.POST.get('left', '')
         rating['y_coordinate'] = request.POST.get('top', '')
+        rating['img_width'] = request.POST.get('width', '')
         rating['type'] = 1
         rating['id'] = uuid.uuid1().hex
 
@@ -1838,7 +1839,7 @@ def xcx_exhibit(request):
             'avatar': user['head_path'],
             'wx_id':user['id'],
             'type': comment['type'],
-            # 'rate_image': comment['rate_image'],
+            'img_width': comment['img_width'],
             'x_coordinate': comment['x_coordinate'],
             'y_coordinate': comment['y_coordinate']
         }
@@ -1890,7 +1891,7 @@ def xcx_exhibit_ratings(request):
                 'avatar': user['head_path'],
                 'wx_id': user['id'],
                 'type': comment['type'],
-                # 'rate_image': comment['rate_image'],
+                'img_width': comment['img_width'],
                 'x_coordinate': comment['x_coordinate'],
                 'y_coordinate': comment['y_coordinate']
             }
