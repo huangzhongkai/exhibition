@@ -400,3 +400,12 @@ class OeWxShareHomeInfo(models.Model):
     url = models.CharField(db_column='URL', max_length=200)
     class Meta:
         db_table = 'oe_wx_share_home_info'
+
+class OeXcxSession(models.Model):
+    id = models.CharField(db_column='ID', primary_key=True, max_length=32)
+    key = models.CharField(db_column='KEY', max_length=200)
+    session_key = models.CharField(db_column='SESSION_KEY', max_length=100)
+    openid =  models.CharField(db_column='OPENID', max_length=100)
+    expire_date = models.DateTimeField(db_column='EXPIRE_DATE')
+    class Meta:
+        db_table = 'oe_xcx_session'

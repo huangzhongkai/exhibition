@@ -50,3 +50,11 @@ class Wx(object):
         r = requests.get(
             url='https://api.weixin.qq.com/sns/userinfo?access_token='+ access_token +'&openid='+ openid +'&lang=zh_CN', verify=False)
         return r.json()
+
+    def get_openid_by_code(self, code):
+        appid = 'wx0bcf443bdf2dc122'
+        secret = '70bb6274f343cacf2652bf6f848da2c4'
+        r = requests.get(
+            url='https://api.weixin.qq.com/sns/jscode2session?appid=' + appid + '&secret=' + secret + '&js_code=' + code + '&grant_type=authorization_code',
+            verify=False)
+        return r.json()

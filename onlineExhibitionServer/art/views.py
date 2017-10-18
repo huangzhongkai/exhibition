@@ -1,13 +1,14 @@
 # -*- coding:utf8 -*-
 import json, random, uuid
-import time
+import time, datetime
 from django.shortcuts import render_to_response, HttpResponse, Http404
 from art.models import OeArtist, OeExhibit, OeExhibition, OeExhibitInterpretation,\
     OeArtistExhibitionRelation, OeWxDeveloper, OeExhibitionInterpretation, OeWxUser, OeUserExhibitionCollection
 from django.forms.models import model_to_dict
 from django.views.decorators.csrf import csrf_exempt
 from art.models import OeWxShareExhibitionInfo, OeWxShareExhibitInfo, OeWxShareHomeInfo, OeWxShareArtistInfo
-from art.models import OeUser, OeExhibitComment, OeExhibitionComment, OeUserAttentionArtist, OeUserExhibitCollection
+from art.models import OeUser, OeExhibitComment, OeExhibitionComment, OeUserAttentionArtist, OeUserExhibitCollection, \
+    OeXcxSession
 from django.contrib.sessions.models import Session
 
 from art.utils import Wx
@@ -1817,50 +1818,79 @@ def xcx_exhibit(request):
     video_reading_dict = {'video_readings': video_reading_list}
 
     #get exhibit rating info
-    comment_list = []
-    comments = OeExhibitComment.objects.filter(exhibit__id=id).order_by("create_time")[:5]
-    for comment in comments:
-        comment = model_to_dict(comment)
-        user = OeUser.objects.filter(id=comment['user']).first()
-        user = model_to_dict(user)
-
-        if comment['parent'] != '' and comment['parent'] != None:
-            parent_user_id = OeExhibitComment.objects.filter(id=comment['parent']).first().user_id
-            parent_user = OeWxUser.objects.filter(id=parent_user_id).first()
-            parent_user = model_to_dict(parent_user)
-            text = smart_unicode('回复 ') + parent_user['nickname'] + smart_unicode(' 的评论:') + comment['content']
-        else:
-            text = comment['content']
-        show_dict = {
-            'id': comment['id'],
-            'username': user['nickname'],
-            'rateTime':  comment['create_time'].strftime('%Y-%m-%d %H:%M:%S'),
-            'text': text,
-            'avatar': user['head_path'],
-            'wx_id':user['id'],
-            'type': comment['type'],
-            'img_width': comment['img_width'],
-            'x_coordinate': comment['x_coordinate'],
-            'y_coordinate': comment['y_coordinate']
-        }
-        comment_list.append(show_dict)
-    comment_dict = {'ratings': comment_list}
+    # comment_list = []
+    rating_number = OeExhibitComment.objects.filter(exhibit__id=id).order_by("create_time").count()
+    # for comment in comments:
+    #     comment = model_to_dict(comment)
+    #     user = OeUser.objects.filter(id=comment['user']).first()
+    #     user = model_to_dict(user)
+    #
+    #     if comment['parent'] != '' and comment['parent'] != None:
+    #         parent_user_id = OeExhibitComment.objects.filter(id=comment['parent']).first().user_id
+    #         parent_user = OeWxUser.objects.filter(id=parent_user_id).first()
+    #         parent_user = model_to_dict(parent_user)
+    #         text = smart_unicode('回复 ') + parent_user['nickname'] + smart_unicode(' 的评论:') + comment['content']
+    #     else:
+    #         text = comment['content']
+    #     show_dict = {
+    #         'id': comment['id'],
+    #         'username': user['nickname'],
+    #         'rateTime':  comment['create_time'].strftime('%Y-%m-%d %H:%M:%S'),
+    #         'text': text,
+    #         'avatar': user['head_path'],
+    #         'wx_id':user['id'],
+    #         'type': comment['type'],
+    #         'img_width': comment['img_width'],
+    #         'x_coordinate': comment['x_coordinate'],
+    #         'y_coordinate': comment['y_coordinate']
+    #     }
+    #     comment_list.append(show_dict)
+    # comment_dict = {'ratings': comment_list}
 
     exhibit_dict = {
         'id': id,
         'image_path': exhibit['image_path'],
         'name': exhibit['name'],
         'author': exhibit['author'],
+        'rating_number':rating_number
     }
 
     exhibit_dict = dict(exhibit_dict, **image_text_reading_dict)
     exhibit_dict = dict(exhibit_dict, **audio_reading_dict)
     exhibit_dict = dict(exhibit_dict, **video_reading_dict)
-    exhibit_dict = dict(exhibit_dict, **comment_dict)
+    # exhibit_dict = dict(exhibit_dict, **comment_dict)
     return HttpResponse(json.dumps(exhibit_dict), content_type='application/json')
 
+@csrf_exempt
 def xcx_exhibit_ratings(request):
     id = request.GET.get('id', 'error')
+    if request.method == 'POST':
+
+        rate = request.POST.get("rate")
+        key = request.POST.get("key")
+        exhibit_id = request.POST.get('exhibit_id')
+        if OeXcxSession.objects.filter(key=key).first():
+            expire_date = OeXcxSession.objects.filter(key=key).first().expire_date
+            if int(time.mktime(expire_date.timetuple())) > time.time() - 7200:
+                user_id = OeWxUser.objects.filter(appid=OeXcxSession.objects.filter(key=key).first().openid).first().user_id
+                timeArray = time.localtime()
+                otherStyleTime = time.strftime("%Y-%m-%d %H:%M:%S", timeArray)
+
+                rating = {}
+                rating['user'] = OeUser.objects.filter(id=user_id).first()
+                rating['exhibit'] = OeExhibit.objects.filter(id=exhibit_id).first()
+                rating['create_time'] = otherStyleTime
+                rating['id'] = uuid.uuid1().hex
+                rating['content'] = rate
+                rating['type'] = 0
+                OeExhibitComment.objects.create(**rating)
+
+                return HttpResponse(json.dumps({'code':0}), content_type='application/json')
+            else:
+                return HttpResponse(json.dumps({'code':-1}), content_type='application/json')
+
+        return HttpResponse(json.dumps({'code':-2}), content_type='application/json')
+
     if request.method == 'GET':
         get_count = int(request.GET.get('get_count','0'))
         get_offset = int(request.GET.get('get_offset','0'))
@@ -1995,3 +2025,64 @@ def xcx_exhibition(request):
         exhibition_dict = dict(exhibition_dict, **video_reading_dict)
         exhibition_dict = dict(exhibition_dict, **comment_dict)
         return HttpResponse(json.dumps(exhibition_dict), content_type='application/json')
+@csrf_exempt
+def onLogin(request):
+    if request.method == "POST":
+        code = request.POST.get('code', 'error')
+        user_info = {}
+        user_info["nickName"] = request.POST.get('nickName', 'error')
+        user_info["avatarUrl"] = request.POST.get('avatarUrl', 'error')
+        user_info["city"] = request.POST.get('city', 'error')
+        user_info["country"] = request.POST.get('country', 'error')
+        user_info["gender"] = request.POST.get('gender', 'error')
+        user_info["province"] = request.POST.get('province', 'error')
+        user_info["language"] = request.POST.get('language', 'error')
+        if code != 'error':
+            wx = Wx('', '', '')
+            message = wx.get_openid_by_code(code)
+
+            if not OeXcxSession.objects.filter(openid=message['openid']).first():
+
+                session_id = uuid.uuid1().hex
+                key = uuid.uuid1().hex
+                timeArray = time.localtime()
+                otherStyleTime = time.strftime("%Y-%m-%d %H:%M:%S", timeArray)
+                OeXcxSession.objects.create(id=session_id,
+                                            key=key,
+                                            session_key=message['session_key'],
+                                            openid=message['openid'],
+                                            expire_date=otherStyleTime)
+
+                # a = OeXcxSession.objects.filter(id="efd4e351b0a711e79b274c32758b0cad").first().expire_date
+                # print int(time.mktime(a.timetuple()))
+
+                user_id = uuid.uuid1().hex
+                timeArray = time.localtime()
+                otherStyleTime = time.strftime("%Y-%m-%d %H:%M:%S", timeArray)
+                user = OeUser.objects.create(id=user_id,
+                                             nickname=user_info['nickName'],
+                                             sex=str(user_info['gender']),
+                                             head_path=user_info['avatarUrl'],
+                                             create_time=otherStyleTime)
+
+                wx_user_id = uuid.uuid1().hex
+                OeWxUser.objects.create(id=wx_user_id,
+                                        user=user,
+                                        appid=message['openid'],
+                                        nickname=user_info['nickName'],
+                                        sex=str(user_info['gender']),
+                                        province=user_info['province'],
+                                        city=user_info['city'],
+                                        country=user_info['country'],
+                                        headimgurl=user_info['avatarUrl'])
+            else:
+                print 'update_info'
+                key = uuid.uuid1().hex
+                timeArray = time.localtime()
+                otherStyleTime = time.strftime("%Y-%m-%d %H:%M:%S", timeArray)
+                OeXcxSession.objects.filter(openid=message['openid']).update(key=key,
+                                                                             session_key=message['session_key'],
+                                                                             expire_date=otherStyleTime)
+
+            return HttpResponse(json.dumps(key), content_type='application/json')
+        return HttpResponse(json.dumps('error'), content_type='application/json')

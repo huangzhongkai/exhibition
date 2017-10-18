@@ -390,7 +390,6 @@
         }
       },
       show_video (index) {
-        alert('aaaa');
         this.$refs.my_video[index].play();
 //        if(this.$store.state.isPlaying === true){
 //          this.$refs.audio_reading.play();

@@ -6,7 +6,7 @@ from art.views import artist, artists, achievement, introduction, exhibit, exhib
 from art.views import exhibition, exhibitions, exhibit_readings,exhibition_readings,\
     exhibit_image_text_readings, exhibit_vedio_readings, exhibition_image_text_readings,\
     exhibition_vedio_readings, get_signature, exhibition_ratings, xcx_exhibit, xcx_exhibition, xcx_exhibit_ratings
-from art.views import home_html, exhibition_html, exhibit_html, artist_html, exhibit_ratings, \
+from art.views import home_html, exhibition_html, exhibit_html, artist_html, exhibit_ratings, onLogin, \
     image_text_readings_html, video_readings_html, attention, information, personal_information_html, collect, \
     bing_phone_commit, send_auth_code, exhibit_remark, check_phone_commit, login, artists_html, get_wx_share_info
 
@@ -69,4 +69,5 @@ urlpatterns = [
     url(r'^xcx_exhibit/$', xcx_exhibit),
     url(r'^xcx_exhibition/$', xcx_exhibition),
     url(r'^xcx_exhibit_ratings/$', xcx_exhibit_ratings),
+    url(r'^onLogin/$', onLogin),
 ]
